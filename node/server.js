@@ -10,22 +10,27 @@ connectDB();
 // Обработка GET-запроса для получения всех товаров
 app.get('/api/products', async (req, res) => {
   try {
-    // SQL-запрос для объединения товаров и их изображений
-    const query = `
- SELECT 
-    p.product_id,
-    p.name,
-    p.description,
-    p.price,
-    i.image_url
-FROM 
-    products p
-LEFT JOIN 
-    images i 
-ON 
-    p.product_id = i.entity_id AND i.entity_type = 'product';
+    const categoryId = req.query.category_id; // Получаем параметр category_id из query-параметров
+
+    // SQL-запрос для объединения товаров и их изображений с фильтрацией по category_id
+    let query = `
+      SELECT 
+        p.product_id,
+        p.name,
+        p.description,
+        p.price,
+        i.image_url
+      FROM 
+        products p
+      LEFT JOIN 
+        images i ON p.product_id = i.entity_id AND i.entity_type = 'product'
     `;
-    
+
+    // Если передан category_id, добавляем фильтрацию по категории
+    if (categoryId) {
+      query += ` WHERE p.category_id = ${categoryId}`;
+    }
+
     // Выполняем запрос к базе данных
     const productsWithImages = await queryDB(query);
 
