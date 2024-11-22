@@ -21,7 +21,7 @@ app.get('/api/products', async (req, res) => {
       FROM 
         products p
       LEFT JOIN 
-        product_images i 
+        images i 
       ON 
         p.product_id = i.product_id;
     `;

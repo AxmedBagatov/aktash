@@ -17,12 +17,17 @@
         class="image-slider"
         :style="{ transform: `translateX(-${currentIndex * 100}%)` }"
       >
-        <img  class="images_123"
+        <div
+          class="slide"
           v-for="(product, index) in products"
           :key="product.id"
-          :src="product.image_url"
-          :alt="product.name"
-        />
+        >
+          <img
+            class="images_123"
+            :src="product.image_url"
+            :alt="product.name"
+          />
+        </div>
       </div>
 
       <!-- Индикаторы -->
@@ -99,7 +104,7 @@ export default {
   font-size: 1.2rem;
 }
 
-.images_123{
+.images_123 {
   width: 100%;
   height: 100%;
 }
@@ -133,12 +138,12 @@ export default {
 
 .slide {
   min-width: 100%; /* Каждое изображение будет занимать 100% ширины слайда */
-  height: 100%;    /* Устанавливаем высоту слайда, чтобы изображение занимало всю область */
+  height: 100%; /* Устанавливаем высоту слайда, чтобы изображение занимало всю область */
 }
 
 .slide img {
   width: 100%;
-  height: 100%;      /* Растягиваем изображение по высоте */
+  height: 100%; /* Растягиваем изображение по высоте */
   object-fit: cover; /* Сохраняем пропорции и растягиваем изображение на весь контейнер */
 }
 
