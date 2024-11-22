@@ -65,6 +65,7 @@ export const actions = {
       const response = await fetch(`http://192.168.62.129:4000/api/products?category_id=${categoryId}`);
       if (response.ok) {
         const data = await response.json();
+        console.log(data);
         commit('setProducts', data);
       } else {
         commit('setErrorMessage', 'Ошибка при загрузке продуктов для категории');
