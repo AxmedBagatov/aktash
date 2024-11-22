@@ -90,20 +90,28 @@ export default {
   align-items: center;
   justify-content: space-between;
   width: 80%;
+  height: 40%;
   margin: auto;
   background-color: antiquewhite;
 }
 
 .carousel-text {
   width: 40%;
+  height: 40%;
   margin-inline-start: 50px;
 }
-
-.carousel-text h2 {
+.line1 {
   font-size: 2rem;
-  margin-bottom: 1rem;
+  font-weight: bold;
+  font-family: "Roboto", sans-serif; /* Шрифт для первой строки */
+  margin-bottom: 10px;
 }
 
+.line2 {
+  font-size: 1.5rem;
+  color: gray;
+  font-family: "Times New Roman", serif; /* Шрифт для второй строки */
+}
 .button_carousel {
   display: flex;
   margin-top: 100px;
