@@ -1,14 +1,9 @@
 <template>
-  <div class="fullscreen-div">
-    <!-- Отображение индикатора загрузки -->
+  <div>
+    <h2>Категории</h2>
     <div v-if="loading" class="loading">Загрузка...</div>
-    
-    <!-- Сообщение об ошибке -->
     <div v-if="errorMessage" class="error">{{ errorMessage }}</div>
-
-    <!-- Цикл по продуктам -->
-    <div v-else>
-      <h2>Категории</h2>
+    <div v-else class="fullscreen-div">
       <div v-for="category in categories" :key="category.category_id" class="product-card">
         <h3>{{ category.name }}</h3>
         <img v-if="category.image_url" :src="category.image_url" :alt="category.name" loading="lazy" class="product-image" />
@@ -63,7 +58,8 @@ export default {
   width: 100%;
   max-width: 300px; /* Ограничение ширины карточек */
   padding: 20px;
-  height: 300px;
+  height: auto;
+  max-height: 400px;
   border: 1px solid black;
   border-radius: 5px;
   text-align: center;

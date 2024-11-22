@@ -96,8 +96,8 @@ export default {
 }
 
 .carousel-text {
-  width: auto;
-  height: auto;
+  width: 40%;
+  height: 40%;
   margin-inline-start: 50px;
 }
 
