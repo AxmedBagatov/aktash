@@ -21,7 +21,7 @@ export const state = () => ({
     async fetchProducts({ commit }) {
       try {
         commit('setLoading', true);  // Устанавливаем флаг загрузки
-        const response = await fetch('http://10.30.74.194:4000/api/products');
+        const response = await fetch('http://10.30.74.198:4000/api/products');
         if (response.ok) {
           const data = await response.json();
           commit('setProducts', data);

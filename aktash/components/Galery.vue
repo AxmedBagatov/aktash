@@ -17,15 +17,17 @@
         class="image-slider"
         :style="{ transform: `translateX(-${currentIndex * 100}%)` }"
       >
-        <div class="slide" v-for="(image, index) in images" :key="index">
-          <img :src="image.url" :alt="image.alt" />
+        <div class="slide" v-for="(product, index) in products" 
+          :key="product.id"
+          :src="product.image_url"
+          :alt="product.name">
         </div>
       </div>
 
       <!-- Индикаторы -->
       <div class="indicators">
         <span
-          v-for="(image, index) in images"
+          v-for="(product, index) in products"
           :key="index"
           class="indicator"
           :class="{ active: index === currentIndex }"
@@ -41,13 +43,14 @@ export default {
   data() {
     return {
       currentIndex: 0,
-      images: [
-        { url: "https://picsum.photos/500/300?random=1", alt: "Slide 1" },
-        { url: "https://picsum.photos/500/300?random=2", alt: "Slide 2" },
-        { url: "https://picsum.photos/500/300?random=3", alt: "Slide 3" },
-      ],
+      autoScrollInterval: null,
     };
   },
+  
+  products() {
+      return this.$store.getters.getProducts;
+    },
+
   methods: {
     nextSlide() {
       this.currentIndex = (this.currentIndex + 1) % this.images.length;
