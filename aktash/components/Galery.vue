@@ -125,12 +125,14 @@ export default {
 }
 
 .slide {
-  min-width: 100%;
+  min-width: 100%; /* Каждое изображение будет занимать 100% ширины слайда */
+  height: 100%;    /* Устанавливаем высоту слайда, чтобы изображение занимало всю область */
 }
 
 .slide img {
   width: 100%;
-  object-fit: cover;
+  height: 100%;      /* Растягиваем изображение по высоте */
+  object-fit: cover; /* Сохраняем пропорции и растягиваем изображение на весь контейнер */
 }
 
 .indicators {
@@ -166,12 +168,6 @@ export default {
   border: none;
   font-size: 2rem;
   cursor: pointer;
-  /* z-index: 2;
-  padding: 10px;
-  margin: 0 10px;
-
-  position: absolute; 
-  top: 100%; */
 }
 
 /* Стиль для левой стрелки */
