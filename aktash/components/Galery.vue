@@ -157,7 +157,7 @@ export default {
   margin: 0 10px;
   
   position: absolute;  /* Устанавливаем абсолютное позиционирование */
-  
+  top: 100%; 
 }
 
 
