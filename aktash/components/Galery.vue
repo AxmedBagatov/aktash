@@ -80,6 +80,19 @@ export default {
     goToSlide(index) {
       this.currentIndex = index;
     },
+    startAutoScroll() {
+      this.autoScrollInterval = setInterval(this.nextSlide, 3000); // Переключаем каждые 3 секунды
+    },
+    stopAutoScroll() {
+      clearInterval(this.autoScrollInterval); // Останавливаем автопрокрутку
+    },
+  },
+  mounted() {
+    this.startAutoScroll(); // Запускаем автопрокрутку при загрузке
+  },
+
+  beforeDestroy() {
+    this.stopAutoScroll(); // Очищаем таймер при уничтожении компонента
   },
 };
 </script>

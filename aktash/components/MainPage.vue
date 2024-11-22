@@ -67,7 +67,7 @@ export default {
 }
 
 .product-card:hover{
-  scale: 1.05;
+  scale: 1.02;
 }
 
 .product-card h3 {
