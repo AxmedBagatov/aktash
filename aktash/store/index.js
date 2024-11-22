@@ -63,10 +63,11 @@ export const actions = {
     try {
       commit('setLoading', true);
       const response = await fetch(`http://192.168.62.129:4000/api/products?category_id=${categoryId}`);
+      
       if (response.ok) {
         const data = await response.json();
-        console.log(data);
-        commit('setProducts', data);
+        console.log(data);  // Проверка данных
+        commit('setProducts', data);  // Сохраняем данные в хранилище
       } else {
         commit('setErrorMessage', 'Ошибка при загрузке продуктов для категории');
         console.error('Ошибка при загрузке продуктов для категории');
@@ -75,7 +76,7 @@ export const actions = {
       commit('setErrorMessage', 'Ошибка сети: ' + error.message);
       console.error('Ошибка сети:', error);
     } finally {
-      commit('setLoading', false);
+      commit('setLoading', false);  // Останавливаем загрузку
     }
   }
 };

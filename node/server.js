@@ -42,6 +42,7 @@ app.get('/api/products', async (req, res) => {
   }
 });
 
+
 app.get('/api/categories', async (req, res) => {
   try {
     // SQL-запрос для объединения категорий и их изображений
