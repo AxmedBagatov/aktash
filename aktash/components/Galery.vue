@@ -1,11 +1,10 @@
 <template>
   <div class="carousel-container">
+    <!-- Индикатор загрузки -->
+    <div v-if="loading" class="loading">Загрузка...</div>
+
     <!-- Левая часть -->
-    <div class="carousel-text"
-      v-for="(slide, index) in slides"
-      :key="index"
-      v-show="currentIndex === index"
-    >
+    <div class="carousel-text" v-for="(slide, index) in slides" :key="index" v-show="currentIndex === index">
       <p class="line1">{{ slide.line1 }}</p>
       <p class="line2">{{ slide.line2 }}</p>
       <button class="btn-details">подробнее</button>
@@ -15,22 +14,11 @@
       </div>
     </div>
 
-    <!-- Правая часть -->
+    <!-- Правая часть (слайдер изображений) -->
     <div class="carousel-images">
-      <div
-        class="image-slider"
-        :style="{ transform: `translateX(-${currentIndex * 100}%)` }"
-      >
-        <div
-          class="slide"
-          v-for="(product, index) in products"
-          :key="product.id"
-        >
-          <img
-            class="images_123"
-            :src="product.image_url"
-            :alt="product.name"
-          />
+      <div class="image-slider" :style="{ transform: `translateX(-${currentIndex * 100}%)` }">
+        <div class="slide" v-for="(product, index) in products" :key="product.id">
+          <img class="images_123" :src="product.image_url" :alt="product.name" />
         </div>
       </div>
 
@@ -59,7 +47,7 @@ export default {
         { line1: "Текст2", line2: "Микротекст2" },
         { line1: "Текст3", line2: "Микротекст3" },
         { line1: "Текст4", line2: "Микротекст4" },
-    ],
+      ],
     };
   },
 
@@ -68,26 +56,45 @@ export default {
     products() {
       return this.$store.getters.getProducts.slice(0, 4);
     },
+
+    // Проверка на загрузку продуктов
+    loading() {
+      return this.$store.getters.isLoading;
+    },
   },
+
   methods: {
     nextSlide() {
       this.currentIndex = (this.currentIndex + 1) % this.products.length;
     },
+
     prevSlide() {
       this.currentIndex =
         (this.currentIndex - 1 + this.products.length) % this.products.length;
     },
+
     goToSlide(index) {
       this.currentIndex = index;
     },
+
     startAutoScroll() {
       this.autoScrollInterval = setInterval(this.nextSlide, 3000); // Переключаем каждые 3 секунды
     },
+
     stopAutoScroll() {
       clearInterval(this.autoScrollInterval); // Останавливаем автопрокрутку
     },
+
+    // Метод для загрузки продуктов, если они еще не загружены
+    async loadProductsIfNeeded() {
+      if (this.products.length === 0 && !this.loading) {
+        await this.$store.dispatch('fetchProducts');
+      }
+    },
   },
+
   mounted() {
+    this.loadProductsIfNeeded(); // Загружаем продукты, если они не загружены
     this.startAutoScroll(); // Запускаем автопрокрутку при загрузке
   },
 
@@ -96,6 +103,7 @@ export default {
   },
 };
 </script>
+
 
 <style scoped>
 .carousel-container {
