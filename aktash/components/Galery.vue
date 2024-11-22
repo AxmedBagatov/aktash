@@ -171,13 +171,6 @@ export default {
   background-color: black;
 }
 
-/* Стиль для кнопок переключения */
-.carousel-buttons {
-  display: flex;
-  justify-content: center;
-  margin-top: 10px; /* Отступ сверху, чтобы кнопки не слипались с кнопкой "Подробнее" */
-}
-
 .arrow {
   background-color: transparent;
   border: none;
