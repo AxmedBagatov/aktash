@@ -122,7 +122,7 @@ export default {
 
 .carousel-images {
   position: relative;
-  width: 1000px;
+  width: 100%;
   overflow: hidden;
 }
 
