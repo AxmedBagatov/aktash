@@ -46,11 +46,13 @@ export default {
       autoScrollInterval: null,
     };
   },
-  
-  products() {
+
+  computed: {
+    // Получаем продукты из Vuex
+    products() {
       return this.$store.getters.getProducts;
     },
-
+  },
   methods: {
     nextSlide() {
       this.currentIndex = (this.currentIndex + 1) % this.images.length;
