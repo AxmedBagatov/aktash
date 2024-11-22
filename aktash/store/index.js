@@ -25,7 +25,7 @@ export const actions = {
   async fetchProducts({ commit }) {
     try {
       commit('setLoading', true);  // Устанавливаем флаг загрузки
-      const response = await fetch('http://10.30.74.198:4000/api/products');
+      const response = await fetch('http://192.168.62.129:4000/api/products');
       if (response.ok) {
         const data = await response.json();
         commit('setProducts', data);
@@ -44,7 +44,7 @@ export const actions = {
   async fetchCategories({ commit }) {
     try {
       commit('setLoading', true);  // Устанавливаем флаг загрузки
-      const response = await fetch('http://10.30.74.198:4000/api/categories');
+      const response = await fetch('http://192.168.62.129:4000/api/categories');
       if (response.ok) {
         const data = await response.json();
         commit('setCategories', data);
