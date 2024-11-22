@@ -50,7 +50,12 @@ export default {
     return {
       currentIndex: 0,
       autoScrollInterval: null,
-      
+      slides: [
+        { line1: "Текст1", line2: "Микротекст1" },
+        { line1: "Текст2", line2: "Микротекст2" },
+        { line1: "Текст3", line2: "Микротекст3" },
+        { line1: "Текст4", line2: "Микротекст4" },
+    ],
     };
   },
 
