@@ -6,14 +6,6 @@ export default {
     port: 80,
     host: '0.0.0.0',
   },
-  router: {
-    extendRoutes(routes, resolve) {
-      routes.push({
-        path: '/shop',
-        component: resolve(__dirname, 'pages/shop/shop.vue')
-      });
-    }
-  },
   head: {
     titleTemplate: '%s - aktash',
     title: 'aktash',
