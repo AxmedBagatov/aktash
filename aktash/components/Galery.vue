@@ -6,9 +6,9 @@
       <p>До 30 ноября скидка до 65%</p>
       <button class="btn-details">
         подробнее
+      </button>
       <button class="arrow left" @click="prevSlide">←</button>
       <button class="arrow right" @click="nextSlide">→</button>
-      </button>
     </div>
 
     <!-- Правая часть -->
