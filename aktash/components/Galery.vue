@@ -127,13 +127,16 @@ export default {
 
 .carousel-images {
   position: relative;
-  width: 100%;
+  width: 1200px;
+  height: 800px;
   overflow: hidden;
 }
 
 .image-slider {
   display: flex;
   transition: transform 0.5s ease-in-out;
+  min-width: 100%; /* Каждое изображение будет занимать 100% ширины слайда */
+  height: 100%; 
 }
 
 .slide {

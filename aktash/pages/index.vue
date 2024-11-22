@@ -1,7 +1,7 @@
 <template>
   <div id="app">
     <div class="first_card">
-      <v-carousel
+      <!-- <v-carousel
         height="400"
         show-arrows="hover"
         cycle
@@ -14,7 +14,7 @@
             </div>
           </v-sheet>
         </v-carousel-item>
-      </v-carousel>
+      </v-carousel> -->
     </div>
     <div class="second_card"></div>
     <div class="third_card"></div>
