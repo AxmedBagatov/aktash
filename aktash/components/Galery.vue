@@ -6,7 +6,6 @@
       <p>До 30 ноября скидка до 65%</p>
       <button class="btn-details">
         подробнее
-        <!-- Кнопки переключения -->
       <button class="arrow left" @click="prevSlide">←</button>
       <button class="arrow right" @click="nextSlide">→</button>
       </button>
@@ -141,22 +140,34 @@ export default {
   background-color: black;
 }
 
+/* Стиль для кнопок переключения */
+.carousel-buttons {
+  display: flex;
+  justify-content: center;
+  margin-top: 10px; /* Отступ сверху, чтобы кнопки не слипались с кнопкой "Подробнее" */
+}
+
 .arrow {
-  position: absolute;
-  top: 50%;
-  transform: translateY(-50%);
   background-color: transparent;
   border: none;
   font-size: 2rem;
   cursor: pointer;
   z-index: 2;
+  padding: 10px;
+  margin: 0 10px;
+  
+  position: absolute;  /* Устанавливаем абсолютное позиционирование */
+  
 }
 
+
+/* Стиль для левой стрелки */
 .arrow.left {
-  left: 10px;
+  margin-right: 20px;
 }
 
+/* Стиль для правой стрелки */
 .arrow.right {
-  right: 10px;
+  margin-left: 30px;
 }
 </style>
