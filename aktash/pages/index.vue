@@ -1,6 +1,20 @@
 <template>
   <div id="app">
     <div class="first_card">
+      <v-carousel
+        height="400"
+        show-arrows="hover"
+        cycle
+        hide-delimiter-background
+      >
+        <v-carousel-item v-for="(slide, i) in slides" :key="i">
+          <v-sheet :color="colors[i]" height="100%">
+            <div class="d-flex fill-height justify-center align-center">
+              <div class="text-h2">{{ slide }} Slide</div>
+            </div>
+          </v-sheet>
+        </v-carousel-item>
+      </v-carousel>
     </div>
     <div class="second_card"></div>
     <div class="third_card"></div>
@@ -8,14 +22,32 @@
 </template>
 
 <script>
-export default {
-  name: "App",
-};
+  export default {
+    data () {
+      return {
+        colors: [
+          'indigo',
+          'warning',
+          'pink darken-2',
+          'red lighten-1',
+          'deep-purple accent-4',
+        ],
+        slides: [
+          'First',
+          'Second',
+          'Third',
+          'Fourth',
+          'Fifth',
+        ],
+      }
+    },
+  }
 </script>
 
 <style>
 .first_card {
   height: 60vh;
+  width: 100%;
 }
 
 .second_card {

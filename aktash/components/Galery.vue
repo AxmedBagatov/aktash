@@ -81,6 +81,7 @@ export default {
 
 .carousel-text {
   width: 40%;
+  margin-inline-start: 50px;
 }
 
 .carousel-text h2 {
