@@ -66,7 +66,7 @@ export default {
   computed: {
     // Получаем продукты из Vuex
     products() {
-      return this.$store.getters.getProducts.slice(2, 4);
+      return this.$store.getters.getProducts.slice(0, 4);
     },
   },
   methods: {
@@ -137,8 +137,8 @@ export default {
 
 .carousel-images {
   position: relative;
-  width: 1200px;
-  height: 800px;
+  width: 80%;
+  height: 80%;
   overflow: hidden;
 }
 
