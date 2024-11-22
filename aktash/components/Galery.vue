@@ -50,6 +50,7 @@ export default {
     return {
       currentIndex: 0,
       autoScrollInterval: null,
+      
     };
   },
 
@@ -147,7 +148,7 @@ export default {
 .slide img {
   width: 100%;
   height: 100%; /* Растягиваем изображение по высоте */
-  object-fit: contain; /* Сохраняем пропорции и растягиваем изображение на весь контейнер */
+  object-fit: fill; /* Сохраняем пропорции и растягиваем изображение на весь контейнер */
 }
 
 .indicators {
