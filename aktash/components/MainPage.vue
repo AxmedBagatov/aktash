@@ -5,13 +5,16 @@
     <div v-if="errorMessage" class="error">{{ errorMessage }}</div>
     <div v-else class="fullscreen-div">
       <div v-for="category in categories" :key="category.category_id" class="product-card">
-        <h3>{{ category.name }}</h3>
+        <router-link :to="`/shop/category/${category.category_id}`">
+          <h3>{{ category.name }}</h3>
+        </router-link>
         <img v-if="category.image_url" :src="category.image_url" :alt="category.name" loading="lazy" class="product-image" />
         <p>{{ category.description }}</p>
       </div>
     </div>
   </div>
 </template>
+
 
 <script>
 export default {
