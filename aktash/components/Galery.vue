@@ -66,7 +66,7 @@ export default {
   computed: {
     // Получаем продукты из Vuex
     products() {
-      return this.$store.getters.getProducts;
+      return this.$store.getters.getProducts.slice(2, 4);
     },
   },
   methods: {
