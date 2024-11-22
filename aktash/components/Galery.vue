@@ -4,16 +4,19 @@
     <div class="carousel-text">
       <h2>Успей обновить интерьер со скидкой</h2>
       <p>До 30 ноября скидка до 65%</p>
-      <button class="btn-details">
-        подробнее
-      </button>
-      <button class="arrow left" @click="prevSlide">←</button>
-      <button class="arrow right" @click="nextSlide">→</button>
+      <button class="btn-details">подробнее</button>
+      <div class="button_carousel">
+        <button class="arrow left" @click="prevSlide">←</button>
+        <button class="arrow right" @click="nextSlide">→</button>
+      </div>
     </div>
 
     <!-- Правая часть -->
     <div class="carousel-images">
-      <div class="image-slider" :style="{ transform: `translateX(-${currentIndex * 100}%)` }">
+      <div
+        class="image-slider"
+        :style="{ transform: `translateX(-${currentIndex * 100}%)` }"
+      >
         <div class="slide" v-for="(image, index) in images" :key="index">
           <img :src="image.url" :alt="image.alt" />
         </div>
@@ -76,6 +79,10 @@ export default {
 .carousel-text h2 {
   font-size: 2rem;
   margin-bottom: 1rem;
+}
+
+.button_carousel{
+  display: flex;
 }
 
 .carousel-text p {
@@ -152,14 +159,13 @@ export default {
   border: none;
   font-size: 2rem;
   cursor: pointer;
-  z-index: 2;
+  /* z-index: 2;
   padding: 10px;
   margin: 0 10px;
-  
-  position: absolute;  /* Устанавливаем абсолютное позиционирование */
-  top: 100%; 
-}
 
+  position: absolute; 
+  top: 100%; */
+}
 
 /* Стиль для левой стрелки */
 .arrow.left {
