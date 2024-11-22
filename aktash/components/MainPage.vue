@@ -7,21 +7,26 @@
     <div v-if="errorMessage" class="error">{{ errorMessage }}</div>
 
     <!-- Цикл по продуктам -->
-    <div v-else v-for="product in products" :key="product.product_id" class="product-card">
-      <h3>{{ product.name }}</h3>
-      <img :src="product.image_url" :alt="product.name" loading="lazy" class="product-image" />
-      <p>{{ product.description }}</p>
-      <p>Цена: {{ product.price }}₽</p>
+    <div v-else>
+      <h2>Категории</h2>
+      <div v-for="category in categories" :key="category.category_id" class="product-card">
+        <h3>{{ category.name }}</h3>
+        <img v-if="category.image_url" :src="category.image_url" :alt="category.name" loading="lazy" class="product-image" />
+        <p>{{ category.description }}</p>
+      </div>
     </div>
   </div>
 </template>
 
 <script>
 export default {
-  name: "ProductList",
+  name: "ProductAndCategoryList",
   computed: {
     products() {
       return this.$store.getters.getProducts;
+    },
+    categories() {
+      return this.$store.getters.getCategories;
     },
     errorMessage() {
       return this.$store.getters.getErrorMessage;
@@ -31,11 +36,13 @@ export default {
     }
   },
   mounted() {
-    this.fetchProducts();
+    this.fetchData();
   },
   methods: {
-    async fetchProducts() {
+    async fetchData() {
+      // Загружаем одновременно продукты и категории
       await this.$store.dispatch('fetchProducts');
+      await this.$store.dispatch('fetchCategories');
     }
   }
 };

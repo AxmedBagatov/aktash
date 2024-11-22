@@ -102,14 +102,14 @@ export default {
 }
 
 .line1 {
-  font-size: 2rem;
+  font-size: clamp(1.5rem, 5vw, 3rem);
   font-weight: bold;
   font-family: "Roboto", sans-serif; /* Шрифт для первой строки */
   margin-bottom: 10px;
 }
 
 .line2 {
-  font-size: 1.5rem;
+  font-size: clamp(1rem, 3vw, 2rem);
   color: gray;
   font-family: "Times New Roman", serif; /* Шрифт для второй строки */
 }
