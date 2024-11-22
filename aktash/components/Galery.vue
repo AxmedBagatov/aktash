@@ -91,6 +91,7 @@ export default {
 
 .button_carousel {
   display: flex;
+  margin-top: 100px;
 }
 
 .carousel-text p {
