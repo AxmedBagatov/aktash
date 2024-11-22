@@ -96,10 +96,11 @@ export default {
 }
 
 .carousel-text {
-  width: 40%;
-  height: 40%;
+  width: auto;
+  height: auto;
   margin-inline-start: 50px;
 }
+
 .line1 {
   font-size: 2rem;
   font-weight: bold;
@@ -112,6 +113,7 @@ export default {
   color: gray;
   font-family: "Times New Roman", serif; /* Шрифт для второй строки */
 }
+
 .button_carousel {
   display: flex;
   margin-top: 100px;
