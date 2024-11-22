@@ -17,11 +17,12 @@
         class="image-slider"
         :style="{ transform: `translateX(-${currentIndex * 100}%)` }"
       >
-        <div class="slide" v-for="(product, index) in products" 
+        <img class="carousel_image"
+          v-for="(product, index) in products"
           :key="product.id"
           :src="product.image_url"
-          :alt="product.name">
-        </div>
+          :alt="product.name"
+        />
       </div>
 
       <!-- Индикаторы -->
@@ -87,9 +88,12 @@ export default {
   margin-bottom: 1rem;
 }
 
-.button_carousel{
+.button_carousel {
   display: flex;
+}
 
+.carousel_image{
+width: 100%;
 }
 
 .carousel-text p {
