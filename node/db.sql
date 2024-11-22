@@ -25,12 +25,13 @@ CREATE TABLE product_categories (
 );
 
 -- Таблица изображений товара
-CREATE TABLE product_images (
-    image_id SERIAL PRIMARY KEY,                  -- Идентификатор изображения
-    product_id INT REFERENCES products(product_id) ON DELETE CASCADE,  -- Ссылка на товар
-    image_url VARCHAR(255) NOT NULL,               -- URL изображения (можно использовать ссылку на файл)
-    image_type VARCHAR(50) NOT NULL,               -- Тип изображения (например, "gif", "jpg", "png")
-    is_primary BOOLEAN DEFAULT FALSE,             -- Является ли это изображение основным
+CREATE TABLE images (
+    image_id SERIAL PRIMARY KEY,                -- Идентификатор изображения
+    entity_type VARCHAR(50) NOT NULL,           -- Тип сущности: 'product' или 'category'
+    entity_id INT NOT NULL,                     -- ID продукта или категории (в зависимости от entity_type)
+    image_url VARCHAR(255) NOT NULL,             -- URL изображения
+    image_type VARCHAR(50) NOT NULL,             -- Тип изображения (например, "gif", "jpg", "png")
+    is_primary BOOLEAN DEFAULT FALSE,           -- Является ли это изображение основным
     created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP   -- Дата добавления изображения
 );
 

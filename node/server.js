@@ -12,18 +12,18 @@ app.get('/api/products', async (req, res) => {
   try {
     // SQL-запрос для объединения товаров и их изображений
     const query = `
-      SELECT 
-        p.product_id,
-        p.name,
-        p.description,
-        p.price,
-        i.image_url
-      FROM 
-        products p
-      LEFT JOIN 
-        images i 
-      ON 
-        p.product_id = i.product_id;
+ SELECT 
+    p.product_id,
+    p.name,
+    p.description,
+    p.price,
+    i.image_url
+FROM 
+    products p
+LEFT JOIN 
+    images i 
+ON 
+    p.product_id = i.entity_id AND i.entity_type = 'product';
     `;
     
     // Выполняем запрос к базе данных
