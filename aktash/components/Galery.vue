@@ -17,7 +17,7 @@
         class="image-slider"
         :style="{ transform: `translateX(-${currentIndex * 100}%)` }"
       >
-        <img class="carousel_image"
+        <img  
           v-for="(product, index) in products"
           :key="product.id"
           :src="product.image_url"
@@ -56,11 +56,11 @@ export default {
   },
   methods: {
     nextSlide() {
-      this.currentIndex = (this.currentIndex + 1) % this.images.length;
+      this.currentIndex = (this.currentIndex + 1) % this.products.length;
     },
     prevSlide() {
       this.currentIndex =
-        (this.currentIndex - 1 + this.images.length) % this.images.length;
+        (this.currentIndex - 1 + this.products.length) % this.products.length;
     },
     goToSlide(index) {
       this.currentIndex = index;
@@ -90,10 +90,6 @@ export default {
 
 .button_carousel {
   display: flex;
-}
-
-.carousel_image{
-width: 100%;
 }
 
 .carousel-text p {
