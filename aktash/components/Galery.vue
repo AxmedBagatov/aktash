@@ -70,6 +70,7 @@ export default {
   justify-content: space-between;
   width: 80%;
   margin: auto;
+  background-color: antiquewhite;
 }
 
 .carousel-text {
@@ -83,6 +84,7 @@ export default {
 
 .button_carousel{
   display: flex;
+
 }
 
 .carousel-text p {
