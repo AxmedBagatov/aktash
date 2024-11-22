@@ -52,7 +52,7 @@ export default {
 <style scoped>
 /* Основной стиль для хедера */
 .header {
-  background-color: #7e0000;
+  background-color: #c32222;
   color: white;
   padding: 15px;
   position: relative;
