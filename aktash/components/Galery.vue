@@ -1,9 +1,13 @@
 <template>
   <div class="carousel-container">
     <!-- Левая часть -->
-    <div class="carousel-text">
-      <h2>Успей обновить интерьер со скидкой</h2>
-      <p>До 30 ноября скидка до 65%</p>
+    <div class="carousel-text"
+      v-for="(slide, index) in slides"
+      :key="index"
+      v-show="currentIndex === index"
+    >
+      <p class="line1">{{ slide.line1 }}</p>
+      <p class="line2">{{ slide.line2 }}</p>
       <button class="btn-details">подробнее</button>
       <div class="button_carousel">
         <button class="arrow left" @click="prevSlide">←</button>
