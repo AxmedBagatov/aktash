@@ -141,6 +141,13 @@ export default {
   cursor: pointer;
 }
 
+.btn-details:hover {
+  color: white; /* Изменение цвета текста */
+  background-color: black; /* Изменение фона */
+  border-color: black; /* Сохранение контура */
+  scale: 0.95;
+}
+
 .btn-details .arrow {
   margin-left: 0.5rem;
 }

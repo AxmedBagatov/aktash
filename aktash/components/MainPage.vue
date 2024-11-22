@@ -66,6 +66,10 @@ export default {
   box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
 }
 
+.product-card:hover{
+  scale: 1.05;
+}
+
 .product-card h3 {
   font-size: 18px;
   margin: 10px 0;
