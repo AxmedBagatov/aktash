@@ -1,7 +1,7 @@
 <template>
   <header class="header">
     <div class="sides_header">
-    <nav>
+    <nav class="nav-routes">
       <!-- Кнопка гамбургера для мобильных устройств -->
       <button class="menu-toggle" @click="toggleMenu" aria-label="Toggle menu">
         <span class="menu-icon" :class="{'open': menuVisible}"></span>
