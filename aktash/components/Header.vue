@@ -1,5 +1,6 @@
 <template>
   <header class="header">
+    <div class="sides_header">
     <nav>
       <!-- Кнопка гамбургера для мобильных устройств -->
       <button class="menu-toggle" @click="toggleMenu" aria-label="Toggle menu">
@@ -25,13 +26,19 @@
         <li><NuxtLink to="/contact">Контакты</NuxtLink></li>
       </ul>
     </nav>
+    <div class="search-container">
+          <Search />
+      </div>
+  </div>
   </header>
   
 </template>
 
 <script>
+import Search from './search.vue';
 export default {
   name: 'Header',
+  components: { Search },
   data() {
     return {
       menuVisible: false, // Состояние видимости бокового меню
