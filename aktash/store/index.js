@@ -1,7 +1,8 @@
 export const state = () => ({
   products: [],
   categories: [],
-  selectedProduct: null, // Для хранения данных одного продукта
+  searchResults: [],
+  selectedProduct: null,
   errorMessage: '',
   loading: false,
 });
@@ -21,7 +22,10 @@ export const mutations = {
   },
   setLoading(state, loading) {
     state.loading = loading;
-  }
+  },
+  setSearchResults(state, results) {
+    state.searchResults = results;
+  },
 };
 
 export const actions = {
@@ -101,7 +105,25 @@ export const actions = {
     } finally {
       commit('setLoading', false);
     }
-  }
+  },
+  async searchProducts({ commit }, query) {
+    try {
+      commit('setLoading', true);
+      const response = await fetch(`http://192.168.62.129:4000/api/products?search=${query}`);
+      if (response.ok) {
+        const data = await response.json();
+        commit('setSearchResults', data); // Сохраняем результаты поиска
+      } else {
+        commit('setErrorMessage', 'Ошибка при выполнении поиска');
+        console.error('Ошибка при выполнении поиска');
+      }
+    } catch (error) {
+      commit('setErrorMessage', 'Ошибка сети: ' + error.message);
+      console.error('Ошибка сети:', error);
+    } finally {
+      commit('setLoading', false);
+    }
+  },
 };
 
 export const getters = {
@@ -119,6 +141,9 @@ export const getters = {
   },
   isLoading(state) {
     return state.loading;
+  },
+  getSearchResults(state) {
+    return state.searchResults;
   },
   getProductsByCategory: (state) => (categoryId) => {
     return state.products.filter(product => product.category_id === parseInt(categoryId));

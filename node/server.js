@@ -10,10 +10,9 @@ connectDB();
 // Обработка GET-запроса для получения всех товаров
 app.get('/api/products', async (req, res) => {
   try {
-    const categoryId = req.query.category_id; // Получаем параметр category_id из query-параметров
-    const productId = req.query.product_id; // Получаем параметр product_id из query-параметров
+    const { category_id: categoryId, product_id: productId, search } = req.query;
 
-    // SQL-запрос для объединения товаров и их изображений
+    // Базовый SQL-запрос
     let query = `
       SELECT 
         p.product_id,
@@ -27,13 +26,25 @@ app.get('/api/products', async (req, res) => {
         images i ON p.product_id = i.entity_id AND i.entity_type = 'product'
     `;
 
-    // Если передан product_id, получаем конкретный продукт
+    const conditions = [];
+    // Если передан product_id, фильтруем по конкретному товару
     if (productId) {
-      query += ` WHERE p.product_id = ${productId}`;
+      conditions.push(`p.product_id = ${productId}`);
     }
-    // Если передан categoryId, фильтруем по категории
-    else if (categoryId) {
-      query += ` WHERE p.category_id = ${categoryId}`;
+
+    // Если передан category_id, фильтруем по категории
+    if (categoryId) {
+      conditions.push(`p.category_id = ${categoryId}`);
+    }
+
+    // Если передан search, добавляем фильтрацию по имени и описанию
+    if (search) {
+      conditions.push(`(p.name ILIKE '%${search}%' OR p.description ILIKE '%${search}%')`);
+    }
+
+    // Добавляем условия в запрос
+    if (conditions.length > 0) {
+      query += ` WHERE ` + conditions.join(' AND ');
     }
 
     // Выполняем запрос к базе данных
@@ -45,7 +56,7 @@ app.get('/api/products', async (req, res) => {
     } else if (productId && productsWithImages.length === 0) {
       res.status(404).json({ error: 'Product not found' });
     } else {
-      // Возвращаем массив продуктов (для категорий или всех продуктов)
+      // Возвращаем массив продуктов
       res.json(productsWithImages);
     }
   } catch (err) {
