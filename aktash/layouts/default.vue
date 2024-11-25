@@ -28,6 +28,7 @@
   
   main {
     padding: 0px;
+    min-height: 77vh;
   }
   </style>
   
