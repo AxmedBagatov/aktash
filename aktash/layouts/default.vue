@@ -21,7 +21,7 @@
   
   <style>
   /* Глобальные стили */
-  body {
+  body html{
     margin: 0;
     font-family: Arial, sans-serif;
   }
