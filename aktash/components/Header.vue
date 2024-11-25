@@ -139,6 +139,11 @@ export default {
   z-index: 20; /* Кнопка всегда поверх бокового меню */
 }
 
+.sides_header{
+  display: flex;
+  justify-content: space-between;
+}
+
 /* Стили для иконки меню (гамбургер) */
 .menu-icon {
   width: 25px;
