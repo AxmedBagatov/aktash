@@ -18,7 +18,7 @@
     <div class="carousel-images">
       <div class="image-slider" :style="{ transform: `translateX(-${currentIndex * 100}%)` }">
         <div class="slide" v-for="(product, index) in products" :key="product.id">
-          <img class="images_123" :src="product.image_url" :alt="product.name" />
+          <img class="images_123" :src="`/shop/${product.image_url}`" :alt="product.name" />
         </div>
       </div>
 
