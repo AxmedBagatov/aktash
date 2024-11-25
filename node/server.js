@@ -16,6 +16,7 @@ app.get('/api/products', async (req, res) => {
     let query = `
       SELECT 
         p.product_id,
+        p.category_id,
         p.name,
         p.description,
         p.price,
