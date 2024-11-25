@@ -11,8 +11,9 @@ connectDB();
 app.get('/api/products', async (req, res) => {
   try {
     const categoryId = req.query.category_id; // Получаем параметр category_id из query-параметров
+    const productId = req.query.product_id; // Получаем параметр product_id из query-параметров
 
-    // SQL-запрос для объединения товаров и их изображений с фильтрацией по category_id
+    // SQL-запрос для объединения товаров и их изображений
     let query = `
       SELECT 
         p.product_id,
@@ -26,21 +27,33 @@ app.get('/api/products', async (req, res) => {
         images i ON p.product_id = i.entity_id AND i.entity_type = 'product'
     `;
 
-    // Если передан category_id, добавляем фильтрацию по категории
-    if (categoryId) {
+    // Если передан product_id, получаем конкретный продукт
+    if (productId) {
+      query += ` WHERE p.product_id = ${productId}`;
+    }
+    // Если передан categoryId, фильтруем по категории
+    else if (categoryId) {
       query += ` WHERE p.category_id = ${categoryId}`;
     }
 
     // Выполняем запрос к базе данных
     const productsWithImages = await queryDB(query);
 
-    // Отправляем результат в формате JSON
-    res.json(productsWithImages);
+    // Если запрошен конкретный продукт, возвращаем один объект
+    if (productId && productsWithImages.length > 0) {
+      res.json(productsWithImages[0]); // Возвращаем только первый найденный продукт
+    } else if (productId && productsWithImages.length === 0) {
+      res.status(404).json({ error: 'Product not found' });
+    } else {
+      // Возвращаем массив продуктов (для категорий или всех продуктов)
+      res.json(productsWithImages);
+    }
   } catch (err) {
     console.error('Error fetching products with images:', err);
     res.status(500).json({ error: 'Internal server error' });
   }
 });
+
 
 
 app.get('/api/categories', async (req, res) => {
