@@ -1,0 +1,13 @@
+                                            Table "public.images"
+   Column    |            Type             | Collation | Nullable |                 Default                  
+-------------+-----------------------------+-----------+----------+------------------------------------------
+ image_id    | integer                     |           | not null | nextval('images_image_id_seq'::regclass)
+ entity_type | character varying(50)       |           | not null | 
+ entity_id   | integer                     |           | not null | 
+ image_url   | character varying(255)      |           | not null | 
+ image_type  | character varying(50)       |           | not null | 
+ created_at  | timestamp without time zone |           |          | CURRENT_TIMESTAMP
+ image_order | integer                     |           | not null | 1
+Indexes:
+    "images_pkey" PRIMARY KEY, btree (image_id)
+
