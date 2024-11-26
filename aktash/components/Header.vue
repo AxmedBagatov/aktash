@@ -62,7 +62,7 @@ export default {
 .header {
   background-color: #c32222;
   color: white;
-  padding: 15px;
+  padding: 10px;
   position: relative;
 }
 
@@ -142,6 +142,7 @@ export default {
 .sides_header{
   display: flex;
   justify-content: space-between;
+  align-items: center;
 }
 
 /* Стили для иконки меню (гамбургер) */
