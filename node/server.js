@@ -7,10 +7,75 @@ const jwt = require('jsonwebtoken');
 const cookieParser = require('cookie-parser');
 const JWT_SECRET = 'cristianomessi';  
 app.use(cors({
+  origin: 'http://localhost:80',
   credentials: true,
 }));
 // Подключаемся к базе данных
 connectDB();
+app.use(cookieParser());
+
+
+// login start
+const generateToken = (user) => {
+  const payload = {
+    userId: user.id,
+    username: user.username,
+    role: user.role,
+  };
+  return jwt.sign(payload, JWT_SECRET, { expiresIn: '1h' });
+};
+
+// Авторизация пользователя (пример POST запроса)
+app.post('/api/login', async (req, res) => {
+  const { username, password } = req.body;
+
+  // Пример простого запроса для проверки пользователя
+  try {
+    const userQuery = await queryDB(`
+      SELECT * FROM users WHERE username = '${username}' AND password_hash = '${password}'
+    `);
+
+    if (userQuery.length === 0) {
+      return res.status(401).json({ error: 'Неверный логин или пароль' });
+    }
+
+    const user = userQuery[0];
+    const token = generateToken(user);
+
+    // Сохраняем JWT в cookie
+    res.cookie('authToken', token, {
+      httpOnly: true,  // Токен доступен только серверу
+      secure: process.env.NODE_ENV === 'production',  // Только для HTTPS в продакшене
+      sameSite: 'Strict',  // Защищает от CSRF атак
+      maxAge: 3600000,  // Время жизни токена (1 час)
+    });
+
+    res.json({ message: 'Авторизация успешна' });
+  } catch (error) {
+    console.error(error);
+    res.status(500).json({ error: 'Ошибка сервера' });
+  }
+});
+
+// Мидлвар для проверки токена
+const authenticateToken = (req, res, next) => {
+  const token = req.cookies.authToken;  // Читаем токен из cookies
+  if (!token) return res.status(401).json({ error: 'Токен не предоставлен' });
+
+  jwt.verify(token, JWT_SECRET, (err, user) => {
+    if (err) return res.status(403).json({ error: 'Неверный или истекший токен' });
+    req.user = user;  // Добавляем данные пользователя в запрос
+    next();
+  });
+};
+
+// Пример защищенного маршрута
+app.get('/api/protected', authenticateToken, (req, res) => {
+  res.json({ message: 'Доступ разрешен', user: req.user });
+});
+// login end
+
+
 
 // Обработка GET-запроса для получения всех товаров
 app.get('/api/products', async (req, res) => {
