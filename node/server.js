@@ -7,8 +7,10 @@ const jwt = require('jsonwebtoken');
 const cookieParser = require('cookie-parser');
 const JWT_SECRET = 'cristianomessi';  
 app.use(cors({
-  origin: 'http://localhost:80',
   credentials: true,
+  origin: 'http://192.168.62.129', // Указываем источник вашего фронтенда
+  methods: ['GET', 'POST'], // Разрешаем методы GET и POST
+  allowedHeaders: ['Content-Type', 'Authorization'], // Разрешаем нужные заголовки
 }));
 // Подключаемся к базе данных
 connectDB();
