@@ -3,7 +3,12 @@ const { connectDB, queryDB } = require('./db');  // Импортируем фу�
 const app = express();
 const port = 4000;
 const cors = require('cors');
-app.use(cors());
+const jwt = require('jsonwebtoken');
+const cookieParser = require('cookie-parser');
+const JWT_SECRET = 'cristianomessi';  
+app.use(cors({
+  credentials: true,
+}));
 // Подключаемся к базе данных
 connectDB();
 

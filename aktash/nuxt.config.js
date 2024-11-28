@@ -38,6 +38,8 @@ export default {
   buildModules: [
     // https://go.nuxtjs.dev/vuetify
     '@nuxtjs/vuetify',
+    '@nuxtjs/axios',  // Модуль для работы с HTTP запросами
+    '@nuxtjs/auth-next', // Модуль для авторизации
   ],
 
   // Modules: https://go.nuxtjs.dev/config-modules
@@ -62,7 +64,31 @@ export default {
       }
     }
   },
-
+  axios: {
+    baseURL: 'http://localhost:4000', // URL вашего API
+    credentials: true,  // Разрешаем отправку cookies
+  },
+  auth: {
+    strategies: {
+      cookie: {
+        cookies: {
+          name: 'authToken', // Название cookie
+          httpOnly: true,     // Токен доступен только серверу (не для JS)
+          secure: process.env.NODE_ENV === 'production', // Работает только на HTTPS в продакшн
+          maxAge: 3600,       // Время жизни токена (например, 1 час)
+          sameSite: 'Strict', // Защищает от CSRF атак
+        },
+        user: {
+          property: 'user', // Свойство, где хранится информация о пользователе
+        },
+        endpoints: {
+          login: { url: '/api/login', method: 'post' }, // URL для логина
+          logout: { url: '/api/logout', method: 'post' }, // URL для выхода
+          user: { url: '/api/user', method: 'get' },     // URL для получения данных о пользователе
+        },
+      },
+    },
+  },
   // Build Configuration: https://go.nuxtjs.dev/config-build
   build: {
   }
