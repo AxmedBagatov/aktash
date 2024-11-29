@@ -44,9 +44,10 @@ app.post('/api/login', async (req, res) => {
 
   // Пример простого запроса для проверки пользователя
   try {
-    const userQuery = await queryDB(`
-      SELECT * FROM users WHERE username = '${username}' AND password_hash = '${password}'
-    `);
+    const userQuery = await queryDB(
+      'SELECT * FROM users WHERE username = $1 AND password_hash = $2',
+      [username, password]
+    );
       console.log(userQuery);
       
     if (userQuery.length === 0) {
