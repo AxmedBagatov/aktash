@@ -19,13 +19,13 @@ const connectDB = async () => {
 };
 
 // Функция для выполнения запросов
-const queryDB = async (query) => {
+const queryDB = async (query, params) => {
   try {
-    const res = await client.query(query);  // Выполняем запрос
-    return res.rows;  // Возвращаем строки данных
-  } catch (err) {
-    console.error('Error executing query:', err);
-    throw err;  // Выбрасываем ошибку для обработки в другом месте
+    const res = await pool.query(query, params); // Передача параметров здесь
+    return res.rows; // Возвращает только строки результата
+  } catch (error) {
+    console.error('Error executing query:', error);
+    throw error; // Проброс ошибки
   }
 };
 
