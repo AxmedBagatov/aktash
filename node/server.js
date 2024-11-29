@@ -6,6 +6,9 @@ const cors = require('cors');
 const jwt = require('jsonwebtoken');
 const cookieParser = require('cookie-parser');
 const JWT_SECRET = 'cristianomessi';  
+app.use(express.json());
+app.use(express.urlencoded({ extended: true }));
+
 app.use(cors({
   origin: (origin, callback) => {
     const allowedOrigins = ['http://192.168.62.129', 'http://localhost:80'];
@@ -15,10 +18,11 @@ app.use(cors({
       callback(new Error('Not allowed by CORS'));
     }
   },
-  credentials: true,
+  credentials: true, // Этот параметр важен для работы с cookies
   methods: ['GET', 'POST'],
   allowedHeaders: ['Content-Type', 'Authorization'],
 }));
+
 // Подключаемся к базе данных
 connectDB();
 app.use(cookieParser());
