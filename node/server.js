@@ -41,7 +41,7 @@ const generateToken = (user) => {
 // Авторизация пользователя (пример POST запроса)
 app.post('/api/login', async (req, res) => {
   const { username, password } = req.body;
-
+  
   // Пример простого запроса для проверки пользователя
   try {
     const userQuery = await queryDB(
