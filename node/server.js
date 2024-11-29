@@ -7,10 +7,17 @@ const jwt = require('jsonwebtoken');
 const cookieParser = require('cookie-parser');
 const JWT_SECRET = 'cristianomessi';  
 app.use(cors({
+  origin: (origin, callback) => {
+    const allowedOrigins = ['http://192.168.62.129', 'http://localhost:80'];
+    if (allowedOrigins.includes(origin) || !origin) {
+      callback(null, true);
+    } else {
+      callback(new Error('Not allowed by CORS'));
+    }
+  },
   credentials: true,
-  origin: 'http://192.168.62.129', // Указываем источник вашего фронтенда
-  methods: ['GET', 'POST'], // Разрешаем методы GET и POST
-  allowedHeaders: ['Content-Type', 'Authorization'], // Разрешаем нужные заголовки
+  methods: ['GET', 'POST'],
+  allowedHeaders: ['Content-Type', 'Authorization'],
 }));
 // Подключаемся к базе данных
 connectDB();
@@ -47,7 +54,8 @@ app.post('/api/login', async (req, res) => {
     // Сохраняем JWT в cookie
     res.cookie('authToken', token, {
       httpOnly: true,  // Токен доступен только серверу
-      secure: process.env.NODE_ENV === 'production',  // Только для HTTPS в продакшене
+      secure: false,
+      //secure: process.env.NODE_ENV === 'production',  // Только для HTTPS в продакшене
       sameSite: 'Strict',  // Защищает от CSRF атак
       maxAge: 3600000,  // Время жизни токена (1 час)
     });
