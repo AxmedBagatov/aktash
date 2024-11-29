@@ -47,7 +47,8 @@ app.post('/api/login', async (req, res) => {
     const userQuery = await queryDB(`
       SELECT * FROM users WHERE username = '${username}' AND password_hash = '${password}'
     `);
-
+      console.log(userQuery);
+      
     if (userQuery.length === 0) {
       return res.status(401).json({ error: 'Неверный логин или пароль' });
     }
