@@ -8,6 +8,7 @@ const cookieParser = require('cookie-parser');
 const JWT_SECRET = 'cristianomessi';  
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
+const bcrypt = require('bcrypt');
 
 app.use(cors({
   origin: (origin, callback) => {
@@ -29,6 +30,8 @@ app.use(cookieParser());
 
 
 // login start
+
+
 const generateToken = (user) => {
   const payload = {
     userId: user.id,
@@ -38,33 +41,40 @@ const generateToken = (user) => {
   return jwt.sign(payload, JWT_SECRET, { expiresIn: '1h' });
 };
 
-// Авторизация пользователя (пример POST запроса)
 app.post('/api/login', async (req, res) => {
-  const { username, password } = req.body;
+  const { username, password } = req.body; // Получаем логин и пароль из запроса
   console.log('Request body:', req.body);
 
-  // Пример простого запроса для проверки пользователя
   try {
+    // Получаем пользователя по имени
     const userQuery = await queryDB(
-      'SELECT * FROM users WHERE username = $1 AND password_hash = $2',
-      [username, password]
+      'SELECT * FROM users WHERE username = $1',
+      [username]
     );
-      console.log('userqueery',userQuery);
-      
+    console.log('userQuery', userQuery);
+
+    // Проверяем, существует ли пользователь
     if (userQuery.length === 0) {
       return res.status(401).json({ error: 'Неверный логин или пароль' });
     }
 
     const user = userQuery[0];
+
+    // Сравниваем введённый пароль с хэшем в базе данных
+    const isPasswordMatch = await bcrypt.compare(password, user.password_hash);
+    if (!isPasswordMatch) {
+      return res.status(401).json({ error: 'Неверный логин или пароль' });
+    }
+
+    // Генерируем токен после успешной проверки
     const token = generateToken(user);
 
     // Сохраняем JWT в cookie
     res.cookie('authToken', token, {
-      httpOnly: true,  // Токен доступен только серверу
-      secure: false,
-      //secure: process.env.NODE_ENV === 'production',  // Только для HTTPS в продакшене
-      sameSite: 'Strict',  // Защищает от CSRF атак
-      maxAge: 3600000,  // Время жизни токена (1 час)
+      httpOnly: true, // Токен доступен только серверу
+      secure: false, // Для HTTPS в продакшене установите true
+      sameSite: 'Strict', // Защита от CSRF атак
+      maxAge: 3600000, // Время жизни токена (1 час)
     });
 
     res.json({ message: 'Авторизация успешна' });
