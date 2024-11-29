@@ -49,7 +49,7 @@ app.post('/api/login', async (req, res) => {
       'SELECT * FROM users WHERE username = $1 AND password_hash = $2',
       [username, password]
     );
-      console.log(userQuery);
+      console.log('userqueery',userQuery);
       
     if (userQuery.length === 0) {
       return res.status(401).json({ error: 'Неверный логин или пароль' });
