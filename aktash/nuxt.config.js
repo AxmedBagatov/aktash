@@ -64,7 +64,7 @@ export default {
     }
   },
   axios: {
-    baseURL: 'http::4000/api', // Укажите адрес вашего сервера
+    baseURL: 'http://192.168.62.129:4000/api', // Укажите адрес вашего сервера
   },
   auth: {
     strategies: {
