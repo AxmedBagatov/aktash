@@ -43,8 +43,7 @@ export default {
   ],
 
   // Modules: https://go.nuxtjs.dev/config-modules
-  modules: [
-  ],
+  modules: ['@nuxtjs/axios', '@nuxtjs/auth-next'],
 
   // Vuetify module configuration: https://go.nuxtjs.dev/config-vuetify
   vuetify: {
@@ -65,27 +64,26 @@ export default {
     }
   },
   axios: {
-    baseURL: 'http://localhost:4000', // URL вашего API
-    credentials: true,  // Разрешаем отправку cookies
+    baseURL: 'http::4000/api', // Укажите адрес вашего сервера
   },
-
   auth: {
     strategies: {
-      cookie: {
-        cookies: {
-          name: 'authToken', // Название cookie
-          httpOnly: true,     // Токен доступен только серверу (не для JS)
-          secure: process.env.NODE_ENV === 'production', // Работает только на HTTPS в продакшн
-          maxAge: 3600,       // Время жизни токена (например, 1 час)
-          sameSite: 'Strict', // Защищает от CSRF атак
+      local: {
+        token: {
+          property: 'accessToken',
+          type: 'Bearer',
+        },
+        refreshToken: {
+          property: 'refreshToken',
+          data: 'refreshToken',
         },
         user: {
-          property: 'user', // Свойство, где хранится информация о пользователе
+          property: false, // Если сервер не возвращает user-данные
         },
         endpoints: {
-          login: { url: '/api/login', method: 'post' }, // URL для логина
-          logout: { url: '/api/logout', method: 'post' }, // URL для выхода
-          user: { url: '/api/user', method: 'get' },     // URL для получения данных о пользователе
+          login: { url: '/login', method: 'post' },
+          logout: false, // Вы сами реализуете logout
+          user: { url: '/user', method: 'get' },
         },
       },
     },
