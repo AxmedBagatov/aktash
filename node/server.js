@@ -41,39 +41,30 @@ const generateToken = (user) => {
   return jwt.sign(payload, JWT_SECRET, { expiresIn: '1h' });
 };
 
+// Маршрут логина
 app.post('/api/login', async (req, res) => {
-  const { username, password } = req.body; // Получаем логин и пароль из запроса
-  console.log('Request body:', req.body);
+  const { username, password } = req.body;
 
   try {
-    // Получаем пользователя по имени
-    const userQuery = await queryDB(
-      'SELECT * FROM users WHERE username = $1',
-      [username]
-    );
-    console.log('userQuery', userQuery);
-
-    // Проверяем, существует ли пользователь
+    // Проверка пользователя в базе
+    const userQuery = await queryDB('SELECT * FROM users WHERE username = $1', [username]);
     if (userQuery.length === 0) {
       return res.status(401).json({ error: 'Неверный логин или пароль' });
     }
 
     const user = userQuery[0];
-
-    // Сравниваем введённый пароль с хэшем в базе данных
     const isPasswordMatch = await bcrypt.compare(password, user.password_hash);
     if (!isPasswordMatch) {
       return res.status(401).json({ error: 'Неверный логин или пароль' });
     }
 
-    // Генерируем токен после успешной проверки
+    // Генерация токена и установка в куки
     const token = generateToken(user);
 
-    // Сохраняем JWT в cookie
     res.cookie('authToken', token, {
-      httpOnly: true, // Токен доступен только серверу
-      secure: false, // Для HTTPS в продакшене установите true
-      sameSite: 'Strict', // Защита от CSRF атак
+      httpOnly: true,  // Токен доступен только серверу
+      secure: process.env.NODE_ENV === 'production', // Включить только в проде (на HTTPS)
+      sameSite: 'Strict', // Защита от CSRF
       maxAge: 3600000, // Время жизни токена (1 час)
     });
 
@@ -86,20 +77,23 @@ app.post('/api/login', async (req, res) => {
 
 // Мидлвар для проверки токена
 const authenticateToken = (req, res, next) => {
-  const token = req.cookies.authToken;  // Читаем токен из cookies
+  const token = req.cookies.authToken;
   if (!token) return res.status(401).json({ error: 'Токен не предоставлен' });
 
   jwt.verify(token, JWT_SECRET, (err, user) => {
     if (err) return res.status(403).json({ error: 'Неверный или истекший токен' });
-    req.user = user;  // Добавляем данные пользователя в запрос
-    next();
+    req.user = user;  // Устанавливаем данные пользователя
+    console.log(req.user);
+    next();  // Переходим к следующему обработчику
   });
 };
+
 
 // Пример защищенного маршрута
 app.get('/api/protected', authenticateToken, (req, res) => {
   res.json({ message: 'Доступ разрешен', user: req.user });
 });
+
 // login end
 
 
