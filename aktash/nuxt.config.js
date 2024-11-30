@@ -64,26 +64,25 @@ export default {
     }
   },
   axios: {
-    baseURL: 'http://192.168.62.129:4000/api', // Укажите адрес вашего сервера
+    baseURL: 'http://192.168.62.129:4000/api', 
+    credentials: true,// Укажите адрес вашего сервера
   },
   auth: {
     strategies: {
       local: {
         token: {
-          property: 'accessToken',
+          property: 'token',
+          global: true,
+          required: true,
           type: 'Bearer',
         },
-        refreshToken: {
-          property: 'refreshToken',
-          data: 'refreshToken',
-        },
         user: {
-          property: false, // Если сервер не возвращает user-данные
+          property: false,
         },
         endpoints: {
           login: { url: '/login', method: 'post' },
-          logout: false, // Вы сами реализуете logout
-          user: { url: '/user', method: 'get' },
+          logout: { url: '/logout', method: 'post' },
+          user: { url: '/protected', method: 'get' },
         },
       },
     },
