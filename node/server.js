@@ -67,7 +67,8 @@ app.post('/api/login', async (req, res) => {
       sameSite: 'Strict', // Защита от CSRF
       maxAge: 3600000, // Время жизни токена (1 час)
     });
-
+    console.log('Авторизация успешна');
+    
     res.json({ message: 'Авторизация успешна' });
   } catch (error) {
     console.error(error);

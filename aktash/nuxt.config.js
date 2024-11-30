@@ -69,9 +69,9 @@ export default {
     credentials: true,  // Разрешаем отправку cookies
   },
   router: {
-    middleware: ['auth'] // Убедитесь, что это подключено глобально или для нужных страниц
+    middleware: ['auth']  // Подключите сюда ваш middleware
   },
-  
+
   auth: {
     strategies: {
       cookie: {
