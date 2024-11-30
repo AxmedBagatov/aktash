@@ -68,9 +68,6 @@ export default {
     baseURL: 'http://localhost:4000', // URL вашего API
     credentials: true,  // Разрешаем отправку cookies
   },
-  router: {
-    middleware: ['auth']  // Подключите сюда ваш middleware
-  },
 
   auth: {
     strategies: {
