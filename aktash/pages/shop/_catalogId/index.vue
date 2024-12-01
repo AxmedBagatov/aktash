@@ -22,7 +22,7 @@
       <ul class="product-list">
         <li v-for="product in sortedProducts" :key="product.product_id" class="product-item">
           <nuxt-link :to="`/shop/${catalogId}/${product.product_id}`" class="product-link">
-            <div class="carousel">
+            <div class="carousel" @mouseenter="startCarousel(product.product_id)" @mouseleave="stopCarousel(product.product_id)">
               <!-- Блок с каруселью -->
               <div class="carousel-wrapper">
                 <div
@@ -37,21 +37,6 @@
                     class="carousel-image"
                   />
                 </div>
-                <!-- Управляющие кнопки внутри карусели -->
-                <button
-                  v-if="product.images.length > 1"
-                  class="carousel-control prev"
-                  @click.stop="prevSlide(product.product_id)"
-                >
-                  ‹
-                </button>
-                <button
-                  v-if="product.images.length > 1"
-                  class="carousel-control next"
-                  @click.stop="nextSlide(product.product_id)"
-                >
-                  ›
-                </button>
               </div>
             </div>
             <div class="product-info">
@@ -66,13 +51,13 @@
   </div>
 </template>
 
-<script>
-export default {
+<script>export default {
   name: "CatalogDetails",
   data() {
     return {
       sortCriteria: "price_asc", // Значение по умолчанию
       currentSlide: {}, // Объект для хранения текущего слайда для каждого товара
+      carouselInterval: {}, // Для хранения интервала переключения слайдов
     };
   },
   async asyncData({ params, store }) {
@@ -130,22 +115,33 @@ export default {
     sortProducts() {
       // Сортировка выполняется автоматически
     },
+    startCarousel(productId) {
+      if (this.carouselInterval[productId]) return;
+
+      this.carouselInterval[productId] = setInterval(() => {
+        this.nextSlide(productId);
+      }, 3000); // Меняет слайд каждые 3 секунды
+    },
+    stopCarousel(productId) {
+      clearInterval(this.carouselInterval[productId]);
+      this.carouselInterval[productId] = null;
+    },
     nextSlide(productId) {
       if (!this.currentSlide[productId]) this.currentSlide[productId] = 0;
       const totalSlides = this.products.find((p) => p.product_id === productId).images.length;
       this.currentSlide[productId] = (this.currentSlide[productId] + 1) % totalSlides;
     },
-    prevSlide(productId) {
-      if (!this.currentSlide[productId]) this.currentSlide[productId] = 0;
-      const totalSlides = this.products.find((p) => p.product_id === productId).images.length;
-      this.currentSlide[productId] = (this.currentSlide[productId] - 1 + totalSlides) % totalSlides;
-    },
   },
 };
+
 </script>
 
 
-<style scoped>
+<style scoped>.catalog-details {
+  padding: 20px;
+  font-family: Arial, sans-serif;
+}
+
 .carousel-wrapper {
   position: relative;
   width: 100%;
@@ -159,26 +155,8 @@ export default {
 
 .carousel-image {
   width: 100%;
-  flex-shrink: 0;
-}
-
-.carousel-control {
-  position: absolute;
-  top: 50%;
-  transform: translateY(-50%);
-  background: rgba(0, 0, 0, 0.5);
-  color: white;
-  border: none;
-  cursor: pointer;
-  z-index: 10;
-}
-
-.carousel-control.prev {
-  left: 10px;
-}
-
-.carousel-control.next {
-  right: 10px;
+  height: 200px;
+  object-fit: cover;
 }
 
 .product-link {
@@ -187,7 +165,56 @@ export default {
 }
 
 .product-info {
+  padding: 15px;
+  flex-grow: 1; /* Для равномерного распределения пространства */
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+}
+
+.product-info h2 {
+  margin: 0 0 10px;
+  font-size: 18px;
+  color: #333;
+}
+
+.product-info p {
+  margin: 0;
+  font-size: 14px;
+  color: #666;
+}
+
+.product-price {
   margin-top: 10px;
+  font-size: 16px;
+  font-weight: bold;
+  color: #000;
+}
+
+.product-item {
+  background: #f9f9f9;
+  border: 1px solid #ddd;
+  border-radius: 8px;
+  width: calc(33.333% - 20px);
+  text-align: center;
+  overflow: hidden;
+  box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+  transition: transform 0.3s ease, box-shadow 0.3s ease;
+  display: flex;
+  flex-direction: column;
+}
+
+.product-item:hover {
+  transform: translateY(-5px);
+  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.2);
+}
+
+.product-list {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 20px;
+  list-style: none;
+  padding: 0;
 }
 
 .breadcrumb {
@@ -225,64 +252,10 @@ h1 {
   font-size: 14px;
 }
 
-.product-list {
-  display: flex;
-  flex-wrap: wrap;
-  gap: 20px;
-  list-style: none;
-  padding: 0;
-}
-
 .product-item {
-  background: #f9f9f9;
-  border: 1px solid #ddd;
-  border-radius: 8px;
-  width: calc(33.333% - 20px);
-  text-align: center;
-  overflow: hidden;
-  box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
-  transition: transform 0.3s ease, box-shadow 0.3s ease;
-}
-
-.product-item:hover {
-  transform: translateY(-5px);
-  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.2);
-}
-
-.product-link {
-  color: inherit;
-  text-decoration: none;
   display: flex;
   flex-direction: column;
-  align-items: center;
+  justify-content: space-between;
 }
 
-.product-image {
-  width: 100%;
-  height: 200px;
-  object-fit: cover;
-}
-
-.product-info {
-  padding: 15px;
-}
-
-.product-info h2 {
-  margin: 0 0 10px;
-  font-size: 18px;
-  color: #333;
-}
-
-.product-info p {
-  margin: 0;
-  font-size: 14px;
-  color: #666;
-}
-
-.product-price {
-  margin-top: 10px;
-  font-size: 16px;
-  font-weight: bold;
-  color: #000;
-}
 </style>
