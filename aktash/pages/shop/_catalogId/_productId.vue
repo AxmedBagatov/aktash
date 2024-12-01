@@ -5,28 +5,22 @@
       <nuxt-link :to="`/shop/`" class="breadcrumb">/ Каталог</nuxt-link>
       <nuxt-link :to="`/shop/${catalogId}`" class="breadcrumb">/ {{ categoryName }}</nuxt-link>
     </div>
-
     <h1>Продукт: {{ product.name }}</h1>
-
     <div v-if="loading" class="loading">Загрузка...</div>
     <div v-else-if="errorMessage" class="error">{{ errorMessage }}</div>
     <div v-else>
       <div class="product-info">
-        <div class="carousel-wrapper">
-          <div
-            class="carousel-images"
-            :style="{ transform: `translateX(-${currentSlide * 100}%)` }"
-          >
-            <!-- Перебор изображений и отображение каждого -->
-            <img
-              v-for="(image, index) in product.images"
-              :key="index"
-              :src="image.url"
-              alt="Image of product"
-              class="carousel-image"
-            />
-          </div>
+        <!-- Loop through product images -->
+        <div v-if="product.images && product.images.length">
+          <img
+            v-for="(image, index) in product.images"
+            :key="index"
+            :src="`/shop/${image.url}`" 
+            :alt="`Image of ${product.name} - ${index + 1}`"
+            class="product-image"
+          />
         </div>
+
         <div class="product-description">
           <p><strong>Описание:</strong> {{ product.description }}</p>
           <p><strong>Цена:</strong> {{ product.price }} ₽</p>
@@ -36,17 +30,12 @@
   </div>
 </template>
 
+
 <script>
 export default {
-  data() {
-    return {
-      currentSlide: 0, // Текущий слайд в карусели
-      carouselInterval: null, // Для хранения интервала переключения слайдов
-    };
-  },
   async asyncData({ params, store }) {
-    const productId = params.productId;
-    const catalogId = params.catalogId;
+    const productId = params.productId; // ID продукта
+    const catalogId = params.catalogId; // ID каталога
 
     try {
       // Запрашиваем данные категорий, если они еще не загружены
@@ -58,8 +47,10 @@ export default {
       await store.dispatch("fetchProductById", productId);
       await store.dispatch("fetchProductsByCategory", catalogId);
 
+      // Получаем данные продукта
       const product = store.getters.getSelectedProduct;
-
+      console.log(product);
+      
       return {
         catalogId,
         product,
@@ -81,27 +72,19 @@ export default {
       return this.$store.getters.isLoading;
     },
     categoryName() {
-      const categories = this.$store.getters.getCategories;
-      const category = categories.find((cat) => cat.category_id == this.catalogId);
+      const categories = this.$store.getters.getCategories; // Получаем категории из хранилища
+      // Ищем категорию по `id`, который должен совпадать с `this.catalogId`
+      const category = categories.find(
+        (cat) => cat.category_id == this.catalogId
+      );
+
+      // Логирование для отладки
+      console.log(
+        `Вывод имени категории: ${category ? category.name : "Не найдено"}`
+      );
+
+      // Возвращаем имя категории или 'Неизвестная категория'
       return category ? category.name : "Неизвестная категория";
-    },
-    product() {
-      return this.$store.getters.getSelectedProduct;
-    },
-  },
-  methods: {
-    startCarousel() {
-      this.carouselInterval = setInterval(() => {
-        this.nextSlide();
-      }, 3000); // Меняет слайд каждые 3 секунды
-    },
-    stopCarousel() {
-      clearInterval(this.carouselInterval);
-      this.carouselInterval = null;
-    },
-    nextSlide() {
-      if (!this.product.images || this.product.images.length === 0) return;
-      this.currentSlide = (this.currentSlide + 1) % this.product.images.length;
     },
   },
 };
