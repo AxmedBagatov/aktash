@@ -1,9 +1,15 @@
 <template>
   <div class="product-details">
+    <div>
+      <p v-if="isLoggedIn">Welcome, {{ user.username }}!</p>
+      <p v-else>Please log in to access this page.</p>
+    </div>
     <div class="routes_catalog">
       <nuxt-link :to="`/`" class="breadcrumb">Главная</nuxt-link>
       <nuxt-link :to="`/shop/`" class="breadcrumb">/ Каталог</nuxt-link>
-      <nuxt-link :to="`/shop/${catalogId}`" class="breadcrumb">/ {{ categoryName }}</nuxt-link>
+      <nuxt-link :to="`/shop/${catalogId}`" class="breadcrumb"
+        >/ {{ categoryName }}</nuxt-link
+      >
     </div>
     <h1>Продукт: {{ product.name }}</h1>
     <div v-if="loading" class="loading">Загрузка...</div>
@@ -15,7 +21,7 @@
           <img
             v-for="(image, index) in product.images"
             :key="index"
-            :src="`/shop/${image.url}`" 
+            :src="`/shop/${image.url}`"
             :alt="`Image of ${product.name} - ${index + 1}`"
             class="product-image"
           />
@@ -29,7 +35,6 @@
     </div>
   </div>
 </template>
-
 
 <script>
 export default {
@@ -50,7 +55,7 @@ export default {
       // Получаем данные продукта
       const product = store.getters.getSelectedProduct;
       console.log(product);
-      
+
       return {
         catalogId,
         product,
@@ -65,6 +70,12 @@ export default {
     }
   },
   computed: {
+    isLoggedIn() {
+      return this.$store.getters.isLoggedIn;
+    },
+    user() {
+      return this.$store.getters.getUser;
+    },
     errorMessage() {
       return this.$store.getters.getErrorMessage;
     },

@@ -1,5 +1,9 @@
 <template>
   <div class="catalogs">
+    <div>
+      <p v-if="isLoggedIn">Welcome, {{ user.username }}!</p>
+      <p v-else>Please log in to access this page.</p>
+    </div>
     <nuxt-link class="breadcrumb" :to="`/`">Главная</nuxt-link>
     <h1>Категории</h1>
     <div v-if="loading" class="loading">Загрузка...</div>
@@ -29,6 +33,12 @@
 export default {
   name: "ProductAndCategoryList",
   computed: {
+    isLoggedIn() {
+      return this.$store.getters.isLoggedIn;
+    },
+    user() {
+      return this.$store.getters.getUser;
+    },
     catalogs() {
       console.log(this.$store.getters.getCategories);
       
