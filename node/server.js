@@ -114,7 +114,6 @@ app.get('/api/products', async (req, res) => {
   try {
     const { category_id: categoryId, product_id: productId, search } = req.query;
 
-    // Базовый SQL-запрос
     let query = `
       SELECT 
         p.product_id,
@@ -122,7 +121,7 @@ app.get('/api/products', async (req, res) => {
         p.name,
         p.description,
         p.price,
-        i.image_url
+        JSON_AGG(JSON_BUILD_OBJECT('url', i.image_url, 'order', i.image_order) ORDER BY i.image_order) AS images
       FROM 
         products p
       LEFT JOIN 
@@ -130,36 +129,23 @@ app.get('/api/products', async (req, res) => {
     `;
 
     const conditions = [];
-    // Если передан product_id, фильтруем по конкретному товару
-    if (productId) {
-      conditions.push(`p.product_id = ${productId}`);
-    }
+    if (productId) conditions.push(`p.product_id = ${productId}`);
+    if (categoryId) conditions.push(`p.category_id = ${categoryId}`);
+    if (search) conditions.push(`(p.name ILIKE '%${search}%' OR p.description ILIKE '%${search}%')`);
 
-    // Если передан category_id, фильтруем по категории
-    if (categoryId) {
-      conditions.push(`p.category_id = ${categoryId}`);
-    }
-
-    // Если передан search, добавляем фильтрацию по имени и описанию
-    if (search) {
-      conditions.push(`(p.name ILIKE '%${search}%' OR p.description ILIKE '%${search}%')`);
-    }
-
-    // Добавляем условия в запрос
     if (conditions.length > 0) {
       query += ` WHERE ` + conditions.join(' AND ');
     }
 
-    // Выполняем запрос к базе данных
+    query += ` GROUP BY p.product_id, p.category_id, p.name, p.description, p.price`;
+
     const productsWithImages = await queryDB(query);
 
-    // Если запрошен конкретный продукт, возвращаем один объект
     if (productId && productsWithImages.length > 0) {
-      res.json(productsWithImages[0]); // Возвращаем только первый найденный продукт
+      res.json(productsWithImages[0]);
     } else if (productId && productsWithImages.length === 0) {
       res.status(404).json({ error: 'Product not found' });
     } else {
-      // Возвращаем массив продуктов
       res.json(productsWithImages);
     }
   } catch (err) {
@@ -167,8 +153,6 @@ app.get('/api/products', async (req, res) => {
     res.status(500).json({ error: 'Internal server error' });
   }
 });
-
-
 
 app.get('/api/categories', async (req, res) => {
   try {
