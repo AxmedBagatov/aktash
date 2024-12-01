@@ -7,7 +7,7 @@
 
     <!-- Отображаем кнопки для добавления и редактирования категорий только для авторизованных пользователей -->
     <div v-if="isLoggedIn" class="admin-controls">
-      <button @click="showAddCategoryForm">Add Category</button>
+      <button @click="showAddCategoryForm" >Add Category</button>
     </div>
 
     <nuxt-link class="breadcrumb" :to="`/`">Главная</nuxt-link>
@@ -17,7 +17,11 @@
     <div v-else-if="errorMessage" class="error">{{ errorMessage }}</div>
     <div v-else>
       <ul class="catalog-list">
-        <li v-for="catalog in catalogs" :key="catalog.category_id" class="catalog-item">
+        <li
+          v-for="catalog in catalogs"
+          :key="catalog.category_id"
+          class="catalog-item"
+        >
           <nuxt-link :to="`/shop/${catalog.category_id}`" class="catalog-link">
             <img
               v-if="catalog.image_url"
@@ -43,7 +47,7 @@
     <!-- Модальное окно для добавления и редактирования категории -->
     <div v-if="showAddForm" class="modal-overlay">
       <div class="modal-content">
-        <h3>{{ isEditMode ? 'Edit Category' : 'Add New Category' }}</h3>
+        <h3>{{ isEditMode ? "Edit Category" : "Add New Category" }}</h3>
         <form @submit.prevent="isEditMode ? updateCategory() : addCategory">
           <div v-if="isEditMode">
             <label for="category_id">Category ID:</label>
@@ -55,11 +59,21 @@
               readonly
             />
           </div>
-          <input v-model="newCategory.name" placeholder="Category Name" required />
-          <textarea v-model="newCategory.description" placeholder="Category Description" required></textarea>
+          <input
+            v-model="newCategory.name"
+            placeholder="Category Name"
+            required
+          />
+          <textarea
+            v-model="newCategory.description"
+            placeholder="Category Description"
+            required
+          ></textarea>
           <input v-model="newCategory.image_url" placeholder="Image URL" />
           <div class="modal-actions">
-            <button type="submit">{{ isEditMode ? 'Update' : 'Add' }} Category</button>
+            <button type="submit">
+              {{ isEditMode ? "Update" : "Add" }} Category
+            </button>
             <button @click="cancelAddCategory">Cancel</button>
           </div>
         </form>
@@ -76,9 +90,9 @@ export default {
       showAddForm: false,
       isEditMode: false,
       newCategory: {
-        name: '',
-        description: '',
-        image_url: '',
+        name: "",
+        description: "",
+        image_url: "",
         category_id: null, // Добавленное поле для хранения ID
       },
       editingCategoryId: null,
@@ -117,14 +131,14 @@ export default {
     showAddCategoryForm() {
       this.showAddForm = true;
       this.isEditMode = false;
-      this.newCategory = { name: '', description: '', image_url: '' }; // Очистить поля
+      this.newCategory = { name: "", description: "", image_url: "" }; // Очистить поля
     },
 
     // Показать форму редактирования категории
     editCategory(categoryId) {
       this.showAddForm = true;
       this.isEditMode = true;
-      const category = this.catalogs.find(c => c.category_id === categoryId);
+      const category = this.catalogs.find((c) => c.category_id === categoryId);
       this.newCategory = { ...category }; // Заполняем поля формы данными категории
       this.editingCategoryId = categoryId;
     },
@@ -139,7 +153,7 @@ export default {
       try {
         await this.$store.dispatch("addCategory", this.newCategory);
         this.showAddForm = false;
-        this.newCategory = { name: '', description: '', image_url: '' };
+        this.newCategory = { name: "", description: "", image_url: "" };
       } catch (error) {
         console.error("Ошибка при добавлении категории:", error);
       }
@@ -148,12 +162,20 @@ export default {
     // Метод для обновления категории
     async updateCategory() {
       try {
+        // Передаем correct category_id
         await this.$store.dispatch("updateCategory", {
-          categoryId: this.editingCategoryId,
-          updatedCategory: this.newCategory,
+          id: this.newCategory.category_id, // Используем category_id из newCategory
+          name: this.newCategory.name,
+          description: this.newCategory.description,
+          image_url: this.newCategory.image_url,
         });
         this.showAddForm = false;
-        this.newCategory = { name: '', description: '', image_url: '' };
+        this.newCategory = {
+          name: "",
+          description: "",
+          image_url: "",
+          category_id: null,
+        }; // Очистить все поля
       } catch (error) {
         console.error("Ошибка при обновлении категории:", error);
       }
@@ -170,7 +192,6 @@ export default {
   },
 };
 </script>
-
 
 <style scoped>
 .catalogs {
