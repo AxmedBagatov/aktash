@@ -37,7 +37,7 @@ export default {
   },
   methods: {
     onSearch: debounce(function () {
-      if (this.searchQuery.length > 0) {
+      if (this.searchQuery.length > 1) {
         this.$store.dispatch("searchProducts", this.searchQuery);
       } else {
         this.products = [];
