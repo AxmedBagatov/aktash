@@ -51,7 +51,7 @@ app.post('/register', async (req, res) => {
 });
 
 // ======== Авторизация ========
-app.post('/login', async (req, res) => {
+app.post('/api/login', async (req, res) => {
   const { username, password } = req.body;
   console.log(username, password);
   if (!username || !password) {
