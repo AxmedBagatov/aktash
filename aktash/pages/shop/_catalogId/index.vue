@@ -20,7 +20,9 @@
     <div v-else>
       <ul class="product-list">
         <li v-for="product in sortedProducts" :key="product.product_id" class="product-item">
+          
           <div class="carousel">
+            
             <div class="carousel-images" :style="{ transform: `translateX(-${currentSlide[product.product_id] * 100}%)` }">
               <img
                 v-for="(image, index) in product.images"
