@@ -88,7 +88,7 @@ app.post('/api/login', async (req, res) => {
 
 
 // ======== Проверка авторизации ========
-app.get('/protected', async (req, res) => {
+app.get('/api/protected', async (req, res) => {
   const token = req.cookies.token;
   if (!token) return res.status(401).send('Unauthorized');
 
