@@ -5,9 +5,14 @@ export const state = () => ({
   selectedProduct: null,
   errorMessage: '',
   loading: false,
+  auth: {
+    loggedIn: false,   // Флаг для проверки авторизован ли пользователь
+    user: null,        // Данные пользователя
+  },
 });
 
 export const mutations = {
+  // Продукты
   setProducts(state, products) {
     state.products = products;
   },
@@ -26,9 +31,20 @@ export const mutations = {
   setSearchResults(state, results) {
     state.searchResults = results;
   },
+
+  // Авторизация
+  setUser(state, user) {
+    state.auth.loggedIn = true;
+    state.auth.user = user;
+  },
+  logout(state) {
+    state.auth.loggedIn = false;
+    state.auth.user = null;
+  },
 };
 
 export const actions = {
+  // Продукты
   async fetchProducts({ commit }) {
     try {
       commit('setLoading', true);
@@ -71,7 +87,6 @@ export const actions = {
     try {
       commit('setLoading', true);
       const response = await fetch(`http://192.168.62.129:4000/api/products?category_id=${categoryId}`);
-      
       if (response.ok) {
         const data = await response.json();
         commit('setProducts', data);
@@ -91,7 +106,6 @@ export const actions = {
     try {
       commit('setLoading', true);
       const response = await fetch(`http://192.168.62.129:4000/api/products?product_id=${productId}`);
-      
       if (response.ok) {
         const data = await response.json();
         commit('setSelectedProduct', data); // Сохраняем данные одного продукта
@@ -106,6 +120,7 @@ export const actions = {
       commit('setLoading', false);
     }
   },
+
   async searchProducts({ commit }, query) {
     try {
       commit('setLoading', true);
@@ -124,9 +139,52 @@ export const actions = {
       commit('setLoading', false);
     }
   },
+
+  // Авторизация
+  async login({ commit }, { username, password }) {
+    try {
+      const response = await fetch('http://192.168.62.129:4000/api/login', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ username, password }),
+        credentials: 'include', // Включаем cookies
+      });
+
+      if (response.ok) {
+        const user = await response.json();
+        commit('setUser', user);
+      } else {
+        commit('setErrorMessage', 'Ошибка при входе');
+        console.error('Ошибка при входе');
+      }
+    } catch (error) {
+      commit('setErrorMessage', 'Ошибка сети: ' + error.message);
+      console.error('Ошибка сети:', error);
+    }
+  },
+
+  async logout({ commit }) {
+    try {
+      const response = await fetch('http://192.168.62.129:4000/logout', {
+        method: 'POST',
+        credentials: 'include', // Включаем cookies
+      });
+
+      if (response.ok) {
+        commit('logout');
+      } else {
+        commit('setErrorMessage', 'Ошибка при выходе');
+        console.error('Ошибка при выходе');
+      }
+    } catch (error) {
+      commit('setErrorMessage', 'Ошибка сети: ' + error.message);
+      console.error('Ошибка сети:', error);
+    }
+  },
 };
 
 export const getters = {
+  // Продукты
   getProducts(state) {
     return state.products;
   },
@@ -147,5 +205,13 @@ export const getters = {
   },
   getProductsByCategory: (state) => (categoryId) => {
     return state.products.filter(product => product.category_id === parseInt(categoryId));
-  }
+  },
+
+  // Авторизация
+  isLoggedIn(state) {
+    return state.auth.loggedIn;
+  },
+  getUser(state) {
+    return state.auth.user;
+  },
 };

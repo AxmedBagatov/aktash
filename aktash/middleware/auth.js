@@ -1,4 +1,5 @@
-// middleware/test.js
-export default function ({ route }) {
-  console.log('Test middleware работает для маршрута:', route.path);
+export default function ({ store, redirect }) {
+  if (!store.state.auth.loggedIn) {
+    return redirect('/login');
+  }
 }

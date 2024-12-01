@@ -86,20 +86,21 @@ app.post('/api/login', async (req, res) => {
   }
 });
 
-
-// ======== Проверка авторизации ========
-app.get('/api/protected', async (req, res) => {
+function authenticateToken(req, res, next) {
   const token = req.cookies.token;
   if (!token) return res.status(401).send('Unauthorized');
 
-  try {
-    const user = jwt.verify(token, JWT_SECRET);
-    res.send(`Hello, ${user.username}`);
-  } catch (err) {
-    res.status(403).send('Invalid token');
-  }
-});
+  jwt.verify(token, JWT_SECRET, (err, user) => {
+    if (err) return res.status(403).send('Invalid token');
+    req.user = user;
+    next();
+  });
+}
 
+// ======== Проверка авторизации ========
+app.get('/api/protected', authenticateToken, (req, res) => {
+  res.send(`Hello, ${req.user.username}`);
+});
 // ======== Выход ========
 app.post('/logout', (req, res) => {
   res.clearCookie('token');
