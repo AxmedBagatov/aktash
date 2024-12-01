@@ -19,6 +19,15 @@ export const mutations = {
   setCategories(state, categories) {
     state.categories = categories;
   },
+  setLoading(state, isLoading) {
+    state.loading = isLoading;
+  },
+  setErrorMessage(state, message) {
+    state.errorMessage = message;
+  },
+  setCategories(state, categories) {
+    state.categories = categories;
+  },
   setSelectedProduct(state, product) {
     state.selectedProduct = product;
   },
@@ -63,7 +72,84 @@ export const actions = {
       commit('setLoading', false);
     }
   },
+// Добавление категории
+async addCategory({ commit }, { name, description, image_url }) {
+  try {
+    commit('setLoading', true);
+    const response = await fetch('http://192.168.62.129:4000/api/categories', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ name, description, image_url }),
+      credentials: 'include', // Включаем cookies
+    });
 
+    if (response.ok) {
+      const data = await response.json();
+      commit('setCategories', [...state.categories, data]); // Добавляем категорию в список
+    } else {
+      commit('setErrorMessage', 'Ошибка при добавлении категории');
+      console.error('Ошибка при добавлении категории');
+    }
+  } catch (error) {
+    commit('setErrorMessage', 'Ошибка сети: ' + error.message);
+    console.error('Ошибка сети:', error);
+  } finally {
+    commit('setLoading', false);
+  }
+},
+
+// Редактирование категории
+async updateCategory({ commit, state }, { id, name, description, image_url }) {
+  try {
+    commit('setLoading', true);
+    const response = await fetch(`http://192.168.62.129:4000/api/categories/${id}`, {
+      method: 'PUT',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ name, description, image_url }),
+      credentials: 'include', // Включаем cookies
+    });
+
+    if (response.ok) {
+      const updatedCategory = await response.json();
+      const updatedCategories = state.categories.map(category =>
+        category.category_id === updatedCategory.category_id ? updatedCategory : category
+      );
+      commit('setCategories', updatedCategories); // Обновляем категорию в списке
+    } else {
+      commit('setErrorMessage', 'Ошибка при обновлении категории');
+      console.error('Ошибка при обновлении категории');
+    }
+  } catch (error) {
+    commit('setErrorMessage', 'Ошибка сети: ' + error.message);
+    console.error('Ошибка сети:', error);
+  } finally {
+    commit('setLoading', false);
+  }
+},
+
+// Удаление категории
+async deleteCategory({ commit, state }, id) {
+  try {
+    commit('setLoading', true);
+    const response = await fetch(`http://192.168.62.129:4000/api/categories/${id}`, {
+      method: 'DELETE',
+      credentials: 'include', // Включаем cookies
+    });
+
+    if (response.ok) {
+      const filteredCategories = state.categories.filter(category => category.category_id !== id);
+      commit('setCategories', filteredCategories); // Удаляем категорию из списка
+    } else {
+      commit('setErrorMessage', 'Ошибка при удалении категории');
+      console.error('Ошибка при удалении категории');
+    }
+  } catch (error) {
+    commit('setErrorMessage', 'Ошибка сети: ' + error.message);
+    console.error('Ошибка сети:', error);
+  } finally {
+    commit('setLoading', false);
+  }
+},
   async fetchCategories({ commit }) {
     try {
       commit('setLoading', true);

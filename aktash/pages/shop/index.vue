@@ -4,8 +4,15 @@
       <p v-if="isLoggedIn">Welcome, {{ user.username }}!</p>
       <p v-else>Please log in to access this page.</p>
     </div>
+
+    <!-- Отображаем кнопки для добавления, редактирования и удаления категорий только для авторизованных пользователей -->
+    <div v-if="isLoggedIn" class="admin-controls">
+      <button @click="showAddCategoryForm">Add Category</button>
+    </div>
+
     <nuxt-link class="breadcrumb" :to="`/`">Главная</nuxt-link>
     <h1>Категории</h1>
+
     <div v-if="loading" class="loading">Загрузка...</div>
     <div v-else-if="errorMessage" class="error">{{ errorMessage }}</div>
     <div v-else>
@@ -23,8 +30,26 @@
               <p>{{ catalog.description }}</p>
             </div>
           </nuxt-link>
+
+          <!-- Кнопки для редактирования и удаления только для авторизованных пользователей -->
+          <div v-if="isLoggedIn" class="admin-actions">
+            <button @click="editCategory(catalog.category_id)">Edit</button>
+            <button @click="deleteCategory(catalog.category_id)">Delete</button>
+          </div>
         </li>
       </ul>
+    </div>
+
+    <!-- Форма для добавления новой категории -->
+    <div v-if="showAddForm" class="add-category-form">
+      <h3>Add New Category</h3>
+      <form @submit.prevent="addCategory">
+        <input v-model="newCategory.name" placeholder="Category Name" required />
+        <textarea v-model="newCategory.description" placeholder="Category Description" required></textarea>
+        <input v-model="newCategory.image_url" placeholder="Image URL" />
+        <button type="submit">Add Category</button>
+        <button @click="cancelAddCategory">Cancel</button>
+      </form>
     </div>
   </div>
 </template>
@@ -32,6 +57,16 @@
 <script>
 export default {
   name: "ProductAndCategoryList",
+  data() {
+    return {
+      showAddForm: false,
+      newCategory: {
+        name: '',
+        description: '',
+        image_url: '',
+      },
+    };
+  },
   computed: {
     isLoggedIn() {
       return this.$store.getters.isLoggedIn;
@@ -40,8 +75,6 @@ export default {
       return this.$store.getters.getUser;
     },
     catalogs() {
-      console.log(this.$store.getters.getCategories);
-      
       return this.$store.getters.getCategories;
     },
     errorMessage() {
@@ -56,11 +89,45 @@ export default {
   },
   methods: {
     async fetchData() {
-      // Загружаем одновременно продукты и категории
       try {
         await this.$store.dispatch("fetchCategories");
       } catch (error) {
         console.error("Ошибка загрузки данных:", error);
+      }
+    },
+
+    // Показать форму добавления категории
+    showAddCategoryForm() {
+      this.showAddForm = true;
+    },
+
+    // Скрыть форму добавления категории
+    cancelAddCategory() {
+      this.showAddForm = false;
+    },
+
+    // Метод для добавления новой категории
+    async addCategory() {
+      try {
+        await this.$store.dispatch("addCategory", this.newCategory);
+        this.showAddForm = false; // Закрыть форму
+        this.newCategory = { name: '', description: '', image_url: '' }; // Очистить поля формы
+      } catch (error) {
+        console.error("Ошибка при добавлении категории:", error);
+      }
+    },
+
+    // Редактировать категорию
+    editCategory(categoryId) {
+      this.$router.push(`/edit-category/${categoryId}`);
+    },
+
+    // Удалить категорию
+    async deleteCategory(categoryId) {
+      try {
+        await this.$store.dispatch("deleteCategory", categoryId);
+      } catch (error) {
+        console.error("Ошибка при удалении категории:", error);
       }
     },
   },
