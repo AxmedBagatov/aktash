@@ -22,38 +22,37 @@
       <ul class="product-list">
         <li v-for="product in sortedProducts" :key="product.product_id" class="product-item">
           <nuxt-link :to="`/shop/${catalogId}/${product.product_id}`" class="product-link">
-            <div class="carousel" v-if="product.images.length > 1">
-              <div
-                class="carousel-images"
-                :style="{ transform: `translateX(-${currentSlide[product.product_id] * 100}%)` }"
-              >
-                <img
-                  v-for="(image, index) in product.images"
-                  :key="index"
-                  :src="image.url"
-                  alt="Product image"
-                  class="carousel-image"
-                />
+            <div class="carousel">
+              <!-- Блок с каруселью -->
+              <div class="carousel-wrapper">
+                <div
+                  class="carousel-images"
+                  :style="{ transform: `translateX(-${currentSlide[product.product_id] * 100}%)` }"
+                >
+                  <img
+                    v-for="(image, index) in product.images"
+                    :key="index"
+                    :src="image.url"
+                    alt="Product image"
+                    class="carousel-image"
+                  />
+                </div>
+                <!-- Управляющие кнопки внутри карусели -->
+                <button
+                  v-if="product.images.length > 1"
+                  class="carousel-control prev"
+                  @click.stop="prevSlide(product.product_id)"
+                >
+                  ‹
+                </button>
+                <button
+                  v-if="product.images.length > 1"
+                  class="carousel-control next"
+                  @click.stop="nextSlide(product.product_id)"
+                >
+                  ›
+                </button>
               </div>
-              <button
-                class="carousel-control prev"
-                @click.stop="prevSlide(product.product_id)"
-              >
-                ‹
-              </button>
-              <button
-                class="carousel-control next"
-                @click.stop="nextSlide(product.product_id)"
-              >
-                ›
-              </button>
-            </div>
-            <div v-else>
-              <img
-                :src="product.images[0].url"
-                alt="Product image"
-                class="product-image"
-              />
             </div>
             <div class="product-info">
               <h2>{{ product.name }}</h2>
@@ -72,8 +71,8 @@ export default {
   name: "CatalogDetails",
   data() {
     return {
-      sortCriteria: 'price_asc', // Значение по умолчанию
-      currentSlide: {}, // Для хранения текущего слайда для каждого продукта
+      sortCriteria: "price_asc", // Значение по умолчанию
+      currentSlide: {}, // Объект для хранения текущего слайда для каждого товара
     };
   },
   async asyncData({ params, store }) {
@@ -97,11 +96,7 @@ export default {
   },
   computed: {
     products() {
-      // Преобразуем данные товаров, добавляя `images` из JSON
-      return this.$store.getters.getProducts.map((product) => ({
-        ...product,
-        images: Array.isArray(product.images) ? product.images : JSON.parse(product.images),
-      }));
+      return this.$store.getters.getProducts;
     },
     errorMessage() {
       return this.$store.getters.getErrorMessage;
@@ -118,13 +113,13 @@ export default {
     sortedProducts() {
       let sorted = [...this.products];
 
-      if (this.sortCriteria === 'price_asc') {
+      if (this.sortCriteria === "price_asc") {
         sorted.sort((a, b) => parseFloat(a.price) - parseFloat(b.price));
-      } else if (this.sortCriteria === 'price_desc') {
+      } else if (this.sortCriteria === "price_desc") {
         sorted.sort((a, b) => parseFloat(b.price) - parseFloat(a.price));
-      } else if (this.sortCriteria === 'name_asc') {
+      } else if (this.sortCriteria === "name_asc") {
         sorted.sort((a, b) => a.name.localeCompare(b.name));
-      } else if (this.sortCriteria === 'name_desc') {
+      } else if (this.sortCriteria === "name_desc") {
         sorted.sort((a, b) => b.name.localeCompare(a.name));
       }
 
@@ -133,7 +128,7 @@ export default {
   },
   methods: {
     sortProducts() {
-      // Сортировка выполняется автоматически через computed-свойства
+      // Сортировка выполняется автоматически
     },
     nextSlide(productId) {
       if (!this.currentSlide[productId]) this.currentSlide[productId] = 0;
@@ -151,9 +146,48 @@ export default {
 
 
 <style scoped>
-.catalog-details {
-  padding: 20px;
-  font-family: Arial, sans-serif;
+.carousel-wrapper {
+  position: relative;
+  width: 100%;
+  overflow: hidden;
+}
+
+.carousel-images {
+  display: flex;
+  transition: transform 0.5s ease;
+}
+
+.carousel-image {
+  width: 100%;
+  flex-shrink: 0;
+}
+
+.carousel-control {
+  position: absolute;
+  top: 50%;
+  transform: translateY(-50%);
+  background: rgba(0, 0, 0, 0.5);
+  color: white;
+  border: none;
+  cursor: pointer;
+  z-index: 10;
+}
+
+.carousel-control.prev {
+  left: 10px;
+}
+
+.carousel-control.next {
+  right: 10px;
+}
+
+.product-link {
+  display: block;
+  position: relative;
+}
+
+.product-info {
+  margin-top: 10px;
 }
 
 .breadcrumb {
