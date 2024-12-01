@@ -45,7 +45,16 @@
       <div class="modal-content">
         <h3>{{ isEditMode ? 'Edit Category' : 'Add New Category' }}</h3>
         <form @submit.prevent="isEditMode ? updateCategory() : addCategory">
-          <p>{{  }}</p>
+          <div v-if="isEditMode">
+            <label for="category_id">Category ID:</label>
+            <input
+              type="text"
+              id="category_id"
+              v-model="newCategory.category_id"
+              placeholder="Category ID"
+              readonly
+            />
+          </div>
           <input v-model="newCategory.name" placeholder="Category Name" required />
           <textarea v-model="newCategory.description" placeholder="Category Description" required></textarea>
           <input v-model="newCategory.image_url" placeholder="Image URL" />
@@ -70,6 +79,7 @@ export default {
         name: '',
         description: '',
         image_url: '',
+        category_id: null, // Добавленное поле для хранения ID
       },
       editingCategoryId: null,
     };
@@ -160,6 +170,7 @@ export default {
   },
 };
 </script>
+
 
 <style scoped>
 .catalogs {
