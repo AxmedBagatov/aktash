@@ -38,11 +38,8 @@ app.post('/register', async (req, res) => {
   }
 
   try {
-    // Хэшируем пароль
     const hashedPassword = await bcrypt.hash(password, 10);
-
-    // Сохраняем пользователя в БД
-    await queryDB('INSERT INTO users (username, password) VALUES (?, ?)', [username, hashedPassword]);
+    await queryDB('INSERT INTO users (username, password) VALUES ($1, $2)', [username, hashedPassword]);
     res.status(201).send('User registered');
   } catch (err) {
     console.error(err);
@@ -50,30 +47,22 @@ app.post('/register', async (req, res) => {
   }
 });
 
-// ======== Авторизация ========
 app.post('/api/login', async (req, res) => {
   const { username, password } = req.body;
-  console.log(username, password);
   if (!username || !password) {
-    console.log("Username and password are required");
     return res.status(400).send('Username and password are required');
   }
 
   try {
-    // Проверяем, существует ли пользователь
-    const result = await queryDB('SELECT * FROM users WHERE username = ?', [username]);
+    const result = await queryDB('SELECT * FROM users WHERE username = $1', [username]);
     const user = result[0];
     if (!user) return res.status(404).send('User not found');
 
-    // Сравниваем пароли
     const isMatch = await bcrypt.compare(password, user.password);
     if (!isMatch) return res.status(401).send('Invalid credentials');
 
-    // Генерируем токен
     const token = jwt.sign({ id: user.id, username: user.username }, JWT_SECRET, { expiresIn: '1h' });
-
-    // Устанавливаем cookie
-    res.cookie('token', token, { httpOnly: true, secure: false }); // Для продакшена secure: true
+    res.cookie('token', token, { httpOnly: true, secure: false });
     res.send('Logged in');
   } catch (err) {
     console.error(err);
