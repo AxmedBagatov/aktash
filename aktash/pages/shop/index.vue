@@ -30,6 +30,8 @@ export default {
   name: "ProductAndCategoryList",
   computed: {
     catalogs() {
+      console.log(this.$store.getters.getCategories);
+      
       return this.$store.getters.getCategories;
     },
     errorMessage() {
