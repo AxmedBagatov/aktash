@@ -1,13 +1,13 @@
 <template>
   <div class="catalogs">
-    <div>
+    <!-- <div>
       <p v-if="isLoggedIn">Welcome, {{ user.username }}!</p>
       <p v-else>Please log in to access this page.</p>
-    </div>
+    </div> -->
 
     <!-- Отображаем кнопки для добавления и редактирования категорий только для авторизованных пользователей -->
     <div v-if="isLoggedIn" class="admin-controls">
-      <button @click="showAddCategoryForm" >Add Category</button>
+      <button @click="showAddCategoryForm">Add Category</button>
     </div>
 
     <nuxt-link class="breadcrumb" :to="`/`">Главная</nuxt-link>
@@ -121,7 +121,7 @@ export default {
   methods: {
     async fetchData() {
       try {
-        await this.$store.dispatch("fetchCategories");
+        await this.$store.dispatch("fetchCategories"); // Загрузить все категории
       } catch (error) {
         console.error("Ошибка загрузки данных:", error);
       }
@@ -154,6 +154,7 @@ export default {
         await this.$store.dispatch("addCategory", this.newCategory);
         this.showAddForm = false;
         this.newCategory = { name: "", description: "", image_url: "" };
+        await this.fetchData(); // Обновить список категорий
       } catch (error) {
         console.error("Ошибка при добавлении категории:", error);
       }
@@ -162,7 +163,6 @@ export default {
     // Метод для обновления категории
     async updateCategory() {
       try {
-        // Передаем correct category_id
         await this.$store.dispatch("updateCategory", {
           id: this.newCategory.category_id, // Используем category_id из newCategory
           name: this.newCategory.name,
@@ -176,15 +176,16 @@ export default {
           image_url: "",
           category_id: null,
         }; // Очистить все поля
+        await this.fetchData(); // Обновить список категорий
       } catch (error) {
         console.error("Ошибка при обновлении категории:", error);
       }
     },
-
     // Удалить категорию
     async deleteCategory(categoryId) {
       try {
         await this.$store.dispatch("deleteCategory", categoryId);
+        await this.fetchData(); // Обновить список категорий
       } catch (error) {
         console.error("Ошибка при удалении категории:", error);
       }
