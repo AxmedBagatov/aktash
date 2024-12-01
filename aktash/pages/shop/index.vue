@@ -45,6 +45,7 @@
       <div class="modal-content">
         <h3>{{ isEditMode ? 'Edit Category' : 'Add New Category' }}</h3>
         <form @submit.prevent="isEditMode ? updateCategory() : addCategory">
+          <p>{{  }}</p>
           <input v-model="newCategory.name" placeholder="Category Name" required />
           <textarea v-model="newCategory.description" placeholder="Category Description" required></textarea>
           <input v-model="newCategory.image_url" placeholder="Image URL" />

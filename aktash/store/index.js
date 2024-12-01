@@ -10,7 +10,6 @@ export const state = () => ({
     user: null,        // Данные пользователя
   },
 });
-
 export const mutations = {
   // Продукты
   setProducts(state, products) {
@@ -25,17 +24,8 @@ export const mutations = {
   setErrorMessage(state, message) {
     state.errorMessage = message;
   },
-  setCategories(state, categories) {
-    state.categories = categories;
-  },
   setSelectedProduct(state, product) {
     state.selectedProduct = product;
-  },
-  setErrorMessage(state, message) {
-    state.errorMessage = message;
-  },
-  setLoading(state, loading) {
-    state.loading = loading;
   },
   setSearchResults(state, results) {
     state.searchResults = results;
@@ -73,19 +63,19 @@ export const actions = {
     }
   },
 // Добавление категории
-async addCategory({ commit }, { name, description, image_url }) {
+async addCategory({ commit, state }, { name, description, image_url }) {
   try {
     commit('setLoading', true);
     const response = await fetch('http://192.168.62.129:4000/api/categories', {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({ name, description, image_url }),
-      credentials: 'include', // Включаем cookies
+      credentials: 'include',
     });
 
     if (response.ok) {
       const data = await response.json();
-      commit('setCategories', [...state.categories, data]); // Добавляем категорию в список
+      commit('setCategories', [...state.categories, data]); // Добавляем категорию
     } else {
       commit('setErrorMessage', 'Ошибка при добавлении категории');
       console.error('Ошибка при добавлении категории');
@@ -98,6 +88,7 @@ async addCategory({ commit }, { name, description, image_url }) {
   }
 },
 
+
 // Редактирование категории
 async updateCategory({ commit, state }, { id, name, description, image_url }) {
   try {
@@ -106,7 +97,7 @@ async updateCategory({ commit, state }, { id, name, description, image_url }) {
       method: 'PUT',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({ name, description, image_url }),
-      credentials: 'include', // Включаем cookies
+      credentials: 'include',
     });
 
     if (response.ok) {
