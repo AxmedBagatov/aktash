@@ -5,7 +5,7 @@
       <p v-else>Please log in to access this page.</p>
     </div>
 
-    <!-- Отображаем кнопки для добавления, редактирования и удаления категорий только для авторизованных пользователей -->
+    <!-- Отображаем кнопки для добавления и редактирования категорий только для авторизованных пользователей -->
     <div v-if="isLoggedIn" class="admin-controls">
       <button @click="showAddCategoryForm">Add Category</button>
     </div>
@@ -40,16 +40,20 @@
       </ul>
     </div>
 
-    <!-- Форма для добавления новой категории -->
-    <div v-if="showAddForm" class="add-category-form">
-      <h3>Add New Category</h3>
-      <form @submit.prevent="addCategory">
-        <input v-model="newCategory.name" placeholder="Category Name" required />
-        <textarea v-model="newCategory.description" placeholder="Category Description" required></textarea>
-        <input v-model="newCategory.image_url" placeholder="Image URL" />
-        <button type="submit">Add Category</button>
-        <button @click="cancelAddCategory">Cancel</button>
-      </form>
+    <!-- Модальное окно для добавления и редактирования категории -->
+    <div v-if="showAddForm" class="modal-overlay">
+      <div class="modal-content">
+        <h3>{{ isEditMode ? 'Edit Category' : 'Add New Category' }}</h3>
+        <form @submit.prevent="isEditMode ? updateCategory() : addCategory">
+          <input v-model="newCategory.name" placeholder="Category Name" required />
+          <textarea v-model="newCategory.description" placeholder="Category Description" required></textarea>
+          <input v-model="newCategory.image_url" placeholder="Image URL" />
+          <div class="modal-actions">
+            <button type="submit">{{ isEditMode ? 'Update' : 'Add' }} Category</button>
+            <button @click="cancelAddCategory">Cancel</button>
+          </div>
+        </form>
+      </div>
     </div>
   </div>
 </template>
@@ -60,11 +64,13 @@ export default {
   data() {
     return {
       showAddForm: false,
+      isEditMode: false,
       newCategory: {
         name: '',
         description: '',
         image_url: '',
       },
+      editingCategoryId: null,
     };
   },
   computed: {
@@ -99,9 +105,20 @@ export default {
     // Показать форму добавления категории
     showAddCategoryForm() {
       this.showAddForm = true;
+      this.isEditMode = false;
+      this.newCategory = { name: '', description: '', image_url: '' }; // Очистить поля
     },
 
-    // Скрыть форму добавления категории
+    // Показать форму редактирования категории
+    editCategory(categoryId) {
+      this.showAddForm = true;
+      this.isEditMode = true;
+      const category = this.catalogs.find(c => c.category_id === categoryId);
+      this.newCategory = { ...category }; // Заполняем поля формы данными категории
+      this.editingCategoryId = categoryId;
+    },
+
+    // Закрыть форму
     cancelAddCategory() {
       this.showAddForm = false;
     },
@@ -110,16 +127,25 @@ export default {
     async addCategory() {
       try {
         await this.$store.dispatch("addCategory", this.newCategory);
-        this.showAddForm = false; // Закрыть форму
-        this.newCategory = { name: '', description: '', image_url: '' }; // Очистить поля формы
+        this.showAddForm = false;
+        this.newCategory = { name: '', description: '', image_url: '' };
       } catch (error) {
         console.error("Ошибка при добавлении категории:", error);
       }
     },
 
-    // Редактировать категорию
-    editCategory(categoryId) {
-      this.$router.push(`/edit-category/${categoryId}`);
+    // Метод для обновления категории
+    async updateCategory() {
+      try {
+        await this.$store.dispatch("updateCategory", {
+          categoryId: this.editingCategoryId,
+          updatedCategory: this.newCategory,
+        });
+        this.showAddForm = false;
+        this.newCategory = { name: '', description: '', image_url: '' };
+      } catch (error) {
+        console.error("Ошибка при обновлении категории:", error);
+      }
     },
 
     // Удалить категорию
@@ -212,5 +238,77 @@ h1 {
   margin: 0;
   font-size: 14px;
   color: #666;
+}
+
+.admin-controls {
+  margin-top: 20px;
+}
+
+.admin-actions {
+  margin-top: 10px;
+}
+
+.admin-actions button {
+  background: #007bff;
+  color: white;
+  border: none;
+  padding: 5px 10px;
+  margin: 5px;
+  cursor: pointer;
+}
+
+.admin-actions button:hover {
+  background: #0056b3;
+}
+
+.modal-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: rgba(0, 0, 0, 0.5);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+.modal-content {
+  background: white;
+  padding: 20px;
+  border-radius: 8px;
+  width: 400px;
+  max-width: 90%;
+  box-shadow: 0 5px 15px rgba(0, 0, 0, 0.3);
+}
+
+.modal-content h3 {
+  margin-bottom: 20px;
+}
+
+.modal-content form input,
+.modal-content form textarea {
+  width: 100%;
+  padding: 10px;
+  margin-bottom: 10px;
+  border: 1px solid #ddd;
+  border-radius: 4px;
+}
+
+.modal-content .modal-actions {
+  display: flex;
+  justify-content: space-between;
+}
+
+.modal-content .modal-actions button {
+  padding: 10px 20px;
+  cursor: pointer;
+  border: none;
+  border-radius: 4px;
+}
+
+.modal-content .modal-actions button:hover {
+  background: #007bff;
+  color: white;
 }
 </style>
