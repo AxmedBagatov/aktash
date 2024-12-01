@@ -186,6 +186,79 @@ app.get('/api/categories', async (req, res) => {
   }
 });
 
+app.post('/api/categories', authenticateToken, async (req, res) => {
+  const { name, description, image_url } = req.body;
+
+  if (!name || !description) {
+    return res.status(400).send('Name and description are required');
+  }
+
+  try {
+    const result = await queryDB('INSERT INTO categories (name, description) VALUES ($1, $2) RETURNING category_id', [name, description]);
+    const categoryId = result[0].category_id;
+
+    if (image_url) {
+      // Если есть изображение, добавляем его
+      await queryDB('INSERT INTO images (entity_id, entity_type, image_url, image_order) VALUES ($1, $2, $3, 1)', [categoryId, 'category', image_url]);
+    }
+
+    res.status(201).json({ category_id: categoryId, name, description, image_url });
+  } catch (err) {
+    console.error('Error adding category:', err);
+    res.status(500).send('Internal server error');
+  }
+});
+
+// ======== Редактирование категории ========
+app.put('/api/categories/:id', authenticateToken, async (req, res) => {
+  const { id } = req.params;
+  const { name, description, image_url } = req.body;
+
+  if (!name || !description) {
+    return res.status(400).send('Name and description are required');
+  }
+
+  try {
+    const result = await queryDB('UPDATE categories SET name = $1, description = $2 WHERE category_id = $3 RETURNING category_id', [name, description, id]);
+
+    if (result.length === 0) {
+      return res.status(404).send('Category not found');
+    }
+
+    // Если есть изображение, обновляем его
+    if (image_url) {
+      await queryDB('UPDATE images SET image_url = $1 WHERE entity_id = $2 AND entity_type = $3', [image_url, id, 'category']);
+    }
+
+    res.status(200).json({ category_id: id, name, description, image_url });
+  } catch (err) {
+    console.error('Error updating category:', err);
+    res.status(500).send('Internal server error');
+  }
+});
+
+// ======== Удаление категории ========
+app.delete('/api/categories/:id', authenticateToken, async (req, res) => {
+  const { id } = req.params;
+
+  try {
+    const result = await queryDB('DELETE FROM categories WHERE category_id = $1 RETURNING category_id', [id]);
+
+    if (result.length === 0) {
+      return res.status(404).send('Category not found');
+    }
+
+    // Удаление изображений, связанных с категорией
+    await queryDB('DELETE FROM images WHERE entity_id = $1 AND entity_type = $2', [id, 'category']);
+
+    res.status(200).send('Category deleted');
+  } catch (err) {
+    console.error('Error deleting category:', err);
+    res.status(500).send('Internal server error');
+  }
+});
+
+
 // Запуск сервера
 app.listen(port, () => {
   console.log(`Server running on http://localhost:${port}`);
