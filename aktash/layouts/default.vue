@@ -28,6 +28,8 @@ body html {
 
 main {
   padding: 0px;
+  flex: 1 0 auto;
+  min-height: auto;
 }
 
 body {
@@ -43,5 +45,7 @@ div#__layout {
 .page-container {
   display: flex;
   flex-direction: column;
+  min-height: 100vh;
 }
+
 </style>
