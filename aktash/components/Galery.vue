@@ -135,6 +135,7 @@ export default {
   width: 60%;
   height: 60%;
   overflow: hidden; */
+  overflow: hidden;
 }
 
 .img-container {
