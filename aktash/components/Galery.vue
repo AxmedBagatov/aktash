@@ -116,11 +116,15 @@ export default {
 <style scoped>
 
 .carousel-container {
+  z-index: -2;
+  position: absolute;
+  top: 0;
+  left: 0;
   display: flex;
   align-items: center;
   justify-content: space-between;
   width: 100%;
-  height: 40%;
+  height: 100vh;
   margin: auto;
   background-color: antiquewhite;
 }
@@ -139,13 +143,23 @@ export default {
   overflow: hidden;
 }
 
+.images_123 {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  object-fit: none;
+  width: auto;
+  height: auto;
+}
+
 .img-container {
-  overflow: hidden;
-  width: 100%;
-  height: 10vh;
-  /* aspect-ratio: 16 / 9; */
-  max-width: none;
-  z-index: -1;
+  /* display: block;
+  object-fit: none;
+  object-position: center; 
+  width: auto;
+  height: auto; */
+
 }
 
 .line1 {
