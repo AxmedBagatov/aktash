@@ -220,31 +220,64 @@ async deleteCategory({ commit, state }, id) {
 
   async uploadFile({ commit }, formData) {
     try {
-      const response = await this.$axios.post("/api/files/upload", formData);
-      return response.data; // Возвращаем данные о файле, включая путь
+      const response = await fetch('http://10.30.74.229:4000/api/files/upload', {
+        method: 'POST',
+        body: formData,
+      });
+  
+      if (response.ok) {
+        const data = await response.json();
+        return data; // Возвращаем данные о файле, включая путь
+      } else {
+        commit('setErrorMessage', 'Ошибка при загрузке файла');
+        console.error('Ошибка при загрузке файла');
+      }
     } catch (error) {
-      console.error("Ошибка при загрузке файла:", error);
+      commit('setErrorMessage', 'Ошибка сети: ' + error.message);
+      console.error('Ошибка сети:', error);
       throw error;
     }
   },
-
+  
   // Удаление файла
   async deleteFile({ commit }, filePath) {
     try {
-      await this.$axios.delete(`/api/files/delete`, { data: { path: filePath } });
+      const response = await fetch('http://10.30.74.229:4000/api/files/delete', {
+        method: 'DELETE',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ path: filePath }),
+      });
+  
+      if (!response.ok) {
+        commit('setErrorMessage', 'Ошибка при удалении файла');
+        console.error('Ошибка при удалении файла');
+      }
     } catch (error) {
-      console.error("Ошибка при удалении файла:", error);
+      commit('setErrorMessage', 'Ошибка сети: ' + error.message);
+      console.error('Ошибка сети:', error);
       throw error;
     }
   },
-
-  // Изменение названия или пути файла
+  
+  // Переименование файла
   async renameFile({ commit }, { oldPath, newPath }) {
     try {
-      const response = await this.$axios.put(`/api/files/rename`, { oldPath, newPath });
-      return response.data; // Возвращаем обновленный путь
+      const response = await fetch('http://10.30.74.229:4000/api/files/rename', {
+        method: 'PUT',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ oldPath, newPath }),
+      });
+  
+      if (response.ok) {
+        const data = await response.json();
+        return data; // Возвращаем обновленный путь
+      } else {
+        commit('setErrorMessage', 'Ошибка при переименовании файла');
+        console.error('Ошибка при переименовании файла');
+      }
     } catch (error) {
-      console.error("Ошибка при переименовании файла:", error);
+      commit('setErrorMessage', 'Ошибка сети: ' + error.message);
+      console.error('Ошибка сети:', error);
       throw error;
     }
   },

@@ -5,6 +5,7 @@
 
     <!-- Левая часть -->
     <div class="carousel-text-gallery" v-for="(slide, index) in slides" :key="index" v-show="currentIndex === index">
+      <div class="line"></div>
       <div class="column">
         <div class="line1-gallery">{{ slide.line1 }}</div>
         <div class="line2-gallery">{{ slide.line2 }}</div>
@@ -132,6 +133,16 @@ export default {
   background-color: antiquewhite;
 }
 
+.line {
+  color: black;
+  z-index: 1;
+  bottom: 0;
+  margin-bottom: 13%;
+  background-color: aquamarine;
+  height: 70px;
+  width: 100%;
+}
+
 .carousel-text-gallery {
   position: absolute;
   color: black;
@@ -150,8 +161,8 @@ export default {
   font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
   /* background-color: rgba(255, 255, 255, 0.5); */
   /* background-color: black; */
-  backdrop-filter: blur(19.5px);
-  -webkit-backdrop-filter: blur(19.5px);
+  /* backdrop-filter: blur(19.5px); */
+  /* -webkit-backdrop-filter: blur(19.5px); */
   flex-wrap: wrap;
   /* width: 40%;
   height: 40%;
@@ -196,6 +207,8 @@ export default {
 }
 
 .line1-gallery {
+  border: 2px solid white;
+  padding: 5px;
   background-color: black;
   font-size: clamp(1.5rem, 5vw, 3rem);
   font-weight: bold;
@@ -210,6 +223,8 @@ export default {
   background-color: black;
   font-size: clamp(0.5rem, 3vw, 1rem);
   color: gray;
+  border: 2px solid white;
+  padding: 5px;
   flex: 50%
 }
 
@@ -235,7 +250,7 @@ export default {
   align-self: center;
   color: white;
   background-color: black;
-  /* border: 2px solid white; */
+  border: 2px solid white;
   padding-left: 10px;
   padding-right: 10px;
   padding: 20px;
@@ -254,8 +269,8 @@ export default {
 
 .right-button:hover {
   color: aqua;
-  /* background-color: black; */
-  border-color: rgb(54, 54, 54);
+  background-color: rgb(54, 54, 54);
+  /* border-color: rgb(54, 54, 54); */
   /* scale: 0.95; */
 }
 
