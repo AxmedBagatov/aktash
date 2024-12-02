@@ -30,9 +30,13 @@
 /* Контейнер для всего контента */
 body {
   height: 100vh;
-  display: flex;
-  flex-direction: column;
 }
+
+.__layout .__nuxt {
+  height: 100vh;
+}
+
+
 
 .main-content {
   flex-grow: 1;                 /* Этот элемент растягивается, заполняя оставшееся пространство */
