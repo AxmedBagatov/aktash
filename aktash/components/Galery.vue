@@ -140,8 +140,8 @@ export default {
 
 .img-container {
   object-fit: fill;
-  width: 1200px;
-  height: 800px;
+  width: 100%;
+  height: 900px;
 }
 
 .line1 {
