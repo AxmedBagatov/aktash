@@ -139,7 +139,7 @@
 
 .carousel-text {
   width: 40%;
-  height: 60%;
+  height: 40%;
   margin-inline-start: 50px;
 }
 
