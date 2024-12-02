@@ -125,23 +125,21 @@ export default {
 }
 
 .carousel-text {
+  position: absolute;
+  color: black;
   /* width: 40%;
   height: 40%;
   margin-inline-start: 50px; */
 }
 
 .carousel-images {
-  /* position: relative;
-  width: 60%;
-  height: 60%;
-  overflow: hidden; */
   overflow: hidden;
 }
 
 .img-container {
   object-fit: fill;
   width: 100%;
-  height: auto;
+  aspect-ratio: 16 / 9;
 }
 
 .line1 {
