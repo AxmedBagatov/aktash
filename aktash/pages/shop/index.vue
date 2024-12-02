@@ -23,6 +23,7 @@
           class="catalog-item"
         >
           <nuxt-link :to="`/shop/${catalog.category_id}`" class="catalog-link">
+            
             <img
               v-if="catalog.image_url"
               :src="`/${catalog.image_url}`"

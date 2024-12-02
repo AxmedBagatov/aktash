@@ -1,13 +1,13 @@
 <template>
-  <div class="carousel-container">
+  <div class="carousel-container-gallery">
     <!-- Индикатор загрузки -->
     <div v-if="loading" class="loading">Загрузка...</div>
 
     <!-- Левая часть -->
-    <div class="carousel-text" v-for="(slide, index) in slides" :key="index" v-show="currentIndex === index">
-      <p class="line1">{{ slide.line1 }}</p>
-      <p class="line2">{{ slide.line2 }}</p>
-      <button class="btn-details">подробнее</button>
+    <div class="carousel-text-gallery" v-for="(slide, index) in slides" :key="index" v-show="currentIndex === index">
+      <div class="line1-gallery">{{ slide.line1 }}</div>
+      <div class="line2-gallery">{{ slide.line2 }}</div>
+      <button class="btn-details-gallery">подробнее</button>
       <!-- <div class="button_carousel">
         <button class="arrow left" @click="prevSlide">←</button>
         <button class="arrow right" @click="nextSlide">→</button>
@@ -15,18 +15,18 @@
     </div>
 
     <!-- Правая часть (слайдер изображений) -->
-    <div class="carousel-images">
-      <div class="image-slider" :style="{ transform: `translateX(-${currentIndex * 100}%)` }">
-        <div class="slide" v-for="(product, index) in formattedProducts" :key="product.id">
-          <div class="img-container">
-            <img class="images_123" :src="`/shop/${product.image_url}`" :alt="product.name" />
+    <div class="carousel-images-gallery">
+      <div class="image-slider-gallery" :style="{ transform: `translateX(-${currentIndex * 100}%)` }">
+        <div class="slide-gallery" v-for="(product, index) in formattedProducts" :key="product.id">
+          <div class="img-container-gallery">
+            <img class="images_123-gallery" :src="`/shop/${product.image_url}`" :alt="product.name" />
           </div>
         </div>
       </div>
 
       <!-- Индикаторы -->
       <div class="indicators-gallery">
-        <span v-for="(product, index) in formattedProducts" :key="index" class="indicator"
+        <span v-for="(product, index) in formattedProducts" :key="index" class="indicator-gallery"
           :class="{ active: index === currentIndex }" @click="goToSlide(index)"></span>
       </div>
     </div>
@@ -115,7 +115,7 @@ export default {
 
 <style scoped>
 
-.carousel-container {
+.carousel-container-gallery {
   /* z-index: -2; */
   /* position: absolute; */
   /* top: 0; */
@@ -129,7 +129,7 @@ export default {
   background-color: antiquewhite;
 }
 
-.carousel-text {
+.carousel-text-gallery {
   position: absolute;
   color: black;
   z-index: 1;
@@ -138,16 +138,17 @@ export default {
   margin-bottom: 20vh;
   width: 100%;
   transition: 0.5s;
+  font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
   /* width: 40%;
   height: 40%;
   margin-inline-start: 50px; */
 }
 
-.carousel-text:hover {
+.carousel-text-gallery:hover {
   background-color: black;
 }
 
-.carousel-images {
+.carousel-images-gallery {
   overflow: hidden;
   width: 100%;
   /* height: auto; */
@@ -155,7 +156,7 @@ export default {
   
 }
 
-.images_123 {
+.images_123-gallery {
   /* position: absolute;
   top: 50%;
   left: 50%;
@@ -166,21 +167,21 @@ export default {
   width: 100%;
 }
 
-.img-container {
+.img-container-gallery {
   width: 100%;
   height: 100%;
   object-fit:cover;
 }
 
-.line1 {
+.line1-gallery {
   font-size: clamp(1.5rem, 5vw, 3rem);
   font-weight: bold;
   /* font-family: "Roboto", sans-serif; */
   /* Шрифт для первой строки */
-  margin-bottom: 10px;
+  /* margin-bottom: 10px; */
 }
 
-.line2 {
+.line2-gallery {
   font-size: clamp(1rem, 3vw, 2rem);
   color: gray;
   /* font-family: "Times New Roman", serif; */
@@ -192,14 +193,14 @@ export default {
   /* margin-top: 100px; */
 }
 
-.carousel-text p {
-  margin-bottom: 1.5rem;
+.carousel-text-gallery p {
+  /* margin-bottom: 1.5rem; */
   font-size: 1.2rem;
 }
 
 
 
-.btn-details {
+.btn-details-gallery {
   display: inline-flex;
   align-items: center;
   padding: 0.5rem 1rem;
@@ -211,7 +212,7 @@ export default {
   cursor: pointer;
 }
 
-.btn-details:hover {
+.btn-details-gallery:hover {
   color: white;
   /* Изменение цвета текста */
   background-color: black;
@@ -221,27 +222,27 @@ export default {
   scale: 0.95;
 }
 
-.btn-details .arrow {
+.btn-details-gallery .arrow {
   margin-left: 0.5rem;
 }
 
 
 
-.image-slider {
+.image-slider-gallery {
   display: flex;
   transition: transform 0.5s ease-in-out;
   min-width: 100%;
   height: 100%;
 }
 
-.slide {
+.slide-gallery {
   min-width: 100%;
   /* Каждое изображение будет занимать 100% ширины слайда */
   height: 100%;
   /* Устанавливаем высоту слайда, чтобы изображение занимало всю область */
 }
 
-.slide img {
+.slide-gallery img {
   /* width: 100%;
   height: 100%; */
   /* Растягиваем изображение по высоте */
@@ -259,7 +260,7 @@ export default {
   gap: 5px;
 }
 
-.indicator {
+.indicator-gallery {
   width: 15px;
   height: 15px;
   border-radius: 50%;
@@ -268,7 +269,7 @@ export default {
   border: 1px solid white;
 }
 
-.indicator.active {
+.indicator-gallery.active {
   background-color: black;
 }
 
