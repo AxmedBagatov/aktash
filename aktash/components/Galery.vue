@@ -128,9 +128,22 @@ export default {
 }
 
 .carousel-text {
-  width: 40%;
+  /* width: 40%;
   height: 40%;
-  margin-inline-start: 50px;
+  margin-inline-start: 50px; */
+}
+
+.carousel-images {
+  /* position: relative;
+  width: 60%;
+  height: 60%;
+  overflow: hidden; */
+}
+
+.images_123 {
+  /* object-fit: fill;
+  width: 100%;
+  height: 100%; */
 }
 
 .line1 {
@@ -156,10 +169,7 @@ export default {
   font-size: 1.2rem;
 }
 
-.images_123 {
-  width: 100%;
-  height: 100%;
-}
+
 
 .btn-details {
   display: inline-flex;
@@ -184,12 +194,7 @@ export default {
   margin-left: 0.5rem;
 }
 
-.carousel-images {
-  position: relative;
-  width: 60%;
-  height: 60%;
-  overflow: hidden;
-}
+
 
 .image-slider {
   display: flex;
