@@ -137,9 +137,9 @@ export default {
   color: black;
   z-index: 1;
   bottom: 0;
-  padding-left: 15vw;
-  padding-right: 15vw;
-  margin-bottom: 20vh;
+  padding-left: 15%;
+  padding-right: 15%;
+  margin-bottom: 10%;
   width: 100%;
   height: fit-content;
   transition: 0.5s;
@@ -196,6 +196,7 @@ export default {
 }
 
 .line1-gallery {
+  background-color: black;
   font-size: clamp(1.5rem, 5vw, 3rem);
   font-weight: bold;
   color: white;
@@ -206,6 +207,7 @@ export default {
 }
 
 .line2-gallery {
+  background-color: black;
   font-size: clamp(0.5rem, 3vw, 1rem);
   color: gray;
   flex: 50%
@@ -232,10 +234,12 @@ export default {
   cursor: pointer;
   align-self: center;
   color: white;
-  border: 2px solid white;
+  background-color: black;
+  /* border: 2px solid white; */
   padding-left: 10px;
   padding-right: 10px;
   padding: 20px;
+  transition: 0.5s;
   /* flex: 1;
   display: inline-flex;
   align-items: center;
@@ -249,10 +253,10 @@ export default {
 }
 
 .right-button:hover {
-  color: white;
-  background-color: black;
-  border-color: black;
-  scale: 0.95;
+  color: aqua;
+  /* background-color: black; */
+  border-color: rgb(54, 54, 54);
+  /* scale: 0.95; */
 }
 
 /* .btn-details-gallery .arrow {
