@@ -154,16 +154,14 @@ export default {
   transform: translate(-50%, -50%);
   object-fit: none; */
   /* width: 100%;
-  height: 100%; */
-  object-fit: fill;
-  aspect-ratio: 16 / 9;
+  /* aspect-ratio: 16 / 9; */
+  width: 100%;
 }
 
 .img-container {
   width: 100%;
   height: 100%;
   object-fit:cover;
-
 }
 
 .line1 {

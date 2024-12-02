@@ -242,8 +242,9 @@ export default {
 }
 
 .preview-image{
-  max-width: 100%;
-  max-height: 100%;
+  width: 100%;
+  height: auto;
+  max-height: 300px;
 }
 
 .breadcrumb {
