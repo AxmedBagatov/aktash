@@ -113,6 +113,8 @@ app.post('/logout', (req, res) => {
 // login end
 
 // file start
+const multer = require('multer');
+const upload = multer({ dest: 'uploads/' });
 router.delete('/api/files/delete', (req, res) => {
   const { path: filePath } = req.body;
   console.log('Запрос на удаление файла:', filePath);
@@ -120,6 +122,18 @@ router.delete('/api/files/delete', (req, res) => {
   // Только логируем, файл пока не удаляем
   res.status(200).json({ message: 'Удаление файла получено', path: filePath });
 });
+
+router.put('/api/files/rename', (req, res) => {
+  const { oldPath, newPath } = req.body;
+  console.log('Запрос на переименование файла:');
+  console.log('Старый путь:', oldPath);
+  console.log('Новый путь:', newPath);
+
+  // Только логируем, файл пока не переименовываем
+  res.status(200).json({ message: 'Переименование файла получено', oldPath, newPath });
+});
+
+module.exports = router;
 // file end
 
 
