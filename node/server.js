@@ -113,7 +113,13 @@ app.post('/logout', (req, res) => {
 // login end
 
 // file start
+router.delete('/api/files/delete', (req, res) => {
+  const { path: filePath } = req.body;
+  console.log('Запрос на удаление файла:', filePath);
 
+  // Только логируем, файл пока не удаляем
+  res.status(200).json({ message: 'Удаление файла получено', path: filePath });
+});
 // file end
 
 
