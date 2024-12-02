@@ -8,10 +8,10 @@
       <p class="line1">{{ slide.line1 }}</p>
       <p class="line2">{{ slide.line2 }}</p>
       <button class="btn-details">подробнее</button>
-      <div class="button_carousel">
+      <!-- <div class="button_carousel">
         <button class="arrow left" @click="prevSlide">←</button>
         <button class="arrow right" @click="nextSlide">→</button>
-      </div>
+      </div> -->
     </div>
 
     <!-- Правая часть (слайдер изображений) -->
@@ -134,6 +134,8 @@ export default {
   color: black;
   z-index: 1;
   bottom: 0;
+  left: 20vw;
+  bottom: 20vh;
   /* width: 40%;
   height: 40%;
   margin-inline-start: 50px; */
@@ -181,7 +183,7 @@ export default {
 
 .button_carousel {
   display: flex;
-  margin-top: 100px;
+  /* margin-top: 100px; */
 }
 
 .carousel-text p {
@@ -243,8 +245,9 @@ export default {
 
 .indicators {
   position: absolute;
+  /* bottom: 10px; */
+  right: 30px;
   bottom: 10px;
-  left: 50%;
   transform: translateX(-50%);
   display: flex;
   gap: 5px;
@@ -256,6 +259,7 @@ export default {
   border-radius: 50%;
   background-color: gray;
   cursor: pointer;
+  border: 1px solid white;
 }
 
 .indicator.active {
