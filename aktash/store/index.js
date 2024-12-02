@@ -217,6 +217,61 @@ async deleteCategory({ commit, state }, id) {
     }
   },
 
+  async uploadFile({ commit }, formData) {
+    try {
+      const response = await this.$axios.post("/api/files/upload", formData);
+      return response.data; // Возвращаем данные о файле, включая путь
+    } catch (error) {
+      console.error("Ошибка при загрузке файла:", error);
+      throw error;
+    }
+  },
+
+  // Удаление файла
+  async deleteFile({ commit }, filePath) {
+    try {
+      await this.$axios.delete(`/api/files/delete`, { data: { path: filePath } });
+    } catch (error) {
+      console.error("Ошибка при удалении файла:", error);
+      throw error;
+    }
+  },
+
+  // Изменение названия или пути файла
+  async renameFile({ commit }, { oldPath, newPath }) {
+    try {
+      const response = await this.$axios.put(`/api/files/rename`, { oldPath, newPath });
+      return response.data; // Возвращаем обновленный путь
+    } catch (error) {
+      console.error("Ошибка при переименовании файла:", error);
+      throw error;
+    }
+  },
+
+  async uploadImage() {
+    if (!this.selectedFile) return;
+  
+    const formData = new FormData();
+    formData.append("file", this.selectedFile);
+  
+    try {
+      const fileData = await this.$store.dispatch("uploadFile", formData);
+      this.newCategory.image_url = fileData.path; // Сохраняем путь в БД
+    } catch (error) {
+      console.error("Ошибка загрузки файла:", error);
+    }
+  },
+  async renameImage(newPath) {
+    try {
+      const updatedPath = await this.$store.dispatch("renameFile", {
+        oldPath: this.newCategory.image_url,
+        newPath,
+      });
+      this.newCategory.image_url = updatedPath;
+    } catch (error) {
+      console.error("Ошибка переименования файла:", error);
+    }
+  },
   // Авторизация
   async login({ commit }, { username, password }) {
     try {

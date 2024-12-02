@@ -78,7 +78,7 @@ app.post('/api/login', async (req, res) => {
     }
 
     // Генерируем токен
-    const token = jwt.sign({ id: user.id, username: user.username }, JWT_SECRET, { expiresIn: '1h' });
+    const token = jwt.sign({ id: user.id, username: user.username }, JWT_SECRET, { expiresIn: '24h' });
     res.cookie('token', token, { httpOnly: true, secure: false }); // Для продакшена: secure: true
     res.send('Logged in');
   } catch (err) {

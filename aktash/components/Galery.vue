@@ -149,7 +149,7 @@ export default {
   align-items: flex-start;
   font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
   /* background-color: rgba(255, 255, 255, 0.5); */
-  background-color: black;
+  /* background-color: black; */
   backdrop-filter: blur(19.5px);
   -webkit-backdrop-filter: blur(19.5px);
   flex-wrap: wrap;
