@@ -157,14 +157,8 @@ export default {
 }
 
 .img-container {
-  /* width: 100%;
-  height: 900px; */
-  /* display: block;
-  object-fit: none;
-  object-position: center; 
-  width: auto;
-  height: auto; */
-
+  width: 100%;
+  height: 100%;
 }
 
 .line1 {
