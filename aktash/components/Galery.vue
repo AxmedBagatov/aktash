@@ -118,7 +118,7 @@ export default {
   display: flex;
   align-items: center;
   justify-content: space-between;
-  width: 80%;
+  width: 100%;
   height: 40%;
   margin: auto;
   background-color: antiquewhite;
