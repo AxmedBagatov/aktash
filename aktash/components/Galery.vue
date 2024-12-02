@@ -140,7 +140,7 @@ export default {
 }
 
 .img-container {
-  object-fit:cover;
+  overflow: hidden;
   width: 100%;
   height: 10vh;
   /* aspect-ratio: 16 / 9; */
