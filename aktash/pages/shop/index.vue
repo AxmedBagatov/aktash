@@ -69,7 +69,16 @@
             placeholder="Category Description"
             required
           ></textarea>
-          <input v-model="newCategory.image_url" placeholder="Image URL" />
+          <input type="file" accept="image/*" @change="onFileChange" />
+          <div v-if="newCategory.image_url">
+            <p>Current Image:</p>
+            <img
+              :src="newCategory.image_url"
+              alt="Preview"
+              class="preview-image"
+            />
+            <button @click="removeImage">Remove Image</button>
+          </div>
           <div class="modal-actions">
             <button type="submit">
               {{ isEditMode ? "Update" : "Add" }} Category
@@ -198,6 +207,11 @@ export default {
 .catalogs {
   padding: 20px;
   font-family: Arial, sans-serif;
+}
+
+.preview-image{
+  max-width: 400px;
+  max-height: 400px;
 }
 
 .breadcrumb {

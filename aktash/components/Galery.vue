@@ -223,7 +223,7 @@ export default {
 
 
 .image-slider {
-  /* display: flex; */
+  display: flex;
   transition: transform 0.5s ease-in-out;
   min-width: 100%;
   height: 100%;
@@ -237,8 +237,8 @@ export default {
 }
 
 .slide img {
-  /* width: 100%; */
-  /* height: 100%; */
+  /* width: 100%;
+  height: 100%; */
   /* Растягиваем изображение по высоте */
   /* object-fit: fill; */
   /* Сохраняем пропорции и растягиваем изображение на весь контейнер */
