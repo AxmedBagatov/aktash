@@ -139,7 +139,7 @@
 
 .carousel-text {
   width: 40%;
-  height: 40%;
+  height: 60%;
   margin-inline-start: 50px;
 }
 
@@ -198,7 +198,7 @@
 .carousel-images {
   position: relative;
   width: 60%;
-  height: 60%;
+  height: 100%;
   overflow: hidden;
 }
 

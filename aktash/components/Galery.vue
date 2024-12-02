@@ -5,9 +5,13 @@
 
     <!-- Левая часть -->
     <div class="carousel-text-gallery" v-for="(slide, index) in slides" :key="index" v-show="currentIndex === index">
-      <div class="line1-gallery">{{ slide.line1 }}</div>
-      <div class="line2-gallery">{{ slide.line2 }}</div>
-      <button class="btn-details-gallery">подробнее</button>
+      <div class="column">
+        <div class="line1-gallery">{{ slide.line1 }}</div>
+        <div class="line2-gallery">{{ slide.line2 }}</div>
+      </div>
+      <div class="right-button">
+        <button class="btn-details-gallery">подробнее</button>
+      </div>
       <!-- <div class="button_carousel">
         <button class="arrow left" @click="prevSlide">←</button>
         <button class="arrow right" @click="nextSlide">→</button>
@@ -114,7 +118,6 @@ export default {
 
 
 <style scoped>
-
 .carousel-container-gallery {
   /* z-index: -2; */
   /* position: absolute; */
@@ -135,27 +138,32 @@ export default {
   z-index: 1;
   bottom: 0;
   padding-left: 20vw;
+  padding-right: 20vw;
   margin-bottom: 20vh;
   width: 100%;
   transition: 0.5s;
   display: flex;
-  flex-direction: column;
+  justify-content: space-between;
+  /* Ensures space between the two groups */
+  align-items: flex-start;
   font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
   /* background-color: rgba(255, 255, 255, 0.5); */
-  backdrop-filter: blur( 19.5px );
-  -webkit-backdrop-filter: blur( 19.5px );
+  backdrop-filter: blur(19.5px);
+  -webkit-backdrop-filter: blur(19.5px);
   flex-wrap: wrap;
   /* width: 40%;
   height: 40%;
   margin-inline-start: 50px; */
 }
 
-.carousel-text-gallery > div {
-  flex: 50%; /* or - flex: 0 50% - or - flex-basis: 50% - */
-  /*demo*/
-  box-shadow: 0 0 0 1px black;
-  margin-bottom: 10px;
+.column {
+  display: flex;
+  flex-direction: column;
+  /* Stack items vertically */
+  gap: 10px;
+  /* Optional: Space between items */
 }
+
 /* .carousel-text-gallery:hover {
   background-color: black;
 } */
@@ -165,7 +173,7 @@ export default {
   width: 100%;
   /* height: auto; */
   height: 100%;
-  
+
 }
 
 .images_123-gallery {
@@ -182,45 +190,43 @@ export default {
 .img-container-gallery {
   width: 100%;
   height: 100%;
-  object-fit:cover;
+  object-fit: cover;
 }
 
 .line1-gallery {
   font-size: clamp(1.5rem, 5vw, 3rem);
   font-weight: bold;
   flex: 50%
-  /* font-family: "Roboto", sans-serif; */
-  /* Шрифт для первой строки */
-  /* margin-bottom: 10px; */
+    /* font-family: "Roboto", sans-serif; */
+    /* Шрифт для первой строки */
+    /* margin-bottom: 10px; */
 }
 
 .line2-gallery {
-  font-size: clamp(0.5rem, 3vw, 1.5rem);
+  font-size: clamp(0.5rem, 3vw, 1rem);
   color: gray;
   flex: 50%
-
-  /* font-family: "Times New Roman", serif; */
-  /* Шрифт для второй строки */
 }
 
 /* .button_carousel { */
-  /* display: flex; */
-  /* margin-top: 100px; */
+/* display: flex; */
+/* margin-top: 100px; */
 /* } */
 
 /* .carousel-text-gallery p {
   font-size: 1.2rem;
 } */
 
-
+.right-button {
+  height: 100%;
+}
 
 .btn-details-gallery {
   cursor: pointer;
   border: 2px solid white;
   padding-left: 10px;
   padding-right: 10px;
-  order: 1;
-  flex-basis: 30%;
+  height: 100%;
   /* flex: 1;
   display: inline-flex;
   align-items: center;
@@ -233,19 +239,16 @@ export default {
   cursor: pointer; */
 }
 
-.btn-details-gallery:hover {
+/* .btn-details-gallery:hover {
   color: white;
-  /* Изменение цвета текста */
   background-color: black;
-  /* Изменение фона */
   border-color: black;
-  /* Сохранение контура */
   scale: 0.95;
 }
 
 .btn-details-gallery .arrow {
   margin-left: 0.5rem;
-}
+} */
 
 
 
@@ -261,14 +264,6 @@ export default {
   /* Каждое изображение будет занимать 100% ширины слайда */
   height: 100%;
   /* Устанавливаем высоту слайда, чтобы изображение занимало всю область */
-}
-
-.slide-gallery img {
-  /* width: 100%;
-  height: 100%; */
-  /* Растягиваем изображение по высоте */
-  /* object-fit: fill; */
-  /* Сохраняем пропорции и растягиваем изображение на весь контейнер */
 }
 
 .indicators-gallery {
