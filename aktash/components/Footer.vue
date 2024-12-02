@@ -30,6 +30,8 @@
 /* Контейнер для всего контента */
 body {
   height: 100vh;
+  display: flex;
+  flex-direction: column;
 }
 
 .main-content {
@@ -39,9 +41,6 @@ body {
 
 /* Футер */
 footer.main-footer {
-  position: absolute;
-  left: 0;
-  bottom: 0;
   background-color: brown;     /* Цвет фона */
   color: white;                /* Цвет текста */
   padding: 20px 0;              /* Внутренние отступы сверху и снизу */
