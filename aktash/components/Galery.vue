@@ -114,6 +114,7 @@ export default {
 
 
 <style scoped>
+
 .carousel-container {
   display: flex;
   align-items: center;
@@ -127,6 +128,8 @@ export default {
 .carousel-text {
   position: absolute;
   color: black;
+  z-index: 1;
+  bottom: 0;
   /* width: 40%;
   height: 40%;
   margin-inline-start: 50px; */
@@ -137,9 +140,12 @@ export default {
 }
 
 .img-container {
-  object-fit: fill;
+  object-fit:cover;
   width: 100%;
-  aspect-ratio: 16 / 9;
+  height: 10vh;
+  /* aspect-ratio: 16 / 9; */
+  max-width: none;
+  z-index: -1;
 }
 
 .line1 {
