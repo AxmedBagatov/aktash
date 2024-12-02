@@ -72,12 +72,7 @@
           <input type="file" accept="image/*" @change="onFileChange" />
           <div v-if="newCategory.image_url">
             <p>Current Image:</p>
-            <img
-              v-if="newCategory.image_url"
-              :src="`/${newCategory.image_url}`"
-              :alt="catalog.name"
-              class="preview-image"
-            />
+            <img :src="`/${newCategory.image_url}`" alt="Preview" class="preview-image" />
             <button @click="removeImage">Remove Image</button>
           </div>
           <div class="modal-actions">
@@ -158,39 +153,75 @@ export default {
       this.showAddForm = false;
     },
 
+    onFileChange(event) {
+    const file = event.target.files[0];
+    if (file) {
+      this.selectedFile = file; // Сохраняем выбранный файл
+    }
+  },
+
+  // Загрузка изображения
+  async uploadImage() {
+    if (!this.selectedFile) return;
+
+    const formData = new FormData();
+    formData.append("image", this.selectedFile);
+
+    try {
+      const response = await this.$store.dispatch("uploadImage", formData);
+      this.newCategory.image_url = response.data.imageUrl; // Получаем URL из ответа сервера
+      this.selectedFile = null; // Очищаем выбранный файл
+    } catch (error) {
+      console.error("Ошибка при загрузке изображения:", error);
+    }
+  },
+
+  // Удаление изображения
+  async removeImage() {
+    if (!this.newCategory.image_url) return;
+
+    try {
+      await this.$store.dispatch("deleteImage", { imageUrl: this.newCategory.image_url });
+      this.newCategory.image_url = null; // Убираем URL
+    } catch (error) {
+      console.error("Ошибка при удалении изображения:", error);
+    }
+  },    
+
     // Метод для добавления новой категории
     async addCategory() {
-      try {
-        await this.$store.dispatch("addCategory", this.newCategory);
-        this.showAddForm = false;
-        this.newCategory = { name: "", description: "", image_url: "" };
-        await this.fetchData(); // Обновить список категорий
-      } catch (error) {
-        console.error("Ошибка при добавлении категории:", error);
+    try {
+      if (this.selectedFile) {
+        await this.uploadImage(); // Загружаем файл перед добавлением категории
       }
-    },
+      await this.$store.dispatch("addCategory", this.newCategory);
+      this.showAddForm = false;
+      this.newCategory = { name: "", description: "", image_url: "" }; // Сброс формы
+      this.fetchData(); // Обновление данных
+    } catch (error) {
+      console.error("Ошибка при добавлении категории:", error);
+    }
+  },
 
     // Метод для обновления категории
     async updateCategory() {
-      try {
-        await this.$store.dispatch("updateCategory", {
-          id: this.newCategory.category_id, // Используем category_id из newCategory
-          name: this.newCategory.name,
-          description: this.newCategory.description,
-          image_url: this.newCategory.image_url,
-        });
-        this.showAddForm = false;
-        this.newCategory = {
-          name: "",
-          description: "",
-          image_url: "",
-          category_id: null,
-        }; // Очистить все поля
-        await this.fetchData(); // Обновить список категорий
-      } catch (error) {
-        console.error("Ошибка при обновлении категории:", error);
+    try {
+      if (this.selectedFile) {
+        await this.uploadImage(); // Загружаем новый файл перед обновлением категории
       }
-    },
+      await this.$store.dispatch("updateCategory", {
+        id: this.newCategory.category_id,
+        name: this.newCategory.name,
+        description: this.newCategory.description,
+        image_url: this.newCategory.image_url,
+      });
+      this.showAddForm = false;
+      this.newCategory = { name: "", description: "", image_url: "", category_id: null };
+      this.fetchData(); // Обновление данных
+    } catch (error) {
+      console.error("Ошибка при обновлении категории:", error);
+    }
+  },
     // Удалить категорию
     async deleteCategory(categoryId) {
       try {
@@ -211,8 +242,8 @@ export default {
 }
 
 .preview-image{
-  max-width: 400px;
-  max-height: 400px;
+  max-width: 100%;
+  max-height: 100%;
 }
 
 .breadcrumb {
