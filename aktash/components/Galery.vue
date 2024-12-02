@@ -141,9 +141,9 @@ export default {
 }
 
 .images_123 {
-  /* object-fit: fill;
-  width: 100%;
-  height: 100%; */
+  object-fit: fill;
+  width: 600px;
+  height: 300px;
 }
 
 .line1 {
