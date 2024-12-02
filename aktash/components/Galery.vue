@@ -137,8 +137,8 @@ export default {
   color: black;
   z-index: 1;
   bottom: 0;
-  padding-left: 20vw;
-  padding-right: 20vw;
+  padding-left: 15vw;
+  padding-right: 15vw;
   margin-bottom: 20vh;
   width: 100%;
   height: fit-content;
@@ -149,6 +149,7 @@ export default {
   align-items: flex-start;
   font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
   /* background-color: rgba(255, 255, 255, 0.5); */
+  background-color: black;
   backdrop-filter: blur(19.5px);
   -webkit-backdrop-filter: blur(19.5px);
   flex-wrap: wrap;
@@ -197,6 +198,7 @@ export default {
 .line1-gallery {
   font-size: clamp(1.5rem, 5vw, 3rem);
   font-weight: bold;
+  color: white;
   flex: 50%
     /* font-family: "Roboto", sans-serif; */
     /* Шрифт для первой строки */
@@ -224,10 +226,12 @@ export default {
 } */
 
 .right-button {
-  /* font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; */
-  font-family: 'Courier New', Courier, monospace;
+  font-family: 'Franklin Gothic Medium', 'Arial Narrow', Arial, sans-serif;
+  font-size: 20px;
+  letter-spacing: 0.1em;
   cursor: pointer;
   align-self: center;
+  color: white;
   border: 2px solid white;
   padding-left: 10px;
   padding-right: 10px;
@@ -244,14 +248,14 @@ export default {
   cursor: pointer; */
 }
 
-/* .btn-details-gallery:hover {
+.right-button:hover {
   color: white;
   background-color: black;
   border-color: black;
   scale: 0.95;
 }
 
-.btn-details-gallery .arrow {
+/* .btn-details-gallery .arrow {
   margin-left: 0.5rem;
 } */
 
