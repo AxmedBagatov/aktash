@@ -115,6 +115,7 @@ app.post('/logout', (req, res) => {
 // file start
 const multer = require('multer');
 const upload = multer({ dest: 'uploads/' });
+const router = express.Router();
 router.delete('/api/files/delete', (req, res) => {
   const { path: filePath } = req.body;
   console.log('Запрос на удаление файла:', filePath);
