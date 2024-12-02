@@ -141,6 +141,9 @@ export default {
 
 .carousel-images {
   overflow: hidden;
+  width: 100%;
+  /* height: auto; */
+  height: 100%;
 }
 
 .images_123 {
@@ -149,11 +152,13 @@ export default {
   left: 50%;
   transform: translate(-50%, -50%);
   object-fit: none;
-  width: auto;
-  height: auto;
+  /* width: 100%;
+  height: 100%; */
 }
 
 .img-container {
+  /* width: 100%;
+  height: 900px; */
   /* display: block;
   object-fit: none;
   object-position: center; 
@@ -218,10 +223,9 @@ export default {
 
 
 .image-slider {
-  display: flex;
+  /* display: flex; */
   transition: transform 0.5s ease-in-out;
   min-width: 100%;
-  /* Каждое изображение будет занимать 100% ширины слайда */
   height: 100%;
 }
 
@@ -233,10 +237,10 @@ export default {
 }
 
 .slide img {
-  width: 100%;
-  height: 100%;
+  /* width: 100%; */
+  /* height: 100%; */
   /* Растягиваем изображение по высоте */
-  object-fit: fill;
+  /* object-fit: fill; */
   /* Сохраняем пропорции и растягиваем изображение на весь контейнер */
 }
 
