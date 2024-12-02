@@ -141,14 +141,24 @@ export default {
   display: flex;
   flex-direction: column;
   font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+  /* background-color: rgba(255, 255, 255, 0.5); */
+  backdrop-filter: blur( 19.5px );
+  -webkit-backdrop-filter: blur( 19.5px );
+  flex-wrap: wrap;
   /* width: 40%;
   height: 40%;
   margin-inline-start: 50px; */
 }
 
-.carousel-text-gallery:hover {
-  background-color: black;
+.carousel-text-gallery > div {
+  flex: 50%; /* or - flex: 0 50% - or - flex-basis: 50% - */
+  /*demo*/
+  box-shadow: 0 0 0 1px black;
+  margin-bottom: 10px;
 }
+/* .carousel-text-gallery:hover {
+  background-color: black;
+} */
 
 .carousel-images-gallery {
   overflow: hidden;
@@ -178,6 +188,7 @@ export default {
 .line1-gallery {
   font-size: clamp(1.5rem, 5vw, 3rem);
   font-weight: bold;
+  flex: 50%
   /* font-family: "Roboto", sans-serif; */
   /* Шрифт для первой строки */
   /* margin-bottom: 10px; */
@@ -186,6 +197,8 @@ export default {
 .line2-gallery {
   font-size: clamp(0.5rem, 3vw, 1.5rem);
   color: gray;
+  flex: 50%
+
   /* font-family: "Times New Roman", serif; */
   /* Шрифт для второй строки */
 }

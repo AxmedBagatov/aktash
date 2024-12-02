@@ -132,7 +132,7 @@
   align-items: center;
   justify-content: space-between;
   width: 80%;
-  height: 80%;
+  height: 100%;
   margin: auto;
   background-color: antiquewhite;
 }
