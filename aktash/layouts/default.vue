@@ -1,9 +1,7 @@
 <template>
-    <div>
+    <div class="page-container">
       <Header />
-      <main>
         <Nuxt />
-      </main>
       <Footer />
     </div>
   </template>
@@ -29,6 +27,11 @@
   main {
     padding: 0px;
     min-height: 77vh;
+  }
+
+  .page-container {
+    display: flex;
+    flex-direction: column;
   }
   </style>
   

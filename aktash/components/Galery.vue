@@ -17,7 +17,7 @@
     <!-- Правая часть (слайдер изображений) -->
     <div class="carousel-images">
       <div class="image-slider" :style="{ transform: `translateX(-${currentIndex * 100}%)` }">
-        <div class="slide" v-for="(product, index) in products" :key="product.id">
+        <div class="slide" v-for="(product, index) in formattedProducts" :key="product.id">
           <img class="images_123" :src="`/shop/${product.image_url}`" :alt="product.name" />
         </div>
       </div>
@@ -25,7 +25,7 @@
       <!-- Индикаторы -->
       <div class="indicators">
         <span
-          v-for="(product, index) in products"
+          v-for="(product, index) in formattedProducts"
           :key="index"
           class="indicator"
           :class="{ active: index === currentIndex }"
@@ -57,6 +57,17 @@ export default {
       return this.$store.getters.getProducts.slice(0, 4);
     },
 
+    // Форматируем продукты для карусели
+    formattedProducts() {
+      return this.products.map((product) => {
+        const firstImage = product.images?.[0]?.url || "default-image.png"; // Берём первый URL или дефолтное изображение
+        return {
+          ...product,
+          image_url: firstImage, // Добавляем ожидаемое поле image_url
+        };
+      });
+    },
+
     // Проверка на загрузку продуктов
     loading() {
       return this.$store.getters.isLoading;
@@ -65,12 +76,12 @@ export default {
 
   methods: {
     nextSlide() {
-      this.currentIndex = (this.currentIndex + 1) % this.products.length;
+      this.currentIndex = (this.currentIndex + 1) % this.formattedProducts.length;
     },
 
     prevSlide() {
       this.currentIndex =
-        (this.currentIndex - 1 + this.products.length) % this.products.length;
+        (this.currentIndex - 1 + this.formattedProducts.length) % this.formattedProducts.length;
     },
 
     goToSlide(index) {
@@ -88,7 +99,7 @@ export default {
     // Метод для загрузки продуктов, если они еще не загружены
     async loadProductsIfNeeded() {
       if (this.products.length === 0 && !this.loading) {
-        await this.$store.dispatch('fetchProducts');
+        await this.$store.dispatch("fetchProducts");
       }
     },
   },
