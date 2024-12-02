@@ -1,53 +1,37 @@
 <template>
   <header class="header">
     <div class="sides_header">
-      <nav class="nav-routes">
-        <!-- Кнопка гамбургера для мобильных устройств -->
-        <button class="menu-toggle" @click="toggleMenu" aria-label="Toggle menu">
-          <span class="menu-icon" :class="{ 'open': menuVisible }"></span>
-        </button>
+    <nav class="nav-routes">
+      <!-- Кнопка гамбургера для мобильных устройств -->
+      <button class="menu-toggle" @click="toggleMenu" aria-label="Toggle menu">
+        <span class="menu-icon" :class="{'open': menuVisible}"></span>
+      </button>
 
-        <!-- Боковое меню -->
-        <div :class="{ 'side-menu': true, 'show': menuVisible }">
-          <button class="close-menu" @click="toggleMenu" aria-label="Close menu">X</button>
-          <ul class="nav-list">
-            <li>
-              <NuxtLink to="/" @click.native="closeMenu">Главная</NuxtLink>
-            </li>
-            <li>
-              <NuxtLink to="/shop" @click.native="closeMenu">Каталог</NuxtLink>
-            </li>
-            <li>
-              <NuxtLink to="/galery" @click.native="closeMenu">Галерея</NuxtLink>
-            </li>
-            <li>
-              <NuxtLink to="/contact" @click.native="closeMenu">Контакты</NuxtLink>
-            </li>
-          </ul>
-        </div>
-
-        <!-- Основное меню для больших экранов -->
-        <ul class="nav-list main-nav">
-          <li>
-            <NuxtLink to="/">Главная</NuxtLink>
-          </li>
-          <li>
-            <NuxtLink to="/shop">Каталог</NuxtLink>
-          </li>
-          <li>
-            <NuxtLink to="/galery">Галерея</NuxtLink>
-          </li>
-          <li>
-            <NuxtLink to="/contact">Контакты</NuxtLink>
-          </li>
+      <!-- Боковое меню -->
+      <div :class="{'side-menu': true, 'show': menuVisible}">
+        <button class="close-menu" @click="toggleMenu" aria-label="Close menu">X</button>
+        <ul class="nav-list">
+          <li><NuxtLink to="/" @click.native="closeMenu">Главная</NuxtLink></li>
+          <li><NuxtLink to="/shop" @click.native="closeMenu">Каталог</NuxtLink></li>
+          <li><NuxtLink to="/galery" @click.native="closeMenu">Галерея</NuxtLink></li>
+          <li><NuxtLink to="/contact" @click.native="closeMenu">Контакты</NuxtLink></li>
         </ul>
-      </nav>
-      <div class="search-container">
-        <Search />
       </div>
-    </div>
-  </header>
 
+      <!-- Основное меню для больших экранов -->
+      <ul class="nav-list main-nav">
+        <li><NuxtLink to="/">Главная</NuxtLink></li>
+        <li><NuxtLink to="/shop">Каталог</NuxtLink></li>
+        <li><NuxtLink to="/galery">Галерея</NuxtLink></li>
+        <li><NuxtLink to="/contact">Контакты</NuxtLink></li>
+      </ul>
+    </nav>
+    <div class="search-container">
+          <Search />
+      </div>
+  </div>
+  </header>
+  
 </template>
 
 <script>
@@ -66,8 +50,8 @@ export default {
     },
     closeMenu() {
       console.log("закрыто");
-
-      this.menuVisible = false;
+      
+      this.menuVisible = false; 
     },
   },
 };
@@ -75,9 +59,16 @@ export default {
 
 <style scoped>
 /* Основной стиль для хедера */
+
+.search-container {
+  align-self: flex-end;
+  margin: 0 auto;
+}
+
 .header {
   display: flex;
   align-items: center;
+  flex-wrap: wrap;
   font-family: 'Gill Sans', 'Gill Sans MT', Calibri, 'Trebuchet MS', sans-serif;
   background-color: #c32222;
   color: white;
@@ -94,9 +85,7 @@ export default {
 }
 
 .nav-list li a {
-  display: flex;
-  justify-content: space-around;
-  flex: 1;
+  /* align-self: ce; */
   color: white;
   text-decoration: none;
   font-weight: bold;
@@ -116,16 +105,13 @@ export default {
   background-color: #7e0000;
   padding: 20px;
   box-shadow: 2px 0 5px rgba(0, 0, 0, 0.5);
-  transform: translateX(-100%);
-  /* Меню скрыто по умолчанию */
+  transform: translateX(-100%); /* Меню скрыто по умолчанию */
   transition: transform 0.3s ease-in-out;
-  z-index: 10;
-  /* Убедитесь, что меню поверх остальных элементов */
+  z-index: 10; /* Убедитесь, что меню поверх остальных элементов */
 }
 
 .side-menu.show {
-  transform: translateX(0);
-  /* Меню появляется */
+  transform: translateX(0); /* Меню появляется */
 }
 
 .side-menu ul {
@@ -162,11 +148,10 @@ export default {
   border: none;
   padding: 10px;
   cursor: pointer;
-  z-index: 20;
-  /* Кнопка всегда поверх бокового меню */
+  z-index: 20; /* Кнопка всегда поверх бокового меню */
 }
 
-.sides_header {
+.sides_header{
   display: flex;
   justify-content: space-between;
   align-items: center;
@@ -202,8 +187,7 @@ export default {
 
 /* Когда меню открыто, изменяем гамбургер */
 .menu-icon.open {
-  background-color: transparent;
-  /* Убираем центральную линию */
+  background-color: transparent; /* Убираем центральную линию */
 }
 
 .menu-icon.open::before {
@@ -218,7 +202,6 @@ export default {
 
 /* Медиа-запрос для мобильных устройств */
 @media (max-width: 768px) {
-
   /* Скрыть основное меню на мобильных устройствах */
   .nav-list.main-nav {
     display: none;
@@ -236,7 +219,6 @@ export default {
 }
 
 @media (min-width: 769px) {
-
   /* Обычное меню для больших экранов */
   .nav-list.main-nav {
     display: flex;
