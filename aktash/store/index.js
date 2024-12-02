@@ -240,17 +240,22 @@ async deleteCategory({ commit, state }, id) {
   },
   
   // Удаление файла
-  async deleteFile({ commit }, filePath) {
+  async deleteImage({ commit }, filePath) {
     try {
-      const response = await fetch(`${BASE_URL}/api/files/delete`, {
+      console.log("Удаление изображения с пути:", filePath);
+
+      // Отправка запроса на сервер для удаления файла
+      const response = await fetch(`${BASE_URL}/files/delete`, {
         method: 'DELETE',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ path: filePath }),
+        body: JSON.stringify({ path: filePath }), // передаем путь файла
       });
-  
+
       if (!response.ok) {
-        commit('setErrorMessage', 'Ошибка при удалении файла');
-        console.error('Ошибка при удалении файла');
+        commit('setErrorMessage', 'Ошибка при удалении изображения');
+        console.error('Ошибка при удалении изображения');
+      } else {
+        console.log('Изображение успешно удалено');
       }
     } catch (error) {
       commit('setErrorMessage', 'Ошибка сети: ' + error.message);
