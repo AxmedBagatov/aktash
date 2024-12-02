@@ -14,7 +14,7 @@ app.use(express.urlencoded({ extended: true }));
 
 app.use(cors({
   origin: (origin, callback) => {
-    const allowedOrigins = ['http://192.168.62.129', 'http://localhost:80'];
+    const allowedOrigins = ['http://192.168.62.129', 'http://localhost:80','http://10.30.74.229'];
     if (allowedOrigins.includes(origin) || !origin) {
       callback(null, true);
     } else {

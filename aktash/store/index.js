@@ -47,7 +47,7 @@ export const actions = {
   async fetchProducts({ commit }) {
     try {
       commit('setLoading', true);
-      const response = await fetch('http://192.168.62.129:4000/api/products');
+      const response = await fetch('http://10.30.74.229:4000/api/products');
       if (response.ok) {
         const data = await response.json();
         commit('setProducts', data);
@@ -66,7 +66,7 @@ export const actions = {
 async addCategory({ commit, state }, { name, description, image_url }) {
   try {
     commit('setLoading', true);
-    const response = await fetch('http://192.168.62.129:4000/api/categories', {
+    const response = await fetch('http://10.30.74.229:4000/api/categories', {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({ name, description, image_url }),
@@ -93,7 +93,7 @@ async addCategory({ commit, state }, { name, description, image_url }) {
 async updateCategory({ commit, state }, { id, name, description, image_url }) {
   try {
     commit('setLoading', true);
-    const response = await fetch(`http://192.168.62.129:4000/api/categories/${id}`, {
+    const response = await fetch(`http://10.30.74.229:4000/api/categories/${id}`, {
       method: 'PUT',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({ name, description, image_url }),
@@ -122,7 +122,7 @@ async updateCategory({ commit, state }, { id, name, description, image_url }) {
 async deleteCategory({ commit, state }, id) {
   try {
     commit('setLoading', true);
-    const response = await fetch(`http://192.168.62.129:4000/api/categories/${id}`, {
+    const response = await fetch(`http://10.30.74.229:4000/api/categories/${id}`, {
       method: 'DELETE',
       credentials: 'include', // Включаем cookies
     });
@@ -144,7 +144,7 @@ async deleteCategory({ commit, state }, id) {
   async fetchCategories({ commit }) {
     try {
       commit('setLoading', true);
-      const response = await fetch('http://192.168.62.129:4000/api/categories');
+      const response = await fetch('http://10.30.74.229:4000/api/categories');
       if (response.ok) {
         const data = await response.json();
         commit('setCategories', data);
@@ -163,7 +163,7 @@ async deleteCategory({ commit, state }, id) {
   async fetchProductsByCategory({ commit }, categoryId) {
     try {
       commit('setLoading', true);
-      const response = await fetch(`http://192.168.62.129:4000/api/products?category_id=${categoryId}`);
+      const response = await fetch(`http://10.30.74.229:4000/api/products?category_id=${categoryId}`);
       if (response.ok) {
         const data = await response.json();
         commit('setProducts', data);
@@ -182,7 +182,7 @@ async deleteCategory({ commit, state }, id) {
   async fetchProductById({ commit }, productId) {
     try {
       commit('setLoading', true);
-      const response = await fetch(`http://192.168.62.129:4000/api/products?product_id=${productId}`);
+      const response = await fetch(`http://10.30.74.229:4000/api/products?product_id=${productId}`);
       if (response.ok) {
         const data = await response.json();
         commit('setSelectedProduct', data); // Сохраняем данные одного продукта
@@ -201,7 +201,7 @@ async deleteCategory({ commit, state }, id) {
   async searchProducts({ commit }, query) {
     try {
       commit('setLoading', true);
-      const response = await fetch(`http://192.168.62.129:4000/api/products?search=${query}`);
+      const response = await fetch(`http://10.30.74.229:4000/api/products?search=${query}`);
       if (response.ok) {
         const data = await response.json();
         commit('setSearchResults', data); // Сохраняем результаты поиска
@@ -220,7 +220,7 @@ async deleteCategory({ commit, state }, id) {
   // Авторизация
   async login({ commit }, { username, password }) {
     try {
-      const response = await fetch('http://192.168.62.129:4000/api/login', {
+      const response = await fetch('http://10.30.74.229:4000/api/login', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ username, password }),
@@ -242,7 +242,7 @@ async deleteCategory({ commit, state }, id) {
 
   async logout({ commit }) {
     try {
-      const response = await fetch('http://192.168.62.129:4000/logout', {
+      const response = await fetch('http://10.30.74.229:4000/logout', {
         method: 'POST',
         credentials: 'include', // Включаем cookies
       });
