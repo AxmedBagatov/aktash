@@ -112,6 +112,9 @@ app.post('/logout', (req, res) => {
 });
 // login end
 
+// file start
+
+// file end
 
 
 // Обработка GET-запроса для получения всех товаров

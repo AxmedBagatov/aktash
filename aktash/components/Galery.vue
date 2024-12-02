@@ -141,7 +141,7 @@ export default {
 .img-container {
   object-fit: fill;
   width: 100%;
-  height: 900px;
+  height: auto;
 }
 
 .line1 {
