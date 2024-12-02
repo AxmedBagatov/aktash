@@ -134,11 +134,17 @@ export default {
   color: black;
   z-index: 1;
   bottom: 0;
-  left: 20vw;
-  bottom: 20vh;
+  padding-left: 20vw;
+  margin-bottom: 20vh;
+  width: 100%;
+  transition: 0.5s;
   /* width: 40%;
   height: 40%;
   margin-inline-start: 50px; */
+}
+
+.carousel-text:hover {
+  background-color: black;
 }
 
 .carousel-images {
@@ -247,15 +253,15 @@ export default {
   position: absolute;
   /* bottom: 10px; */
   right: 30px;
-  bottom: 10px;
+  bottom: 30px;
   transform: translateX(-50%);
   display: flex;
   gap: 5px;
 }
 
 .indicator {
-  width: 10px;
-  height: 10px;
+  width: 15px;
+  height: 15px;
   border-radius: 50%;
   background-color: gray;
   cursor: pointer;

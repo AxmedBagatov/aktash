@@ -30,7 +30,8 @@ export default {
 
 body html {
   margin: 0;
-  font-family: Arial, sans-serif;
+  /* font-family: Arial, sans-serif; */
+  font-family: 'Franklin Gothic Medium', 'Arial Narrow', Arial, sans-serif;
 }
 
 main {
