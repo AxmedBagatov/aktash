@@ -191,10 +191,6 @@
   scale: 0.95;
 }
 
-.btn-details .arrow {
-  margin-left: 0.5rem;
-}
-
 .carousel-images {
   position: relative;
   width: 60%;

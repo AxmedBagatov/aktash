@@ -9,9 +9,9 @@
         <div class="line1-gallery">{{ slide.line1 }}</div>
         <div class="line2-gallery">{{ slide.line2 }}</div>
       </div>
-      <div class="right-button">
-        <button class="btn-details-gallery">подробнее</button>
-      </div>
+      <!-- <div class="right-button"> -->
+        <button class="right-button">подробнее</button>
+      <!-- </div> -->
       <!-- <div class="button_carousel">
         <button class="arrow left" @click="prevSlide">←</button>
         <button class="arrow right" @click="nextSlide">→</button>
@@ -141,6 +141,7 @@ export default {
   padding-right: 20vw;
   margin-bottom: 20vh;
   width: 100%;
+  height: fit-content;
   transition: 0.5s;
   display: flex;
   justify-content: space-between;
@@ -217,17 +218,20 @@ export default {
   font-size: 1.2rem;
 } */
 
-.right-button {
-  flex: 1;
+/* .right-button {
+  height: 100%;
   align-self: center
-}
+} */
 
-.btn-details-gallery {
+.right-button {
+  /* font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; */
+  font-family: 'Courier New', Courier, monospace;
   cursor: pointer;
+  align-self: center;
   border: 2px solid white;
   padding-left: 10px;
   padding-right: 10px;
-  height: 100%;
+  padding: 20px;
   /* flex: 1;
   display: inline-flex;
   align-items: center;
