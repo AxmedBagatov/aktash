@@ -124,7 +124,7 @@ export default {
   align-items: center;
   justify-content: space-between;
   width: 100%;
-  height: calc(100vh - (var(--header-height) + var(--header-padding)));
+  height: calc((100vh - (var(--header-height) + var(--header-padding))) + var(--footer-padding));
   margin: auto;
   background-color: antiquewhite;
 }

@@ -40,7 +40,8 @@
 footer.main-footer {
   background-color: brown;     /* Цвет фона */
   color: white;                /* Цвет текста */
-  padding: 20px 0;              /* Внутренние отступы сверху и снизу */
+  padding-top: var(--footer-padding);              /* Внутренние отступы сверху и снизу */
+  padding-bottom: var(--footer-padding);              /* Внутренние отступы сверху и снизу */
   width: 100%;                  /* Полная ширина */
   text-align: center;           /* Центрируем текст */
 }

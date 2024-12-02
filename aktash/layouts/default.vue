@@ -25,6 +25,7 @@ export default {
 :root {
   --header-height: 60px;
   --header-padding: 10px;
+  --footer-padding: 20px;
 }
 
 body html {
