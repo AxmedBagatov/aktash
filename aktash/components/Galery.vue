@@ -25,7 +25,7 @@
       </div>
 
       <!-- Индикаторы -->
-      <div class="indicators">
+      <div class="indicators-gallery">
         <span v-for="(product, index) in formattedProducts" :key="index" class="indicator"
           :class="{ active: index === currentIndex }" @click="goToSlide(index)"></span>
       </div>
@@ -175,7 +175,7 @@ export default {
 .line1 {
   font-size: clamp(1.5rem, 5vw, 3rem);
   font-weight: bold;
-  font-family: "Roboto", sans-serif;
+  /* font-family: "Roboto", sans-serif; */
   /* Шрифт для первой строки */
   margin-bottom: 10px;
 }
@@ -183,7 +183,7 @@ export default {
 .line2 {
   font-size: clamp(1rem, 3vw, 2rem);
   color: gray;
-  font-family: "Times New Roman", serif;
+  /* font-family: "Times New Roman", serif; */
   /* Шрифт для второй строки */
 }
 
@@ -249,7 +249,7 @@ export default {
   /* Сохраняем пропорции и растягиваем изображение на весь контейнер */
 }
 
-.indicators {
+.indicators-gallery {
   position: absolute;
   /* bottom: 10px; */
   right: 30px;

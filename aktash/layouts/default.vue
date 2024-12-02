@@ -31,7 +31,8 @@ export default {
 body html {
   margin: 0;
   /* font-family: Arial, sans-serif; */
-  font-family: 'Franklin Gothic Medium', 'Arial Narrow', Arial, sans-serif;
+  /* font-family: 'Franklin Gothic Medium', 'Arial Narrow', Arial, sans-serif; */
+  font-family: 'Courier New', Courier, monospace;
 }
 
 main {
