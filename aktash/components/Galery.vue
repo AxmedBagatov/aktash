@@ -18,19 +18,16 @@
     <div class="carousel-images">
       <div class="image-slider" :style="{ transform: `translateX(-${currentIndex * 100}%)` }">
         <div class="slide" v-for="(product, index) in formattedProducts" :key="product.id">
-          <img class="images_123" :src="`/shop/${product.image_url}`" :alt="product.name" />
+          <div class="img-container">
+            <img class="images_123" :src="`/shop/${product.image_url}`" :alt="product.name" />
+          </div>
         </div>
       </div>
 
       <!-- Индикаторы -->
       <div class="indicators">
-        <span
-          v-for="(product, index) in formattedProducts"
-          :key="index"
-          class="indicator"
-          :class="{ active: index === currentIndex }"
-          @click="goToSlide(index)"
-        ></span>
+        <span v-for="(product, index) in formattedProducts" :key="index" class="indicator"
+          :class="{ active: index === currentIndex }" @click="goToSlide(index)"></span>
       </div>
     </div>
   </div>
@@ -140,23 +137,25 @@ export default {
   overflow: hidden; */
 }
 
-.images_123 {
+.img-container {
   object-fit: fill;
-  width: 600px;
-  height: 300px;
+  width: 1200px;
+  height: 800px;
 }
 
 .line1 {
   font-size: clamp(1.5rem, 5vw, 3rem);
   font-weight: bold;
-  font-family: "Roboto", sans-serif; /* Шрифт для первой строки */
+  font-family: "Roboto", sans-serif;
+  /* Шрифт для первой строки */
   margin-bottom: 10px;
 }
 
 .line2 {
   font-size: clamp(1rem, 3vw, 2rem);
   color: gray;
-  font-family: "Times New Roman", serif; /* Шрифт для второй строки */
+  font-family: "Times New Roman", serif;
+  /* Шрифт для второй строки */
 }
 
 .button_carousel {
@@ -184,9 +183,12 @@ export default {
 }
 
 .btn-details:hover {
-  color: white; /* Изменение цвета текста */
-  background-color: black; /* Изменение фона */
-  border-color: black; /* Сохранение контура */
+  color: white;
+  /* Изменение цвета текста */
+  background-color: black;
+  /* Изменение фона */
+  border-color: black;
+  /* Сохранение контура */
   scale: 0.95;
 }
 
@@ -199,19 +201,24 @@ export default {
 .image-slider {
   display: flex;
   transition: transform 0.5s ease-in-out;
-  min-width: 100%; /* Каждое изображение будет занимать 100% ширины слайда */
-  height: 100%; 
+  min-width: 100%;
+  /* Каждое изображение будет занимать 100% ширины слайда */
+  height: 100%;
 }
 
 .slide {
-  min-width: 100%; /* Каждое изображение будет занимать 100% ширины слайда */
-  height: 100%; /* Устанавливаем высоту слайда, чтобы изображение занимало всю область */
+  min-width: 100%;
+  /* Каждое изображение будет занимать 100% ширины слайда */
+  height: 100%;
+  /* Устанавливаем высоту слайда, чтобы изображение занимало всю область */
 }
 
 .slide img {
   width: 100%;
-  height: 100%; /* Растягиваем изображение по высоте */
-  object-fit: fill; /* Сохраняем пропорции и растягиваем изображение на весь контейнер */
+  height: 100%;
+  /* Растягиваем изображение по высоте */
+  object-fit: fill;
+  /* Сохраняем пропорции и растягиваем изображение на весь контейнер */
 }
 
 .indicators {
