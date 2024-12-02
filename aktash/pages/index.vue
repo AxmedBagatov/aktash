@@ -60,6 +60,7 @@
   computed: {
     // Получаем продукты из Vuex
     products() {
+      console.log(this.$store.getters.getProducts);
       return this.$store.getters.getProducts.slice(0, 4);
     },
 

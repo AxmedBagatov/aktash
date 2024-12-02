@@ -138,6 +138,7 @@ export default {
   margin-bottom: 20vh;
   width: 100%;
   transition: 0.5s;
+  display: flex;
   font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
   /* width: 40%;
   height: 40%;
@@ -182,7 +183,7 @@ export default {
 }
 
 .line2-gallery {
-  font-size: clamp(1rem, 3vw, 2rem);
+  font-size: clamp(0.5rem, 3vw, 1.5rem);
   color: gray;
   /* font-family: "Times New Roman", serif; */
   /* Шрифт для второй строки */
@@ -193,14 +194,15 @@ export default {
   /* margin-top: 100px; */
 }
 
-.carousel-text-gallery p {
-  /* margin-bottom: 1.5rem; */
+/* .carousel-text-gallery p {
   font-size: 1.2rem;
-}
+} */
 
 
 
 .btn-details-gallery {
+  cursor: pointer;
+  /* flex: 1;
   display: inline-flex;
   align-items: center;
   padding: 0.5rem 1rem;
@@ -209,7 +211,7 @@ export default {
   background-color: transparent;
   border: 2px solid black;
   border-radius: 5px;
-  cursor: pointer;
+  cursor: pointer; */
 }
 
 .btn-details-gallery:hover {
