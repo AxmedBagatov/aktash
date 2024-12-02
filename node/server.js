@@ -58,7 +58,8 @@ app.post('/api/login', async (req, res) => {
   try {
     // Проверяем, существует ли пользователь
     const result = await queryDB('SELECT * FROM users WHERE username = $1', [username]);
-
+    console.log("Попытка входа с данными",result);
+    
     if (result.length === 0) {
       console.error(`User not found: ${username}`);
       return res.status(404).send('User not found');
@@ -88,6 +89,8 @@ app.post('/api/login', async (req, res) => {
 
 function authenticateToken(req, res, next) {
   const token = req.cookies.token;
+  console.log("Токен", token);
+  
   if (!token) return res.status(401).send('Unauthorized');
 
   jwt.verify(token, JWT_SECRET, (err, user) => {
@@ -99,6 +102,7 @@ function authenticateToken(req, res, next) {
 
 // ======== Проверка авторизации ========
 app.get('/api/protected', authenticateToken, (req, res) => {
+
   res.send(`Hello, ${req.user.username}`);
 });
 // ======== Выход ========

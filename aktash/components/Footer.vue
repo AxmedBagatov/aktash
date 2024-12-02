@@ -28,6 +28,10 @@
 
 
 /* Контейнер для всего контента */
+body {
+  height: 100vh;
+}
+
 .main-content {
   flex-grow: 1;                 /* Этот элемент растягивается, заполняя оставшееся пространство */
   padding: 20px;                /* Внутренние отступы для контента */
@@ -35,6 +39,9 @@
 
 /* Футер */
 footer.main-footer {
+  position: absolute;
+  left: 0;
+  bottom: 0;
   background-color: brown;     /* Цвет фона */
   color: white;                /* Цвет текста */
   padding: 20px 0;              /* Внутренние отступы сверху и снизу */
