@@ -150,8 +150,8 @@ export default {
   color: black;
   z-index: 1;
   bottom: 0;
-  padding-left: 15%;
-  padding-right: 15%;
+  padding-left: 0;
+  padding-right: 10%;
   margin-bottom: 10%;
   width: 100%;
   height: fit-content;
