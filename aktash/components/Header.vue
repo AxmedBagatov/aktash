@@ -62,8 +62,9 @@ export default {
 .header {
   background-color: #c32222;
   color: white;
-  padding: 10px;
+  padding: var(--header-padding);
   position: relative;
+  height: var(--header-height);
 }
 
 /* Стили для навигационного списка */

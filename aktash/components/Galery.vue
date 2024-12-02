@@ -117,14 +117,14 @@ export default {
 
 .carousel-container {
   z-index: -2;
-  position: absolute;
+  /* position: absolute; */
   top: 0;
   left: 0;
   display: flex;
   align-items: center;
   justify-content: space-between;
   width: 100%;
-  height: 100vh;
+  height: calc(100vh - (var(--header-height) + var(--header-padding)));
   margin: auto;
   background-color: antiquewhite;
 }

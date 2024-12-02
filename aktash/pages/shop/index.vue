@@ -73,8 +73,9 @@
           <div v-if="newCategory.image_url">
             <p>Current Image:</p>
             <img
-              :src="newCategory.image_url"
-              alt="Preview"
+              v-if="newCategory.image_url"
+              :src="`/${newCategory.image_url}`"
+              :alt="catalog.name"
               class="preview-image"
             />
             <button @click="removeImage">Remove Image</button>

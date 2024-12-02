@@ -21,6 +21,12 @@ export default {
 
 <style>
 /* Глобальные стили */
+
+:root {
+  --header-height: 60px;
+  --header-padding: 10px;
+}
+
 body html {
   margin: 0;
   font-family: Arial, sans-serif;
