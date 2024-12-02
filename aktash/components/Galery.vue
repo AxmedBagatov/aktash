@@ -11,7 +11,7 @@
         <div class="line2-gallery">{{ slide.line2 }}</div>
       </div>
       <!-- <div class="right-button"> -->
-        <button class="right-button">подробнее</button>
+      <button class="right-button">подробнее</button>
       <!-- </div> -->
       <!-- <div class="button_carousel">
         <button class="arrow left" @click="prevSlide">←</button>
@@ -134,13 +134,15 @@ export default {
 }
 
 .line {
-  color: black;
-  z-index: 1;
-  bottom: 0;
-  margin-bottom: 13%;
-  background-color: aquamarine;
-  height: 70px;
-  width: 100%;
+  /* color: black;
+  z-index: -1;
+  position: relative;
+  left: 900px;
+  bottom: -110px;
+  backdrop-filter: blur(19.5px);
+  -webkit-backdrop-filter: blur(19.5px);
+  height: 100px;
+  width: 100vw; */
 }
 
 .carousel-text-gallery {
