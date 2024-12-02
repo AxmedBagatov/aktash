@@ -19,7 +19,7 @@
     <!-- Правая часть (слайдер изображений) -->
     <div class="carousel-images">
       <div class="image-slider" :style="{ transform: `translateX(-${currentIndex * 100}%)` }">
-        <div class="slide" v-for="(product, index) in products" :key="product.id">
+        <div class="slide" v-for="(product, index) in formattedProducts" :key="product.id">
            <img class="images_123" :src="`/shop/${product.image_url}`" :alt="product.name" />
         </div>
       </div>
@@ -60,8 +60,18 @@
   computed: {
     // Получаем продукты из Vuex
     products() {
-      console.log(this.$store.getters.getProducts);
       return this.$store.getters.getProducts.slice(0, 4);
+    },
+
+    // Форматируем продукты для карусели
+    formattedProducts() {
+      return this.products.map((product) => {
+        const firstImage = product.images?.[0]?.url || "default-image.png"; // Берём первый URL или дефолтное изображение
+        return {
+          ...product,
+          image_url: firstImage, // Добавляем ожидаемое поле image_url
+        };
+      });
     },
 
     // Проверка на загрузку продуктов
@@ -122,7 +132,7 @@
   align-items: center;
   justify-content: space-between;
   width: 80%;
-  height: 40%;
+  height: 80%;
   margin: auto;
   background-color: antiquewhite;
 }
@@ -159,6 +169,7 @@
 .images_123 {
   width: 100%;
   height: 100%;
+  object-fit: fill;
 }
 
 .btn-details {

@@ -139,6 +139,7 @@ export default {
   width: 100%;
   transition: 0.5s;
   display: flex;
+  flex-direction: column;
   font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
   /* width: 40%;
   height: 40%;
@@ -189,10 +190,10 @@ export default {
   /* Шрифт для второй строки */
 }
 
-.button_carousel {
-  display: flex;
+/* .button_carousel { */
+  /* display: flex; */
   /* margin-top: 100px; */
-}
+/* } */
 
 /* .carousel-text-gallery p {
   font-size: 1.2rem;
@@ -202,6 +203,11 @@ export default {
 
 .btn-details-gallery {
   cursor: pointer;
+  border: 2px solid white;
+  padding-left: 10px;
+  padding-right: 10px;
+  order: 1;
+  flex-basis: 30%;
   /* flex: 1;
   display: inline-flex;
   align-items: center;
