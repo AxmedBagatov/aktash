@@ -188,6 +188,8 @@ export default {
 
     // Удаление изображения
     async removeImage() {
+      console.log(this.newCategory.image_url);
+      
       if (!this.newCategory.image_url) return;
 
       try {

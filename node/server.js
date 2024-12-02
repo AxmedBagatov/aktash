@@ -89,8 +89,6 @@ app.post('/api/login', async (req, res) => {
 
 function authenticateToken(req, res, next) {
   const token = req.cookies.token;
-  console.log("Токен", token);
-  
   if (!token) return res.status(401).send('Unauthorized');
 
   jwt.verify(token, JWT_SECRET, (err, user) => {
