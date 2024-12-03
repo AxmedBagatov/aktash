@@ -135,7 +135,6 @@
   height: 100%;
   margin: auto;
   background-color: antiquewhite;
-  position: relative;
 }
 
 .carousel-text {
