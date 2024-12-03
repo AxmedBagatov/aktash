@@ -166,12 +166,14 @@ export default {
     onFileChange(event) {
       const file = event.target.files[0];
       if (file) {
+        console.log(this.selectedFile);
         this.selectedFile = file; // Сохраняем выбранный файл
       }
     },
 
     // Загрузка изображения
     async uploadImage() {
+      console.log(this.selectedFile);
       if (!this.selectedFile) return;
 
       const formData = new FormData();
