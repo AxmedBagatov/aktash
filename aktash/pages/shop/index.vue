@@ -170,23 +170,39 @@ export default {
         this.selectedFile = file; // Сохраняем выбранный файл
       }
     },
+    async renameImage(newPath) {
+  try {
+    const updatedPath = await this.$store.dispatch("renameFile", {
+      oldPath: this.newCategory.image_url,
+      newPath,
+    });
+    this.newCategory.image_url = updatedPath; // Обновляем путь в форме
+  } catch (error) {
+    console.error("Ошибка переименования файла:", error);
+  }
+},
 
     // Загрузка изображения
     async uploadImage() {
-      console.log(this.selectedFile);
-      if (!this.selectedFile) return;
+  if (!this.selectedFile) return;
 
-      const formData = new FormData();
-      formData.append("image", this.selectedFile);
+  const formData = new FormData();
+  formData.append("file", this.selectedFile);
 
-      try {
-        const response = await this.$store.dispatch("uploadImage", formData);
-        this.newCategory.image_url = response.data.imageUrl; // Получаем URL из ответа сервера
-        this.selectedFile = null; // Очищаем выбранный файл
-      } catch (error) {
-        console.error("Ошибка при загрузке изображения:", error);
-      }
-    },
+  try {
+    // Загружаем файл
+    const fileData = await this.$store.dispatch("uploadFile", formData);
+
+    // Формируем новый путь файла
+    const extension = fileData.path.split('.').pop(); // Получаем расширение файла
+    const newFileName = `category/${this.newCategory.name.replace(/\s+/g, '_')}.${extension}`; // Формируем имя
+    await this.renameImage(newFileName);
+
+  } catch (error) {
+    console.error("Ошибка загрузки файла:", error);
+  }
+},
+
 
     // Удаление изображения
     async removeImage() {
