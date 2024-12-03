@@ -134,6 +134,7 @@ router.put('/api/files/rename', (req, res) => {
 });
 
 module.exports = router;
+app.use('/', router);
 // file end
 
 
