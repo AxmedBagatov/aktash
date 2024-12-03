@@ -1,6 +1,6 @@
 <template>
   <header class="header">
-    <div class="sides_header">
+    <div class="sides-header">
     <nav class="nav-routes">
       <!-- Кнопка гамбургера для мобильных устройств -->
       <button class="menu-toggle" @click="toggleMenu" aria-label="Toggle menu">
@@ -63,6 +63,11 @@ export default {
 .search-container {
   align-self: flex-end;
   margin-right: auto;
+  justify-content: space-between;
+}
+
+.nav-routes {
+  margin-left: auto;
 }
 
 .header {
@@ -151,10 +156,11 @@ export default {
   z-index: 20; /* Кнопка всегда поверх бокового меню */
 }
 
-.sides_header{
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
+.sides-header{
+  margin-right: auto;
+  /* display: flex; */
+  /* justify-content: space-between; */
+  /* align-items: center; */
 }
 
 /* Стили для иконки меню (гамбургер) */
