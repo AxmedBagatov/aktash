@@ -76,12 +76,13 @@ export default {
 
 .search-container {
   /* align-self: center; */
-  margin-right: auto;
+  margin-right: 10vw;
+  margin-left: auto;
   justify-content: space-between;
 }
 
 .nav-routes {
-  /* margin-left: auto; */
+  margin-left: 10vw;
 }
 
 .header {
