@@ -62,7 +62,7 @@ export default {
 
 .search-container {
   align-self: flex-end;
-  margin: 0 auto;
+  margin-right: auto;
 }
 
 .header {
