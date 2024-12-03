@@ -141,6 +141,7 @@
   width: 40%;
   height: 40%;
   margin-inline-start: 50px;
+  
 }
 
 .line1 {
