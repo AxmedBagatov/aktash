@@ -265,39 +265,41 @@ async deleteCategory({ commit, state }, id) {
   },
   
   // Переименование файла
+  async uploadFile({ commit }, formData) {
+    try {
+      const response = await fetch(`${BASE_URL}/api/files/upload`, {
+        method: "POST",
+        body: formData,
+      });
+  
+      if (response.ok) {
+        return await response.json(); // Возвращаем путь к файлу
+      } else {
+        throw new Error("Ошибка при загрузке файла");
+      }
+    } catch (error) {
+      commit("setErrorMessage", error.message);
+      throw error;
+    }
+  },
+  
+  // Action для переименования файла
   async renameFile({ commit }, { oldPath, newPath }) {
     try {
       const response = await fetch(`${BASE_URL}/api/files/rename`, {
-        method: 'PUT',
-        headers: { 'Content-Type': 'application/json' },
+        method: "PUT",
+        headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ oldPath, newPath }),
       });
   
       if (response.ok) {
-        const data = await response.json();
-        return data; // Возвращаем обновленный путь
+        return (await response.json()).path; // Возвращаем обновленный путь
       } else {
-        commit('setErrorMessage', 'Ошибка при переименовании файла');
-        console.error('Ошибка при переименовании файла');
+        throw new Error("Ошибка при переименовании файла");
       }
     } catch (error) {
-      commit('setErrorMessage', 'Ошибка сети: ' + error.message);
-      console.error('Ошибка сети:', error);
+      commit("setErrorMessage", error.message);
       throw error;
-    }
-  },
-
-  async uploadImage() {
-    if (!this.selectedFile) return;
-  
-    const formData = new FormData();
-    formData.append("file", this.selectedFile);
-  
-    try {
-      const fileData = await this.$store.dispatch("uploadFile", formData);
-      this.newCategory.image_url = fileData.path; // Сохраняем путь в БД
-    } catch (error) {
-      console.error("Ошибка загрузки файла:", error);
     }
   },
   async renameImage(newPath) {
