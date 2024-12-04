@@ -240,7 +240,7 @@
   try {
     if (this.selectedFile) {
       console.log(this.selectedFile)
-      const extension = fileData.path.split('.').pop(); // Получаем расширение файла
+      const extension = this.selectedFile.path.split('.').pop(); // Получаем расширение файла
       const newFileName = `category/${this.newCategory.name.replace(/\s+/g, '_')}.${extension}`; // Формируем имя
       console.log(newFileName)
       // await this.uploadImage(); // Загружаем и переименовываем файл перед добавлением категории
