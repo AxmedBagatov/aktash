@@ -115,13 +115,21 @@ app.post('/logout', (req, res) => {
 
 const multer = require("multer");
 const router = express.Router();
-
 const storage = multer.diskStorage({
   destination: (req, file, cb) => {
-    cb(null, "uploads/"); // Папка, куда будут сохраняться файлы
+    const categoryName = req.body.categoryName || "default"; // Получаем categoryName, если нет — "default"
+    
+    // Проверяем, что путь создан правильно
+    const uploadPath = path.join("images", categoryName); // Путь для сохранения файлов в папке категории
+    console.log("Upload path:", uploadPath); // Логирование пути для отладки
+
+    // Проверяем существование папки и создаем, если нет
+    fs.mkdirSync(uploadPath, { recursive: true }); // Создаем папки, если их нет
+
+    cb(null, uploadPath); // Указываем multer, куда сохранять файл
   },
   filename: (req, file, cb) => {
-    cb(null, `${Date.now()}-${file.originalname}`); // Уникальное имя файла
+    cb(null, file.originalname); // Сохраняем файл с оригинальным именем
   },
 });
 
@@ -133,13 +141,14 @@ router.post("/api/files/upload", upload.single("file"), (req, res) => {
     const categoryName = req.body.categoryName; // Данные категории из FormData
     const file = req.file; // Файл, обработанный multer
 
-    console.log("Received categoryName:", categoryName);
-    console.log("Received file:", file);
+    console.log("Received categoryName:", categoryName); // Логируем полученную категорию
+    console.log("Received file:", file); // Логируем файл
 
     res.json({
-      message: "Данные получены",
+      message: "Файл успешно загружен",
       categoryName: categoryName,
       fileName: file ? file.filename : "Файл не найден",
+      filePath: file ? file.path : null, // Отправляем путь к файлу
     });
   } catch (error) {
     console.error("Ошибка при обработке запроса:", error);
@@ -321,7 +330,7 @@ app.delete('/api/categories/:id', authenticateToken, async (req, res) => {
 
 
 // Запуск сервера
-module.exports = router;
+
 app.listen(port, () => {
   console.log(`Server running on http://localhost:${port}`);
 });
