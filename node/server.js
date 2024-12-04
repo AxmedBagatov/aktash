@@ -6,7 +6,7 @@ const cors = require('cors');
 const jwt = require('jsonwebtoken');
 const cookieParser = require('cookie-parser');
 const bcrypt = require('bcrypt');
-
+const path = require('path');
 const JWT_SECRET = 'cristianomessi'; // Лучше хранить это в .env файле
 
 app.use(express.json());
@@ -111,38 +111,51 @@ app.post('/logout', (req, res) => {
 // login end
 
 // file start
-const multer = require('multer');
-const upload = multer({ dest: 'uploads/' });
-const router = express.Router();
-
-router.delete('/api/files/delete', (req, res) => {
-  const { path: filePath } = req.body;
-  console.log('Запрос на удаление файла:', filePath);
-
-  // Только логируем, файл пока не удаляем
-  res.status(200).json({ message: 'Удаление файла получено', path: filePath });
-});
-
-router.post('/api/files/upload', upload.single('file'), (req, res) => {
-  try {
-    console.log("Запрос для принятия файла")
-    // Если файл загружен успешно, возвращаем информацию о файле
-    if (req.file) {
-      console.log("upload file:",req.file)
-      res.json({
-        message: 'Файл успешно загружен',
-        path: req.file.path, // Возвращаем путь к загруженному файлу
-        filename: req.file.filename, // Возвращаем имя файла
-        originalname: req.file.originalname, // Оригинальное имя файла
-      });
-    } else {
-      res.status(400).json({ message: 'Файл не был загружен' });
+  const multer = require('multer');
+  const storage = multer.diskStorage({
+    destination: (req, file, cb) => {
+      // Укажите директорию, куда нужно сохранять файлы
+      cb(null, 'images/'); // Например, сохраняем в папку "uploads"
+    },
+    filename: (req, file, cb) => {
+      // Получаем расширение файла
+      const extension = path.extname(file.originalname);
+      // Создаем новое имя файла, например, используя текущее время и оригинальное имя
+      const customFileName = `category/${Date.now()}_${file.originalname.replace(/\s+/g, '_')}`;
+      cb(null, customFileName); // Указываем новое имя для файла
     }
-  } catch (error) {
-    console.error('Ошибка при загрузке файла:', error);
-    res.status(500).json({ message: 'Ошибка сервера при загрузке файла' });
-  }
-});
+  });
+  const upload = multer({ storage: storage });
+  const router = express.Router();
+
+  router.delete('/api/files/delete', (req, res) => {
+    const { path: filePath } = req.body;
+    console.log('Запрос на удаление файла:', filePath);
+
+    // Только логируем, файл пока не удаляем
+    res.status(200).json({ message: 'Удаление файла получено', path: filePath });
+  });
+
+  router.post('/api/files/upload', upload.single('file'), (req, res) => {
+    try {
+      console.log("Запрос для принятия файла")
+      // Если файл загружен успешно, возвращаем информацию о файле
+      if (req.file) {
+        console.log("upload file:",req.file)
+        res.json({
+          message: 'Файл успешно загружен',
+          path: req.file.path, // Возвращаем путь к загруженному файлу
+          filename: req.file.filename, // Возвращаем имя файла
+          originalname: req.file.originalname, // Оригинальное имя файла
+        });
+      } else {
+        res.status(400).json({ message: 'Файл не был загружен' });
+      }
+    } catch (error) {
+      console.error('Ошибка при загрузке файла:', error);
+      res.status(500).json({ message: 'Ошибка сервера при загрузке файла' });
+    }
+  });
 
 router.put('/api/files/rename', (req, res) => {
   const { oldPath, newPath } = req.body;
