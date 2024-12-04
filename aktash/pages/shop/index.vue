@@ -252,13 +252,9 @@ export default {
         if (this.selectedFile) {
           console.log(this.selectedFile);
           const categoryName = this.newCategory.name;
-
           console.log("Category Name:", categoryName);
-          const newFileName = `category/${this.selectedFile.name.replace(
-            /\s+/g,
-            "_"
-          )}`; // Формируем имя
-          console.log(newFileName);
+          formData.append("file", this.selectedFile); // Добавляем файл
+          formData.append("categoryName", categoryName); // Добавляем имя категории в FormData
           await this.uploadImage(); // Загружаем и переименовываем файл перед добавлением категории
         }
         // await this.$store.dispatch("addCategory", this.newCategory); // Отправляем данные категории
