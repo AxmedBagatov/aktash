@@ -130,59 +130,50 @@ const multer = require("multer");
 const router = express.Router();
 const storage = multer.diskStorage({
   destination: (req, file, cb) => {
-    // Место для хранения файлов (пока без использования categoryName)
-    const uploadPath = path.join("images"); // Это можно оставить как общую папку для всех файлов
-    console.log("General upload path:", uploadPath); // Логируем путь для отладки
-
-    // Создаем папку, если её нет
-    fs.mkdirSync(uploadPath, { recursive: true });
-
-    cb(null, uploadPath); // Указываем multer, куда сохранять файл
+    // Указываем папку для хранения файлов
+    cb(null, 'images/');
   },
   filename: (req, file, cb) => {
-    cb(null, file.originalname); // Сохраняем файл с оригинальным именем
-  },
+    // Формируем имя файла
+    cb(null, Date.now() + path.extname(file.originalname));  // уникальное имя
+  }
 });
 
-const upload = multer({ storage });
+// Инициализация multer
+const upload = multer({ storage: storage });
 
-router.post("/api/files/upload", (req, res) => {
+// Настройка маршрута с загрузкой файлов
+router.post('/api/files/upload', upload.single('file'), (req, res) => {
   try {
-    const categoryName = req.body.categoryName || "default"; // Получаем categoryName из тела запроса
+    const categoryName = req.body.categoryName || 'default'; // Получаем categoryName из тела запроса
     const file = req.file; // Получаем файл из запроса
-
-    // Формируем путь с категорией и именем файла
-    // const uploadPath = path.join("images", categoryName, file.filename);
-    const destinationDir = path.join(__dirname, categoryName, file.filename); // директория для создания
-    const destinationFilePath = path.join(destinationDir, file.filename); // путь для сохранения файла
-    console.log(destinationDir);
-    console.log(destinationDir);
+    console.log(categoryName)
+    console.log(file);
     
-    
-    // // 1. Проверим, существует ли папка admin в images
-    // if (!fs.existsSync(destinationDir)) {
-    //   // Если папки нет, создаем её
-    //   fs.mkdirSync(destinationDir, { recursive: true });
-    //   console.log("Папка admin была успешно создана!");
-    // }
+    if (!file) {
+      return res.status(400).json({ message: 'Файл не был загружен' });
+    }
 
-    // // 2. Перемещаем файл из временной директории в папку admin
-    // fs.rename(file.path, destinationFilePath, (err) => {
-    //   if (err) {
-    //     console.error("Ошибка при перемещении файла:", err);
-    //   } else {
-    //     console.log("Файл был успешно сохранён в папке admin!");
-    //   }
-    // });
+    // Формируем путь для сохранения файла
+    const destinationDir = path.join(categoryName);  // директория для категории
+    const destinationFilePath = path.join(destinationDir, file.originalname);  // путь для сохранения файла
+    console.log(destinationFilePath);
+    
+    // Создаем директорию, если она не существует
+    if (!fs.existsSync(destinationDir)) {
+      fs.mkdirSync(destinationDir, { recursive: true });
+    }
+
+    // Возвращаем информацию о файле
     res.json({
-      message: "Файл успешно загружен",
+      message: 'Файл успешно загружен',
       categoryName: categoryName,
       fileName: file.filename,
       filePath: destinationFilePath, // Отправляем путь к файлу
     });
   } catch (error) {
-    console.error("Ошибка при обработке запроса:", error);
-    res.status(500).json({ message: "Ошибка сервера" });
+    console.error('Ошибка при обработке запроса:', error);
+    res.status(500).json({ message: 'Ошибка сервера' });
   }
 });
 
