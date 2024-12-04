@@ -110,6 +110,7 @@ export default {
     return {
       showAddForm: false,
       isEditMode: false,
+      showEditForm: false,
       newCategory: {
         name: "",
         description: "",
@@ -155,9 +156,8 @@ export default {
       this.newCategory = { name: "", description: "", image_url: "" }; // Очистить поля
     },
 
-    // Показать форму редактирования категории
     editCategory(categoryId) {
-      this.showAddForm = true;
+      this.showEditForm = false;
       this.isEditMode = true;
       const category = this.catalogs.find((c) => c.category_id === categoryId);
       this.newCategory = { ...category }; // Заполняем поля формы данными категории
@@ -167,6 +167,10 @@ export default {
     // Закрыть форму
     cancelAddCategory() {
       this.showAddForm = false;
+    },
+
+    cancelEditCategory(){
+      this.showEditForm = false;
     },
 
     onFileChange(event) {
@@ -272,7 +276,6 @@ export default {
           description: this.newCategory.description,
           image_url: this.newCategory.image_url,
         });
-        this.showAddForm = false;
         this.newCategory = {
           name: "",
           description: "",
