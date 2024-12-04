@@ -6,7 +6,8 @@ const cors = require('cors');
 const jwt = require('jsonwebtoken');
 const cookieParser = require('cookie-parser');
 const bcrypt = require('bcrypt');
-
+const path = require("path");
+const fs = require("fs");
 const JWT_SECRET = 'cristianomessi'; // Лучше хранить это в .env файле
 
 app.use(express.json());
@@ -111,9 +112,61 @@ app.post('/logout', (req, res) => {
 // login end
 
 // file start
-const multer = require('multer');
-const upload = multer({ dest: 'uploads/' });
+
+const multer = require("multer");
+const storage = multer.diskStorage({
+  destination: (req, file, cb) => {
+    const categoryName = req.body.categoryName; // Получаем имя категории из тела запроса
+
+    console.log("Received categoryName:", categoryName); // Логирование полученного значения
+
+    if (!categoryName) {
+      return cb(new Error("Category name is required"), null); // Если нет categoryName, возвращаем ошибку
+    }
+
+    const uploadPath = path.join(__dirname, "images", categoryName); // Создаем путь для сохранения файла
+
+    // Проверяем, существует ли директория, если нет — создаем
+    fs.mkdirSync(uploadPath, { recursive: true });
+
+    cb(null, uploadPath); // Указываем папку для сохранения файла
+  },
+  filename: (req, file, cb) => {
+    // Получаем оригинальное имя файла
+    const originalName = file.originalname;
+    
+    // Создаем имя файла с расширением
+    const fileName = originalName.replace(/\s+/g, "_"); // Заменяем пробелы на подчеркивания
+
+    cb(null, fileName); // Указываем имя файла
+  }
+});
+
+const upload = multer({ storage: storage });
 const router = express.Router();
+
+router.post("/api/files/upload", (req, res) => {
+  try {
+    // Получаем имя категории из тела запроса
+    const categoryName = req.body.categoryName;
+    // Получаем файл из тела запроса
+    const file = req.body.file; // Предполагаем, что файл передается в теле запроса
+
+    console.log("Received categoryName:", categoryName); // Логирование полученного значения
+    console.log("Received file:", file); // Логирование полученного файла
+
+    // Просто возвращаем имя категории и название файла
+    res.json({
+      message: "Данные получены",
+      categoryName: categoryName,
+      fileName: file ? file.name : "Файл не найден"
+    });
+  } catch (error) {
+    console.error("Ошибка при обработке запроса:", error);
+    res.status(500).json({ message: "Ошибка сервера" });
+  }
+});
+
 
 router.delete('/api/files/delete', (req, res) => {
   const { path: filePath } = req.body;
@@ -121,27 +174,6 @@ router.delete('/api/files/delete', (req, res) => {
 
   // Только логируем, файл пока не удаляем
   res.status(200).json({ message: 'Удаление файла получено', path: filePath });
-});
-
-router.post('/api/files/upload', upload.single('file'), (req, res) => {
-  try {
-    console.log("Запрос для принятия")
-    // Если файл загружен успешно, возвращаем информацию о файле
-    if (req.file) {
-      console.log("upload file:",req.file)
-      res.json({
-        message: 'Файл успешно загружен',
-        path: req.file.path, // Возвращаем путь к загруженному файлу
-        filename: req.file.filename, // Возвращаем имя файла
-        originalname: req.file.originalname, // Оригинальное имя файла
-      });
-    } else {
-      res.status(400).json({ message: 'Файл не был загружен' });
-    }
-  } catch (error) {
-    console.error('Ошибка при загрузке файла:', error);
-    res.status(500).json({ message: 'Ошибка сервера при загрузке файла' });
-  }
 });
 
 router.put('/api/files/rename', (req, res) => {
