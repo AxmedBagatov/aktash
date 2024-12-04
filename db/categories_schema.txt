@@ -10,4 +10,5 @@ Indexes:
     "categories_pkey" PRIMARY KEY, btree (category_id)
 Referenced by:
     TABLE "product_categories" CONSTRAINT "product_categories_category_id_fkey" FOREIGN KEY (category_id) REFERENCES categories(category_id) ON DELETE CASCADE
+    TABLE "products" CONSTRAINT "products_category_id_fkey" FOREIGN KEY (category_id) REFERENCES categories(category_id) ON DELETE CASCADE
 

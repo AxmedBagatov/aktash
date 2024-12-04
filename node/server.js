@@ -149,8 +149,6 @@ router.post('/api/files/upload', upload.single('file'), (req, res) => {
   try {
     const categoryName = req.body.categoryName || 'default';  // Получаем categoryName из тела запроса
     const categoryDescription = req.body.description
-    console.log(categoryDescription);
-    
     const file = req.file;  // Получаем файл из запроса
     
     if (!file) {
