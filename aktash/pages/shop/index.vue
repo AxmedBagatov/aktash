@@ -235,7 +235,6 @@ export default {
           const formData = new FormData();
           formData.append("file", this.selectedFile); // Добавляем файл
           formData.append("categoryName", categoryName); // Добавляем имя категории в FormData
-
           await this.uploadImage(formData); // Передаем formData в uploadImage
         }
 
