@@ -51,6 +51,7 @@ export const actions = {
       const response = await fetch(`${BASE_URL}/api/products`);
       if (response.ok) {
         const data = await response.json();
+        console.log("проверка даты", data);
         commit('setProducts', data);
       } else {
         commit('setErrorMessage', 'Ошибка при получении данных продуктов');
