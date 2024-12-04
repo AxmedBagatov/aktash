@@ -134,8 +134,10 @@ const storage = multer.diskStorage({
     cb(null, 'images/');  // Все файлы будут сначала сохраняться в папку 'images'
   },
   filename: (req, file, cb) => {
-    // Формируем уникальное имя для файла
-    cb(null, Date.now() + path.extname(file.originalname));  // Добавляем временную метку для уникальности
+    // Формируем уникальное имя для файла и добавляем оригинальное имя
+    const uniqueName = Date.now() + path.extname(file.originalname); // уникальное имя
+    const finalFileName = uniqueName.replace(path.extname(file.originalname), '') + '_' + file.originalname; // добавляем оригинальное имя
+    cb(null, finalFileName); // сохраняем с новым именем
   }
 });
 
@@ -145,11 +147,8 @@ const upload = multer({ storage: storage });
 // Настройка маршрута для загрузки файла
 router.post('/api/files/upload', upload.single('file'), (req, res) => {
   try {
-    const categoryName = req.body.categoryName;  // Получаем categoryName из query-параметра
+    const categoryName = req.body.categoryName || 'default';  // Получаем categoryName из тела запроса
     const file = req.file;  // Получаем файл из запроса
-
-    console.log(categoryName);
-    console.log(file);
 
     if (!file) {
       return res.status(400).json({ message: 'Файл не был загружен' });
@@ -157,7 +156,7 @@ router.post('/api/files/upload', upload.single('file'), (req, res) => {
 
     // Формируем путь для сохранения файла в подкатегории
     const destinationDir = path.join('images', categoryName);  // Папка для категории
-    const destinationFilePath = path.join(destinationDir, file.originalname);  // Путь для окончательного сохранения файла
+    const destinationFilePath = path.join(destinationDir, file.filename);  // Путь для окончательного сохранения файла
 
     // Создаем директорию, если её нет
     if (!fs.existsSync(destinationDir)) {
@@ -165,7 +164,7 @@ router.post('/api/files/upload', upload.single('file'), (req, res) => {
     }
 
     // Перемещаем файл из временной директории в нужную папку
-    const tempFilePath = path.join('images', file.originalname);  // Временный путь, куда файл сохраняет multer
+    const tempFilePath = path.join('images', file.filename);  // Используем новое имя файла
     fs.rename(tempFilePath, destinationFilePath, (err) => {
       if (err) {
         console.error('Ошибка при перемещении файла:', err);
@@ -176,7 +175,7 @@ router.post('/api/files/upload', upload.single('file'), (req, res) => {
       res.json({
         message: 'Файл успешно загружен',
         categoryName: categoryName,
-        fileName: file.filename,
+        fileName: file.filename,  // Используем уникальное имя файла
         filePath: destinationFilePath,  // Отправляем путь к файлу
       });
     });
@@ -186,6 +185,7 @@ router.post('/api/files/upload', upload.single('file'), (req, res) => {
     res.status(500).json({ message: 'Ошибка сервера' });
   }
 });
+
 
 router.delete("/api/files/delete", (req, res) => {
   const { path: filePath } = req.body;

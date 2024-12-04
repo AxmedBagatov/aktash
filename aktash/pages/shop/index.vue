@@ -228,8 +228,10 @@ export default {
     async addCategory() {
       try {
         if (this.selectedFile) {
+          const id: this.newCategory.category_id,
           console.log(this.selectedFile);
           const categoryName = this.newCategory.name;
+          const description: this.newCategory.description,
           console.log("Category Name:", categoryName);
 
           const formData = new FormData();
