@@ -220,10 +220,11 @@ async deleteCategory({ commit, state }, id) {
   },
 
   async uploadFile({ commit }, formData) {
+    console.log(formData);
+    for (let [key, value] of formData.entries()) {
+      console.log(`${key}:`, value instanceof File ? value.name : value);
+    }
     try {
-      for (let [key, value] of formData.entries()) {
-        console.log(`${key}:`, value instanceof File ? value.name : value);
-      }
       const response = await fetch(`${BASE_URL}/api/files/upload`, {
         method: 'POST',
         body: formData,
@@ -243,6 +244,7 @@ async deleteCategory({ commit, state }, id) {
       throw error;
     }
   },
+
   
   // Удаление файла
   async deleteImage({ commit }, filePath) {
@@ -270,23 +272,7 @@ async deleteCategory({ commit, state }, id) {
   },
   
   // Переименование файла
-  async uploadFile({ commit }, formData) {
-    try {
-      const response = await fetch(`${BASE_URL}/api/files/upload`, {
-        method: "POST",
-        body: formData,
-      });
-  
-      if (response.ok) {
-        return await response.json(); // Возвращаем путь к файлу
-      } else {
-        throw new Error("Ошибка при загрузке файла");
-      }
-    } catch (error) {
-      commit("setErrorMessage", error.message);
-      throw error;
-    }
-  },
+
   
   // Action для переименования файла
   async renameFile({ commit }, { oldPath, newPath }) {
