@@ -230,7 +230,27 @@ export default {
       }
     },
 
-    // Удаление изображения
+    // Метод для добавления новой категории
+    async addCategory() {
+      try {
+        if (this.selectedFile) {
+          console.log(this.selectedFile);
+          const categoryName = this.newCategory.name;
+          console.log("Category Name:", categoryName);
+          const formData = new FormData();
+          formData.append("file", this.selectedFile); // Добавляем файл
+          formData.append("categoryName", categoryName); // Добавляем имя категории в FormData
+          await this.uploadImage(formData); // Загружаем и переименовываем файл перед добавлением категории
+        }
+        // await this.$store.dispatch("addCategory", this.newCategory); // Отправляем данные категории
+        // this.showAddForm = false;
+        // this.newCategory = { name: "", description: "", image_url: "" }; // Сброс формы
+        this.fetchData(); // Обновление данных
+      } catch (error) {
+        console.error("Ошибка при добавлении категории:", error);
+      }
+    },
+
     async removeImage() {
       console.log(this.newCategory.image_url);
 
@@ -243,26 +263,6 @@ export default {
         this.newCategory.image_url = null; // Убираем URL
       } catch (error) {
         console.error("Ошибка при удалении изображения:", error);
-      }
-    },
-
-    // Метод для добавления новой категории
-    async addCategory() {
-      try {
-        if (this.selectedFile) {
-          console.log(this.selectedFile);
-          const categoryName = this.newCategory.name;
-          console.log("Category Name:", categoryName);
-          formData.append("file", this.selectedFile); // Добавляем файл
-          formData.append("categoryName", categoryName); // Добавляем имя категории в FormData
-          await this.uploadImage(); // Загружаем и переименовываем файл перед добавлением категории
-        }
-        // await this.$store.dispatch("addCategory", this.newCategory); // Отправляем данные категории
-        // this.showAddForm = false;
-        // this.newCategory = { name: "", description: "", image_url: "" }; // Сброс формы
-        this.fetchData(); // Обновление данных
-      } catch (error) {
-        console.error("Ошибка при добавлении категории:", error);
       }
     },
 
