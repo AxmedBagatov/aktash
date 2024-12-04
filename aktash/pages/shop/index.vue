@@ -240,9 +240,8 @@
   try {
     if (this.selectedFile) {
       console.log(this.selectedFile)
-      console.log(this.selectedFile.name);
-      // const newFileName = `category/${this.newCategory.name.replace(/\s+/g, '_')}.${extension}`; // Формируем имя
-      console.log(1)
+      const newFileName = `category/${this.selectedFile.name.replace(/\s+/g, '_')}`;; // Формируем имя
+      console.log(newFileName);
       // await this.uploadImage(); // Загружаем и переименовываем файл перед добавлением категории
     }
     // await this.$store.dispatch("addCategory", this.newCategory); // Отправляем данные категории
