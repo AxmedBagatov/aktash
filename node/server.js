@@ -127,10 +127,10 @@ app.post("/logout", (req, res) => {
 const multer = require("multer");
 const storage = multer.diskStorage({
   destination: (req, file, cb) => {
-    const categoryName = req.body.categoryName; // Получаем имя категории из body запроса
+    const categoryName = req.body.categoryName; // Получаем имя категории из тела запроса
 
     if (!categoryName) {
-      return cb(new Error('Category name is required'), null); // Если нет categoryName, возвращаем ошибку
+      return cb(new Error("Category name is required"), null); // Если нет categoryName, возвращаем ошибку
     }
 
     const uploadPath = path.join(__dirname, "images", categoryName); // Создаем путь для сохранения файла
@@ -150,16 +150,11 @@ const storage = multer.diskStorage({
     cb(null, fileName); // Указываем имя файла
   }
 });
+
 const upload = multer({ storage: storage });
 const router = express.Router();
 
-router.delete("/api/files/delete", (req, res) => {
-  const { path: filePath } = req.body;
-  console.log("Запрос на удаление файла:", filePath);
 
-  // Только логируем, файл пока не удаляем
-  res.status(200).json({ message: "Удаление файла получено", path: filePath });
-});
 
 router.post("/api/files/upload", upload.single("file"), (req, res) => {
   try {
@@ -184,6 +179,14 @@ router.post("/api/files/upload", upload.single("file"), (req, res) => {
     console.error("Ошибка при загрузке файла:", error);
     res.status(500).json({ message: "Ошибка сервера при загрузке файла" });
   }
+});
+
+router.delete("/api/files/delete", (req, res) => {
+  const { path: filePath } = req.body;
+  console.log("Запрос на удаление файла:", filePath);
+
+  // Только логируем, файл пока не удаляем
+  res.status(200).json({ message: "Удаление файла получено", path: filePath });
 });
 
 router.put("/api/files/rename", (req, res) => {
