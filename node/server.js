@@ -117,13 +117,11 @@ const multer = require("multer");
 const router = express.Router();
 const storage = multer.diskStorage({
   destination: (req, file, cb) => {
-    // Извлекаем categoryName из параметров запроса (URL)
-    const categoryName = req.query.categoryName || "default"; // Если нет, используем "default"
-    const uploadPath = path.join("images", categoryName); // Генерируем путь
+    // Место для хранения файлов (пока без использования categoryName)
+    const uploadPath = path.join("images"); // Это можно оставить как общую папку для всех файлов
+    console.log("General upload path:", uploadPath); // Логируем путь для отладки
 
-    console.log("Upload path:", uploadPath); // Логирование пути для отладки
-
-    // Создаем папку, если ее нет
+    // Создаем папку, если её нет
     fs.mkdirSync(uploadPath, { recursive: true });
 
     cb(null, uploadPath); // Указываем multer, куда сохранять файл
@@ -135,26 +133,32 @@ const storage = multer.diskStorage({
 
 const upload = multer({ storage });
 
-// Маршрут для загрузки файла
 router.post("/api/files/upload", upload.single("file"), (req, res) => {
   try {
-    const categoryName = req.body.categoryName; // Убедитесь, что categoryName есть в body
-    const file = req.file;
-    const uploadPath = path.join("images", categoryName);
-    console.log("Upload path with category:", uploadPath);
-    console.log("Received categoryName:", categoryName); // Логируем полученную категорию
+    const categoryName = req.body.categoryName || "default"; // Получаем categoryName из тела запроса
+    const file = req.file; // Получаем файл из запроса
+
+    // Формируем путь с категорией и именем файла
+    const uploadPath = path.join("images", categoryName, file.filename);
+
+    console.log("Upload path with category and filename:", uploadPath); // Логируем окончательный путь для отладки
+
+    // Логируем полученные данные
+    console.log("Received categoryName:", categoryName); // Логируем категорию
     console.log("Received file:", file); // Логируем файл
 
+    // Возвращаем ответ с данными
     res.json({
       message: "Файл успешно загружен",
       categoryName: categoryName,
       fileName: file ? file.filename : "Файл не найден",
-      filePath: file ? file.path : null, // Отправляем путь к файлу
+      filePath: uploadPath, // Отправляем путь к файлу
     });
   } catch (error) {
     console.error("Ошибка при обработке запроса:", error);
     res.status(500).json({ message: "Ошибка сервера" });
   }
+
 });
 
 router.delete('/api/files/delete', (req, res) => {
