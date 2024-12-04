@@ -156,6 +156,7 @@ const upload = multer({ storage: storage });
 const router = express.Router();
 
 router.post("/api/files/upload",  (req, res) => {
+  console.log("Request body:", req.body); // Логирование всего тела запроса
   try {
     const categoryName = req.body.categoryName; // Получаем имя категории из тела запроса
     console.log("Received categoryName:", categoryName); // Логирование полученного значения
