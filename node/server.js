@@ -133,7 +133,7 @@ const storage = multer.diskStorage({
 
 const upload = multer({ storage });
 
-router.post("/api/files/upload", upload.single("file"), (req, res) => {
+router.post("/api/files/upload", (req, res) => {
   try {
     const categoryName = req.body.categoryName || "default"; // Получаем categoryName из тела запроса
     const file = req.file; // Получаем файл из запроса
@@ -147,18 +147,30 @@ router.post("/api/files/upload", upload.single("file"), (req, res) => {
     console.log("Received categoryName:", categoryName); // Логируем категорию
     console.log("Received file:", file); // Логируем файл
 
-    // Возвращаем ответ с данными
-    res.json({
-      message: "Файл успешно загружен",
-      categoryName: categoryName,
-      fileName: file ? file.filename : "Файл не найден",
-      filePath: uploadPath, // Отправляем путь к файлу
+    // Создаем директорию, если она не существует
+    const dirPath = path.dirname(uploadPath); // Получаем путь к родительской директории
+    fs.mkdirSync(dirPath, { recursive: true }); // Создаем директорию, если ее нет
+
+    // Перемещаем файл в нужную директорию
+    fs.rename(file.path, uploadPath, (err) => {
+      if (err) {
+        console.error("Ошибка при перемещении файла:", err);
+        return res.status(500).json({ message: "Ошибка при сохранении файла" });
+      }
+
+      // Возвращаем ответ с данными
+      res.json({
+        message: "Файл успешно загружен",
+        categoryName: categoryName,
+        fileName: file.filename,
+        filePath: uploadPath, // Отправляем путь к файлу
+      });
     });
+
   } catch (error) {
     console.error("Ошибка при обработке запроса:", error);
     res.status(500).json({ message: "Ошибка сервера" });
   }
-
 });
 
 router.delete('/api/files/delete', (req, res) => {
