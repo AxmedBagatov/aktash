@@ -168,18 +168,42 @@ router.post('/api/files/upload', upload.single('file'), (req, res) => {
     // Перемещаем файл из временной директории в нужную папку
     const tempFilePath = path.join('images', file.filename);  // Используем новое имя файла
     console.log(destinationFilePath)
-    fs.rename(tempFilePath, destinationFilePath, (err) => {
+    fs.rename(tempFilePath, destinationFilePath, async (err) => {
       if (err) {
         console.error('Ошибка при перемещении файла:', err);
         return res.status(500).json({ message: 'Ошибка сервера при перемещении файла' });
       }
 
+      const insertCategoryQuery = `
+        INSERT INTO categories (name, description)
+        VALUES ($1, $2)
+        RETURNING category_id;
+      `;
+      const categoryResult = await queryDB(insertCategoryQuery, [categoryName, categoryDescription]);
+      if (categoryResult.rows.length === 0) {
+        return res.status(500).json({ message: 'Ошибка при создании категории' });
+      }
+
+      const categoryId = categoryResult.rows[0].category_id;
+
+      // 2. Добавление изображения для категории в таблицу images
+      const insertImageQuery = `
+        INSERT INTO images (entity_id, entity_type, image_url, image_type, image_order)
+        VALUES ($1, 'category', $2, $3, 1);
+      `;
+      await queryDB(insertImageQuery, [
+        categoryId,  // entity_id из таблицы categories
+        destinationFilePath.replace('images/', ''),  // Убираем 'images/' в начале пути
+        fileType,  // Тип файла (например, 'image/jpeg')
+      ]);
+
       // Возвращаем информацию о файле
       res.json({
-        message: 'Файл успешно загружен',
+        message: 'Категория и изображение успешно загружены',
         categoryName: categoryName,
         fileName: file.filename,  // Используем уникальное имя файла
         filePath: destinationFilePath,  // Отправляем путь к файлу
+        categoryId: categoryId,  // Отправляем id новой категории
       });
     });
 
