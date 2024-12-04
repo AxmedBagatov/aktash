@@ -251,6 +251,9 @@ export default {
       try {
         if (this.selectedFile) {
           console.log(this.selectedFile);
+          const categoryName = this.newCategory.name;
+
+          console.log("Category Name:", categoryName);
           const newFileName = `category/${this.selectedFile.name.replace(
             /\s+/g,
             "_"
