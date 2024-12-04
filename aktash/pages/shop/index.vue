@@ -239,11 +239,12 @@
     async addCategory() {
   try {
     if (this.selectedFile) {
-      await this.uploadImage(); // Загружаем и переименовываем файл перед добавлением категории
+      console.log(this.selectedFile)
+      // await this.uploadImage(); // Загружаем и переименовываем файл перед добавлением категории
     }
-    await this.$store.dispatch("addCategory", this.newCategory); // Отправляем данные категории
-    this.showAddForm = false;
-    this.newCategory = { name: "", description: "", image_url: "" }; // Сброс формы
+    // await this.$store.dispatch("addCategory", this.newCategory); // Отправляем данные категории
+    // this.showAddForm = false;
+    // this.newCategory = { name: "", description: "", image_url: "" }; // Сброс формы
     this.fetchData(); // Обновление данных
   } catch (error) {
     console.error("Ошибка при добавлении категории:", error);
