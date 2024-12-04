@@ -224,7 +224,8 @@ async deleteCategory({ commit, state }, id) {
         method: 'POST',
         body: formData,
       });
-      log
+      console.log("Запрос отправлен для отправки файла");
+      
       if (response.ok) {
         const data = await response.json();
         return data; // Возвращаем данные о файле, включая путь

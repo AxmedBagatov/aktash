@@ -169,7 +169,7 @@ export default {
       this.showAddForm = false;
     },
 
-    cancelEditCategory(){
+    cancelEditCategory() {
       this.showEditForm = false;
     },
 
@@ -215,6 +215,9 @@ export default {
 
     async uploadImage() {
       if (!this.selectedFile) return; // Если нет выбранного файла, выходим
+
+      // Создаем объект FormData и добавляем файл
+      const formData = new FormData();
       formData.append("file", this.selectedFile); // Добавляем файл в formData
 
       try {
@@ -253,10 +256,10 @@ export default {
             "_"
           )}`; // Формируем имя
           console.log(newFileName);
-          // await this.uploadImage(); // Загружаем и переименовываем файл перед добавлением категории
+          await this.uploadImage(); // Загружаем и переименовываем файл перед добавлением категории
         }
         // await this.$store.dispatch("addCategory", this.newCategory); // Отправляем данные категории
-        this.showAddForm = false;
+        // this.showAddForm = false;
         // this.newCategory = { name: "", description: "", image_url: "" }; // Сброс формы
         this.fetchData(); // Обновление данных
       } catch (error) {
