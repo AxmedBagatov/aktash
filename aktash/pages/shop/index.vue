@@ -215,7 +215,6 @@ export default {
 
     async uploadImage(formData) {
       if (!formData) return; // Если нет данных для отправки, выходим
-
       try {
         // Загружаем файл, передавая formData в экшн store
         const fileData = await this.$store.dispatch("uploadFile", formData);

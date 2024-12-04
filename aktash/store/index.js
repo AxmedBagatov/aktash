@@ -1,4 +1,4 @@
-const BASE_URL = 'http://10.30.74.229:4000';
+const BASE_URL = 'http://192.168.62.129:4000';
 export const state = () => ({
   products: [],
   categories: [],
@@ -221,11 +221,12 @@ async deleteCategory({ commit, state }, id) {
 
   async uploadFile({ commit }, formData) {
     try {
+      console.log("Запрос отправлен для отправки файла",formData);
       const response = await fetch(`${BASE_URL}/api/files/upload`, {
         method: 'POST',
         body: formData,
       });
-      console.log("Запрос отправлен для отправки файла");
+      
       
       if (response.ok) {
         const data = await response.json();
