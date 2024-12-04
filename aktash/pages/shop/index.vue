@@ -52,11 +52,7 @@
             placeholder="Category Description"
             required
           ></textarea>
-          <input
-            type="file"
-            accept="image/*"
-            @change="onFileChange"
-          />
+          <input type="file" accept="image/*" @change="onFileChange" />
           <div class="modal-actions">
             <button type="submit">Add Category</button>
             <button @click="cancelAddCategory">Cancel</button>
@@ -96,11 +92,7 @@
             />
             <button @click="removeImage">Remove Image</button>
           </div>
-          <input
-            type="file"
-            accept="image/*"
-            @change="onFileChange"
-          />
+          <input type="file" accept="image/*" @change="onFileChange" />
           <div class="modal-actions">
             <button type="submit">Update Category</button>
             <button @click="cancelEditCategory">Cancel</button>
@@ -111,118 +103,130 @@
   </div>
 </template>
 
-
-  <script>
-  export default {
-    name: "ProductAndCategoryList",
-    data() {
-      return {
-        showAddForm: false,
-        isEditMode: false,
-        newCategory: {
-          name: "",
-          description: "",
-          image_url: "",
-          category_id: null, // Добавленное поле для хранения ID
-        },
-        editingCategoryId: null,
-      };
-    },
-    computed: {
-      isLoggedIn() {
-        return this.$store.getters.isLoggedIn;
+<script>
+export default {
+  name: "ProductAndCategoryList",
+  data() {
+    return {
+      showAddForm: false,
+      isEditMode: false,
+      newCategory: {
+        name: "",
+        description: "",
+        image_url: "",
+        category_id: null, // Добавленное поле для хранения ID
       },
-      user() {
-        return this.$store.getters.getUser;
-      },
-      catalogs() {
-        return this.$store.getters.getCategories;
-      },
-      errorMessage() {
-        return this.$store.getters.getErrorMessage;
-      },
-      loading() {
-        return this.$store.getters.isLoading;
-      },
-    },
-    mounted() {
-      this.fetchData();
-    },
-    methods: {
-      async fetchData() {
-        try {
-          await this.$store.dispatch("fetchCategories"); // Загрузить все категории
-        } catch (error) {
-          console.error("Ошибка загрузки данных:", error);
-        }
-      },
-
-      // Показать форму добавления категории
-      showAddCategoryForm() {
-        this.showAddForm = true;
-        this.isEditMode = false;
-        this.newCategory = { name: "", description: "", image_url: "" }; // Очистить поля
-      },
-
-      // Показать форму редактирования категории
-      editCategory(categoryId) {
-        this.showAddForm = true;
-        this.isEditMode = true;
-        const category = this.catalogs.find((c) => c.category_id === categoryId);
-        this.newCategory = { ...category }; // Заполняем поля формы данными категории
-        this.editingCategoryId = categoryId;
-      },
-
-      // Закрыть форму
-      cancelAddCategory() {
-        this.showAddForm = false;
-      },
-
-      onFileChange(event) {
-        const file = event.target.files[0];
-        if (file) {
-          console.log(this.selectedFile);
-          this.selectedFile = file; // Сохраняем выбранный файл
-        }
-      },
-      async renameImage(newPath) {
-    try {
-      const updatedPath = await this.$store.dispatch("renameFile", {
-        oldPath: this.newCategory.image_url,
-        newPath,
-      });
-      this.newCategory.image_url = updatedPath; // Обновляем путь в форме
-    } catch (error) {
-      console.error("Ошибка переименования файла:", error);
-    }
+      editingCategoryId: null,
+    };
   },
-
-      // Загрузка изображения
-      async uploadImage() {
-    if (!this.selectedFile) return;
-
-    const formData = new FormData();
-    formData.append("file", this.selectedFile);
-
-    try {
-      // Загружаем файл
-      const fileData = await this.$store.dispatch("uploadFile", formData);
-
-      // Формируем новый путь файла
-      const extension = fileData.path.split('.').pop(); // Получаем расширение файла
-      const newFileName = `category/${this.newCategory.name.replace(/\s+/g, '_')}.${extension}`; // Формируем имя
-      await this.renameImage(newFileName);
-
-    } catch (error) {
-      console.error("Ошибка загрузки файла:", error);
-    }
+  computed: {
+    isLoggedIn() {
+      return this.$store.getters.isLoggedIn;
+    },
+    user() {
+      return this.$store.getters.getUser;
+    },
+    catalogs() {
+      return this.$store.getters.getCategories;
+    },
+    errorMessage() {
+      return this.$store.getters.getErrorMessage;
+    },
+    loading() {
+      return this.$store.getters.isLoading;
+    },
   },
+  mounted() {
+    this.fetchData();
+  },
+  methods: {
+    async fetchData() {
+      try {
+        await this.$store.dispatch("fetchCategories"); // Загрузить все категории
+      } catch (error) {
+        console.error("Ошибка загрузки данных:", error);
+      }
+    },
 
+    // Показать форму добавления категории
+    showAddCategoryForm() {
+      this.showAddForm = true;
+      this.isEditMode = false;
+      this.newCategory = { name: "", description: "", image_url: "" }; // Очистить поля
+    },
+
+    // Показать форму редактирования категории
+    editCategory(categoryId) {
+      this.showAddForm = true;
+      this.isEditMode = true;
+      const category = this.catalogs.find((c) => c.category_id === categoryId);
+      this.newCategory = { ...category }; // Заполняем поля формы данными категории
+      this.editingCategoryId = categoryId;
+    },
+
+    // Закрыть форму
+    cancelAddCategory() {
+      this.showAddForm = false;
+    },
+
+    onFileChange(event) {
+      const file = event.target.files[0];
+      if (file) {
+        console.log(this.selectedFile);
+        this.selectedFile = file; // Сохраняем выбранный файл
+      }
+    },
+    async renameImage(newPath) {
+      try {
+        const updatedPath = await this.$store.dispatch("renameFile", {
+          oldPath: this.newCategory.image_url,
+          newPath,
+        });
+        this.newCategory.image_url = updatedPath; // Обновляем путь в форме
+      } catch (error) {
+        console.error("Ошибка переименования файла:", error);
+      }
+    },
+
+    // Загрузка изображения
+    //   async uploadImage() {
+    //   if (!this.selectedFile) return;
+
+    //   const formData = new FormData();
+    //   formData.append("file", this.selectedFile);
+
+    //   try {
+    //     // Загружаем файл
+    //     const fileData = await this.$store.dispatch("uploadFile", formData);
+
+    //     // Формируем новый путь файла
+    //     const extension = fileData.path.split('.').pop(); // Получаем расширение файла
+    //     const newFileName = `category/${this.newCategory.name.replace(/\s+/g, '_')}.${extension}`; // Формируем имя
+    //     await this.renameImage(newFileName);
+
+    //   } catch (error) {
+    //     console.error("Ошибка загрузки файла:", error);
+    //   }
+    // },
+
+    async uploadImage() {
+      if (!this.selectedFile) return; // Если нет выбранного файла, выходим
+      formData.append("file", this.selectedFile); // Добавляем файл в formData
+
+      try {
+        // Загружаем файл, передавая formData в экшн store
+        const fileData = await this.$store.dispatch("uploadFile", formData);
+
+        console.log("Файл успешно загружен:", fileData); // Выводим данные о файле, если нужно
+      } catch (error) {
+        console.error("Ошибка загрузки файла:", error); // Логируем ошибку, если что-то пошло не так
+      }
+    },
 
     // Удаление изображения
     async removeImage() {
       console.log(this.newCategory.image_url);
-      
+
       if (!this.newCategory.image_url) return;
 
       try {
@@ -237,41 +241,49 @@
 
     // Метод для добавления новой категории
     async addCategory() {
-  try {
-    if (this.selectedFile) {
-      console.log(this.selectedFile)
-      const newFileName = `category/${this.selectedFile.name.replace(/\s+/g, '_')}`;; // Формируем имя
-      console.log(newFileName);
-      // await this.uploadImage(); // Загружаем и переименовываем файл перед добавлением категории
-    }
-    // await this.$store.dispatch("addCategory", this.newCategory); // Отправляем данные категории
-    this.showAddForm = false;
-    // this.newCategory = { name: "", description: "", image_url: "" }; // Сброс формы
-    this.fetchData(); // Обновление данных
-  } catch (error) {
-    console.error("Ошибка при добавлении категории:", error);
-  }
-},
+      try {
+        if (this.selectedFile) {
+          console.log(this.selectedFile);
+          const newFileName = `category/${this.selectedFile.name.replace(
+            /\s+/g,
+            "_"
+          )}`; // Формируем имя
+          console.log(newFileName);
+          // await this.uploadImage(); // Загружаем и переименовываем файл перед добавлением категории
+        }
+        // await this.$store.dispatch("addCategory", this.newCategory); // Отправляем данные категории
+        this.showAddForm = false;
+        // this.newCategory = { name: "", description: "", image_url: "" }; // Сброс формы
+        this.fetchData(); // Обновление данных
+      } catch (error) {
+        console.error("Ошибка при добавлении категории:", error);
+      }
+    },
 
-// Метод для обновления категории
-async updateCategory() {
-  try {
-    if (this.selectedFile) {
-      await this.uploadImage(); // Загружаем и переименовываем файл перед обновлением категории
-    }
-    await this.$store.dispatch("updateCategory", {
-      id: this.newCategory.category_id,
-      name: this.newCategory.name,
-      description: this.newCategory.description,
-      image_url: this.newCategory.image_url,
-    });
-    this.showAddForm = false;
-    this.newCategory = { name: "", description: "", image_url: "", category_id: null }; // Сброс формы
-    this.fetchData(); // Обновление данных
-  } catch (error) {
-    console.error("Ошибка при обновлении категории:", error);
-  }
-},
+    // Метод для обновления категории
+    async updateCategory() {
+      try {
+        if (this.selectedFile) {
+          await this.uploadImage(); // Загружаем и переименовываем файл перед обновлением категории
+        }
+        await this.$store.dispatch("updateCategory", {
+          id: this.newCategory.category_id,
+          name: this.newCategory.name,
+          description: this.newCategory.description,
+          image_url: this.newCategory.image_url,
+        });
+        this.showAddForm = false;
+        this.newCategory = {
+          name: "",
+          description: "",
+          image_url: "",
+          category_id: null,
+        }; // Сброс формы
+        this.fetchData(); // Обновление данных
+      } catch (error) {
+        console.error("Ошибка при обновлении категории:", error);
+      }
+    },
     // Удалить категорию
     async deleteCategory(categoryId) {
       try {
