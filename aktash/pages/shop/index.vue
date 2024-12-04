@@ -228,14 +228,14 @@ export default {
     async addCategory() {
       try {
         if (this.selectedFile) {
-          const id: this.newCategory.category_id,
           console.log(this.selectedFile);
           const categoryName = this.newCategory.name;
-          const description: this.newCategory.description,
+          const description = this.newCategory.description;
           console.log("Category Name:", categoryName);
-
+          console.log("id:", this.newCategory.category_id);
           const formData = new FormData();
           formData.append("file", this.selectedFile); // Добавляем файл
+          formData.append("description", description);
           formData.append("categoryName", categoryName); // Добавляем имя категории в FormData
           await this.uploadImage(formData); // Передаем formData в uploadImage
         }
