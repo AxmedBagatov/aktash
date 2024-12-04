@@ -131,47 +131,55 @@ const router = express.Router();
 const storage = multer.diskStorage({
   destination: (req, file, cb) => {
     // Указываем базовую папку для хранения файлов
-    cb(null, 'images/');  // Все файлы будут сначала сохраняться в папку 'images'
+    cb(null, "images/"); // Все файлы будут сначала сохраняться в папку 'images'
   },
   filename: (req, file, cb) => {
     // Формируем уникальное имя для файла и добавляем оригинальное имя
     const uniqueName = Date.now() + path.extname(file.originalname); // уникальное имя
-    const finalFileName = uniqueName.replace(path.extname(file.originalname), '') + '_' + file.originalname; // добавляем оригинальное имя
+    const finalFileName =
+      uniqueName.replace(path.extname(file.originalname), "") +
+      "_" +
+      file.originalname; // добавляем оригинальное имя
     cb(null, finalFileName); // сохраняем с новым именем
-  }
+  },
 });
 
 // Инициализация multer с использованием настроенного хранилища
 const upload = multer({ storage: storage });
 
 // Настройка маршрута для загрузки файла
-router.post('/api/files/upload', upload.single('file'), (req, res) => {
+router.post("/api/files/upload", upload.single("file"), (req, res) => {
   try {
-    const categoryName = req.body.categoryName || 'default';  // Получаем categoryName из тела запроса
-    const categoryDescription = req.body.description
-    const file = req.file;  // Получаем файл из запроса
+    const categoryName = req.body.categoryName || "default"; // Получаем categoryName из тела запроса
+    const categoryDescription = req.body.description;
+    const file = req.file; // Получаем файл из запроса
     console.log(file);
-    const filetpype = file.mimetype;
+    
+    
     if (!file) {
-      return res.status(400).json({ message: 'Файл не был загружен' });
+      return res.status(400).json({ message: "Файл не был загружен" });
     }
 
     // Формируем путь для сохранения файла в подкатегории
-    const destinationDir = path.join('images', 'category', categoryName);  // Папка для категории
-    const destinationFilePath = path.join(destinationDir, file.filename);  // Путь для окончательного сохранения файла
-
+    const destinationDir = path.join("images", "category", categoryName); // Папка для категории
+    const destinationFilePath = path.join(destinationDir, file.filename); // Путь для окончательного сохранения файла
+    const filetype = file.mimetype;
+    console.log(filetype);
+    
     // Создаем директорию, если её нет
     if (!fs.existsSync(destinationDir)) {
       fs.mkdirSync(destinationDir, { recursive: true });
     }
 
     // Перемещаем файл из временной директории в нужную папку
-    const tempFilePath = path.join('images', file.filename);  // Используем новое имя файла
-    console.log(destinationFilePath)
+    const tempFilePath = path.join("images", file.filename); // Используем новое имя файла
+    console.log(destinationFilePath);
     fs.rename(tempFilePath, destinationFilePath, async (err) => {
       if (err) {
-        console.error('Ошибка при перемещении файла:', err);
-        return res.status(500).json({ message: 'Ошибка сервера при перемещении файла' });
+        console.error("Ошибка при перемещении файла:", err);
+        return res
+          .status(500)
+          .json({ message: "Ошибка сервера при перемещении файла" });
       }
 
       const insertCategoryQuery = `
@@ -179,12 +187,32 @@ router.post('/api/files/upload', upload.single('file'), (req, res) => {
         VALUES ($1, $2)
         RETURNING category_id;
       `;
-      const categoryResult = await queryDB(insertCategoryQuery, [categoryName, categoryDescription]);
-      if (categoryResult.rows.length === 0) {
-        return res.status(500).json({ message: 'Ошибка при создании категории' });
+      let categoryResult;
+      try {
+        categoryResult = await queryDB(insertCategoryQuery, [
+          categoryName,
+          categoryDescription,
+        ]);
+        console.log("categoryResult:", categoryResult); // Логируем результат запроса
+      } catch (error) {
+        console.error(
+          "Ошибка при выполнении запроса insertCategoryQuery:",
+          error
+        );
+        return res
+          .status(500)
+          .json({ message: "Ошибка при создании категории" });
       }
 
-      const categoryId = categoryResult.rows[0].category_id;
+      // Проверяем, если нет результата или ошибка в запросе
+      if (categoryResult.length === 0) {
+        // Исправлено: удаляем .rows и проверяем длину массива
+        return res
+          .status(500)
+          .json({ message: "Ошибка при создании категории. Нет результата." });
+      }
+
+      const categoryId = categoryResult[0].category_id;
 
       // 2. Добавление изображения для категории в таблицу images
       const insertImageQuery = `
@@ -192,27 +220,25 @@ router.post('/api/files/upload', upload.single('file'), (req, res) => {
         VALUES ($1, 'category', $2, $3, 1);
       `;
       await queryDB(insertImageQuery, [
-        categoryId,  // entity_id из таблицы categories
-        destinationFilePath.replace('images/', ''),  // Убираем 'images/' в начале пути
-        fileType,  // Тип файла (например, 'image/jpeg')
+        categoryId, // entity_id из таблицы categories
+        destinationFilePath.replace("images/", ""), // Убираем 'images/' в начале пути
+        filetype, // Тип файла (например, 'image/jpeg')
       ]);
 
       // Возвращаем информацию о файле
       res.json({
-        message: 'Категория и изображение успешно загружены',
+        message: "Категория и изображение успешно загружены",
         categoryName: categoryName,
-        fileName: file.filename,  // Используем уникальное имя файла
-        filePath: destinationFilePath,  // Отправляем путь к файлу
-        categoryId: categoryId,  // Отправляем id новой категории
+        fileName: file.filename, // Используем уникальное имя файла
+        filePath: destinationFilePath, // Отправляем путь к файлу
+        categoryId: categoryId, // Отправляем id новой категории
       });
     });
-
   } catch (error) {
-    console.error('Ошибка при обработке запроса:', error);
-    res.status(500).json({ message: 'Ошибка сервера' });
+    console.error("Ошибка при обработке запроса:", error);
+    res.status(500).json({ message: "Ошибка сервера" });
   }
 });
-
 
 router.delete("/api/files/delete", (req, res) => {
   const { path: filePath } = req.body;

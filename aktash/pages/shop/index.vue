@@ -240,9 +240,9 @@ export default {
           await this.uploadImage(formData); // Передаем formData в uploadImage
         }
 
-        // await this.$store.dispatch("addCategory", this.newCategory); // Отправляем данные категории
-        // this.showAddForm = false;
-        // this.newCategory = { name: "", description: "", image_url: "" }; // Сброс формы
+        await this.$store.dispatch("addCategory", this.newCategory); // Отправляем данные категории
+        this.showAddForm = false;
+        this.newCategory = { name: "", description: "", image_url: "" }; // Сброс формы
         this.fetchData(); // Обновление данных
       } catch (error) {
         console.error("Ошибка при добавлении категории:", error);
