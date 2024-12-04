@@ -8,7 +8,7 @@ const cookieParser = require("cookie-parser");
 const bcrypt = require("bcrypt");
 const path = require("path");
 const JWT_SECRET = "cristianomessi"; // Лучше хранить это в .env файле
-
+const fs = require("fs");
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 
@@ -127,19 +127,28 @@ app.post("/logout", (req, res) => {
 const multer = require("multer");
 const storage = multer.diskStorage({
   destination: (req, file, cb) => {
-    // Укажите директорию, куда нужно сохранять файлы
-    cb(null, "images/"); // Например, сохраняем в папку "uploads"
+    const categoryName = req.body.categoryName; // Получаем имя категории из body запроса
+
+    if (!categoryName) {
+      return cb(new Error('Category name is required'), null); // Если нет categoryName, возвращаем ошибку
+    }
+
+    const uploadPath = path.join(__dirname, "images", categoryName); // Создаем путь для сохранения файла
+
+    // Проверяем, существует ли директория, если нет — создаем
+    fs.mkdirSync(uploadPath, { recursive: true });
+
+    cb(null, uploadPath); // Указываем папку для сохранения файла
   },
   filename: (req, file, cb) => {
-    // Получаем расширение файла
-    const extension = path.extname(file.originalname);
-    // Создаем новое имя файла, например, используя текущее время и оригинальное имя
-    const customFileName = `category/${Date.now()}_${file.originalname.replace(
-      /\s+/g,
-      "_"
-    )}`;
-    cb(null, customFileName); // Указываем новое имя для файла
-  },
+    // Получаем оригинальное имя файла
+    const originalName = file.originalname;
+    
+    // Создаем имя файла с расширением
+    const fileName = originalName.replace(/\s+/g, "_"); // Заменяем пробелы на подчеркивания
+
+    cb(null, fileName); // Указываем имя файла
+  }
 });
 const upload = multer({ storage: storage });
 const router = express.Router();
@@ -154,10 +163,11 @@ router.delete("/api/files/delete", (req, res) => {
 
 router.post("/api/files/upload", upload.single("file"), (req, res) => {
   try {
-    const categoryName = req.body.categoryName;
+    const categoryName = req.body.categoryName; // Получаем имя категории из тела запроса
     console.log("Received categoryName:", categoryName);
 
     console.log("Запрос для принятия файла");
+
     // Если файл загружен успешно, возвращаем информацию о файле
     if (req.file) {
       console.log("upload file:", req.file);

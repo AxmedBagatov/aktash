@@ -213,17 +213,12 @@ export default {
     //   }
     // },
 
-    async uploadImage() {
-      if (!this.selectedFile) return; // Если нет выбранного файла, выходим
-
-      // Создаем объект FormData и добавляем файл
-      const formData = new FormData();
-      formData.append("file", this.selectedFile); // Добавляем файл в formData
+    async uploadImage(formData) {
+      if (!formData) return; // Если нет данных для отправки, выходим
 
       try {
         // Загружаем файл, передавая formData в экшн store
         const fileData = await this.$store.dispatch("uploadFile", formData);
-
         console.log("Файл успешно загружен:", fileData); // Выводим данные о файле, если нужно
       } catch (error) {
         console.error("Ошибка загрузки файла:", error); // Логируем ошибку, если что-то пошло не так
@@ -237,11 +232,14 @@ export default {
           console.log(this.selectedFile);
           const categoryName = this.newCategory.name;
           console.log("Category Name:", categoryName);
+
           const formData = new FormData();
           formData.append("file", this.selectedFile); // Добавляем файл
           formData.append("categoryName", categoryName); // Добавляем имя категории в FormData
-          await this.uploadImage(formData); // Загружаем и переименовываем файл перед добавлением категории
+
+          await this.uploadImage(formData); // Передаем formData в uploadImage
         }
+
         // await this.$store.dispatch("addCategory", this.newCategory); // Отправляем данные категории
         // this.showAddForm = false;
         // this.newCategory = { name: "", description: "", image_url: "" }; // Сброс формы
