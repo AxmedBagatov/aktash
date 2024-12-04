@@ -66,6 +66,7 @@
     // Форматируем продукты для карусели
     formattedProducts() {
       return this.products.map((product) => {
+        console.log(this.products.map)
         const firstImage = product.images?.[0]?.url || "default-image.png"; // Берём первый URL или дефолтное изображение
         return {
           ...product,
