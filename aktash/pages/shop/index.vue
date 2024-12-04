@@ -1,207 +1,207 @@
-<template>
-  <div class="catalogs">
-    <!-- <div>
-      <p v-if="isLoggedIn">Welcome, {{ user.username }}!</p>
-      <p v-else>Please log in to access this page.</p>
-    </div> -->
+  <template>
+    <div class="catalogs">
+      <!-- <div>
+        <p v-if="isLoggedIn">Welcome, {{ user.username }}!</p>
+        <p v-else>Please log in to access this page.</p>
+      </div> -->
 
-    <!-- Отображаем кнопки для добавления и редактирования категорий только для авторизованных пользователей -->
-    <div v-if="isLoggedIn" class="admin-controls">
-      <button @click="showAddCategoryForm">Add Category</button>
-    </div>
+      <!-- Отображаем кнопки для добавления и редактирования категорий только для авторизованных пользователей -->
+      <div v-if="isLoggedIn" class="admin-controls">
+        <button @click="showAddCategoryForm">Add Category</button>
+      </div>
 
-    <nuxt-link class="breadcrumb" :to="`/`">Главная</nuxt-link>
-    <h1>Категории</h1>
+      <nuxt-link class="breadcrumb" :to="`/`">Главная</nuxt-link>
+      <h1>Категории</h1>
 
-    <div v-if="loading" class="loading">Загрузка...</div>
-    <div v-else-if="errorMessage" class="error">{{ errorMessage }}</div>
-    <div v-else>
-      <ul class="catalog-list">
-        <li
-          v-for="catalog in catalogs"
-          :key="catalog.category_id"
-          class="catalog-item"
-        >
-          <nuxt-link :to="`/shop/${catalog.category_id}`" class="catalog-link">
-            
-            <img
-              v-if="catalog.image_url"
-              :src="`/${catalog.image_url}`"
-              :alt="catalog.name"
-              class="catalog-image"
-            />
-            <div class="catalog-info">
-              <h2>{{ catalog.name }}</h2>
-              <p>{{ catalog.description }}</p>
+      <div v-if="loading" class="loading">Загрузка...</div>
+      <div v-else-if="errorMessage" class="error">{{ errorMessage }}</div>
+      <div v-else>
+        <ul class="catalog-list">
+          <li
+            v-for="catalog in catalogs"
+            :key="catalog.category_id"
+            class="catalog-item"
+          >
+            <nuxt-link :to="`/shop/${catalog.category_id}`" class="catalog-link">
+              
+              <img
+                v-if="catalog.image_url"
+                :src="`/${catalog.image_url}`"
+                :alt="catalog.name"
+                class="catalog-image"
+              />
+              <div class="catalog-info">
+                <h2>{{ catalog.name }}</h2>
+                <p>{{ catalog.description }}</p>
+              </div>
+            </nuxt-link>
+
+            <!-- Кнопки для редактирования и удаления только для авторизованных пользователей -->
+            <div v-if="isLoggedIn" class="admin-actions">
+              <button @click="editCategory(catalog.category_id)">Edit</button>
+              <button @click="deleteCategory(catalog.category_id)">Delete</button>
             </div>
-          </nuxt-link>
+          </li>
+        </ul>
+      </div>
 
-          <!-- Кнопки для редактирования и удаления только для авторизованных пользователей -->
-          <div v-if="isLoggedIn" class="admin-actions">
-            <button @click="editCategory(catalog.category_id)">Edit</button>
-            <button @click="deleteCategory(catalog.category_id)">Delete</button>
-          </div>
-        </li>
-      </ul>
-    </div>
-
-    <!-- Модальное окно для добавления и редактирования категории -->
-    <div v-if="showAddForm" class="modal-overlay">
-      <div class="modal-content">
-        <h3>{{ isEditMode ? "Edit Category" : "Add New Category" }}</h3>
-        <form @submit.prevent="isEditMode ? updateCategory() : addCategory">
-          <div v-if="isEditMode">
-            <label for="category_id">Category ID:</label>
+      <!-- Модальное окно для добавления и редактирования категории -->
+      <div v-if="showAddForm" class="modal-overlay">
+        <div class="modal-content">
+          <h3>{{ isEditMode ? "Edit Category" : "Add New Category" }}</h3>
+          <form @submit.prevent="isEditMode ? updateCategory() : addCategory">
+            <div v-if="isEditMode">
+              <label for="category_id">Category ID:</label>
+              <input
+                type="text"
+                id="category_id"
+                v-model="newCategory.category_id"
+                placeholder="Category ID"
+                readonly
+              />
+            </div>
             <input
-              type="text"
-              id="category_id"
-              v-model="newCategory.category_id"
-              placeholder="Category ID"
-              readonly
+              v-model="newCategory.name"
+              placeholder="Category Name"
+              required
             />
-          </div>
-          <input
-            v-model="newCategory.name"
-            placeholder="Category Name"
-            required
-          />
-          <textarea
-            v-model="newCategory.description"
-            placeholder="Category Description"
-            required
-          ></textarea>
-          <input
-            v-if="!newCategory.image_url"
-            type="file"
-            accept="image/*"
-            @change="onFileChange"
-          />
-          <div v-if="newCategory.image_url">
-            <p>Current Image:</p>
-            <img
-              :src="`/${newCategory.image_url}`"
-              alt="Preview"
-              class="preview-image"
+            <textarea
+              v-model="newCategory.description"
+              placeholder="Category Description"
+              required
+            ></textarea>
+            <input
+              v-if="!newCategory.image_url"
+              type="file"
+              accept="image/*"
+              @change="onFileChange"
             />
-            <button @click="removeImage">Remove Image</button>
-          </div>
-          <div class="modal-actions">
-            <button type="submit">
-              {{ isEditMode ? "Update" : "Add" }} Category
-            </button>
-            <button @click="cancelAddCategory">Cancel</button>
-          </div>
-        </form>
+            <div v-if="newCategory.image_url">
+              <p>Current Image:</p>
+              <img
+                :src="`/${newCategory.image_url}`"
+                alt="Preview"
+                class="preview-image"
+              />
+              <button @click="removeImage">Remove Image</button>
+            </div>
+            <div class="modal-actions">
+              <button type="submit">
+                {{ isEditMode ? "Update" : "Add" }} Category
+              </button>
+              <button @click="cancelAddCategory">Cancel</button>
+            </div>
+          </form>
+        </div>
       </div>
     </div>
-  </div>
-</template>
+  </template>
 
-<script>
-export default {
-  name: "ProductAndCategoryList",
-  data() {
-    return {
-      showAddForm: false,
-      isEditMode: false,
-      newCategory: {
-        name: "",
-        description: "",
-        image_url: "",
-        category_id: null, // Добавленное поле для хранения ID
+  <script>
+  export default {
+    name: "ProductAndCategoryList",
+    data() {
+      return {
+        showAddForm: false,
+        isEditMode: false,
+        newCategory: {
+          name: "",
+          description: "",
+          image_url: "",
+          category_id: null, // Добавленное поле для хранения ID
+        },
+        editingCategoryId: null,
+      };
+    },
+    computed: {
+      isLoggedIn() {
+        return this.$store.getters.isLoggedIn;
       },
-      editingCategoryId: null,
-    };
+      user() {
+        return this.$store.getters.getUser;
+      },
+      catalogs() {
+        return this.$store.getters.getCategories;
+      },
+      errorMessage() {
+        return this.$store.getters.getErrorMessage;
+      },
+      loading() {
+        return this.$store.getters.isLoading;
+      },
+    },
+    mounted() {
+      this.fetchData();
+    },
+    methods: {
+      async fetchData() {
+        try {
+          await this.$store.dispatch("fetchCategories"); // Загрузить все категории
+        } catch (error) {
+          console.error("Ошибка загрузки данных:", error);
+        }
+      },
+
+      // Показать форму добавления категории
+      showAddCategoryForm() {
+        this.showAddForm = true;
+        this.isEditMode = false;
+        this.newCategory = { name: "", description: "", image_url: "" }; // Очистить поля
+      },
+
+      // Показать форму редактирования категории
+      editCategory(categoryId) {
+        this.showAddForm = true;
+        this.isEditMode = true;
+        const category = this.catalogs.find((c) => c.category_id === categoryId);
+        this.newCategory = { ...category }; // Заполняем поля формы данными категории
+        this.editingCategoryId = categoryId;
+      },
+
+      // Закрыть форму
+      cancelAddCategory() {
+        this.showAddForm = false;
+      },
+
+      onFileChange(event) {
+        const file = event.target.files[0];
+        if (file) {
+          console.log(this.selectedFile);
+          this.selectedFile = file; // Сохраняем выбранный файл
+        }
+      },
+      async renameImage(newPath) {
+    try {
+      const updatedPath = await this.$store.dispatch("renameFile", {
+        oldPath: this.newCategory.image_url,
+        newPath,
+      });
+      this.newCategory.image_url = updatedPath; // Обновляем путь в форме
+    } catch (error) {
+      console.error("Ошибка переименования файла:", error);
+    }
   },
-  computed: {
-    isLoggedIn() {
-      return this.$store.getters.isLoggedIn;
-    },
-    user() {
-      return this.$store.getters.getUser;
-    },
-    catalogs() {
-      return this.$store.getters.getCategories;
-    },
-    errorMessage() {
-      return this.$store.getters.getErrorMessage;
-    },
-    loading() {
-      return this.$store.getters.isLoading;
-    },
+
+      // Загрузка изображения
+      async uploadImage() {
+    if (!this.selectedFile) return;
+
+    const formData = new FormData();
+    formData.append("file", this.selectedFile);
+
+    try {
+      // Загружаем файл
+      const fileData = await this.$store.dispatch("uploadFile", formData);
+
+      // Формируем новый путь файла
+      const extension = fileData.path.split('.').pop(); // Получаем расширение файла
+      const newFileName = `category/${this.newCategory.name.replace(/\s+/g, '_')}.${extension}`; // Формируем имя
+      await this.renameImage(newFileName);
+
+    } catch (error) {
+      console.error("Ошибка загрузки файла:", error);
+    }
   },
-  mounted() {
-    this.fetchData();
-  },
-  methods: {
-    async fetchData() {
-      try {
-        await this.$store.dispatch("fetchCategories"); // Загрузить все категории
-      } catch (error) {
-        console.error("Ошибка загрузки данных:", error);
-      }
-    },
-
-    // Показать форму добавления категории
-    showAddCategoryForm() {
-      this.showAddForm = true;
-      this.isEditMode = false;
-      this.newCategory = { name: "", description: "", image_url: "" }; // Очистить поля
-    },
-
-    // Показать форму редактирования категории
-    editCategory(categoryId) {
-      this.showAddForm = true;
-      this.isEditMode = true;
-      const category = this.catalogs.find((c) => c.category_id === categoryId);
-      this.newCategory = { ...category }; // Заполняем поля формы данными категории
-      this.editingCategoryId = categoryId;
-    },
-
-    // Закрыть форму
-    cancelAddCategory() {
-      this.showAddForm = false;
-    },
-
-    onFileChange(event) {
-      const file = event.target.files[0];
-      if (file) {
-        console.log(this.selectedFile);
-        this.selectedFile = file; // Сохраняем выбранный файл
-      }
-    },
-    async renameImage(newPath) {
-  try {
-    const updatedPath = await this.$store.dispatch("renameFile", {
-      oldPath: this.newCategory.image_url,
-      newPath,
-    });
-    this.newCategory.image_url = updatedPath; // Обновляем путь в форме
-  } catch (error) {
-    console.error("Ошибка переименования файла:", error);
-  }
-},
-
-    // Загрузка изображения
-    async uploadImage() {
-  if (!this.selectedFile) return;
-
-  const formData = new FormData();
-  formData.append("file", this.selectedFile);
-
-  try {
-    // Загружаем файл
-    const fileData = await this.$store.dispatch("uploadFile", formData);
-
-    // Формируем новый путь файла
-    const extension = fileData.path.split('.').pop(); // Получаем расширение файла
-    const newFileName = `category/${this.newCategory.name.replace(/\s+/g, '_')}.${extension}`; // Формируем имя
-    await this.renameImage(newFileName);
-
-  } catch (error) {
-    console.error("Ошибка загрузки файла:", error);
-  }
-},
 
 
     // Удаление изображения
