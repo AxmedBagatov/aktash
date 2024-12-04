@@ -124,10 +124,11 @@ app.post("/logout", (req, res) => {
 // login end
 
 // file start
-const multer = require("multer");
-const storage = multer.diskStorage({
+const multer = require("multer");const storage = multer.diskStorage({
   destination: (req, file, cb) => {
     const categoryName = req.body.categoryName; // Получаем имя категории из тела запроса
+
+    console.log("Received categoryName:", categoryName); // Логирование полученного значения
 
     if (!categoryName) {
       return cb(new Error("Category name is required"), null); // Если нет categoryName, возвращаем ошибку
@@ -154,12 +155,10 @@ const storage = multer.diskStorage({
 const upload = multer({ storage: storage });
 const router = express.Router();
 
-
-
-router.post("/api/files/upload", upload.single("file"), (req, res) => {
+router.post("/api/files/upload",  (req, res) => {
   try {
     const categoryName = req.body.categoryName; // Получаем имя категории из тела запроса
-    console.log("Received categoryName:", categoryName);
+    console.log("Received categoryName:", categoryName); // Логирование полученного значения
 
     console.log("Запрос для принятия файла");
 
@@ -180,7 +179,6 @@ router.post("/api/files/upload", upload.single("file"), (req, res) => {
     res.status(500).json({ message: "Ошибка сервера при загрузке файла" });
   }
 });
-
 router.delete("/api/files/delete", (req, res) => {
   const { path: filePath } = req.body;
   console.log("Запрос на удаление файла:", filePath);
