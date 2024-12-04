@@ -7,9 +7,12 @@
  price       | numeric(10,2)               |           | not null | 
  created_at  | timestamp without time zone |           |          | CURRENT_TIMESTAMP
  updated_at  | timestamp without time zone |           |          | CURRENT_TIMESTAMP
+ category_id | integer                     |           | not null | 
 Indexes:
     "products_pkey" PRIMARY KEY, btree (product_id)
     "idx_product_name" btree (name)
+Foreign-key constraints:
+    "products_category_id_fkey" FOREIGN KEY (category_id) REFERENCES categories(category_id) ON DELETE CASCADE
 Referenced by:
     TABLE "product_attributes" CONSTRAINT "product_attributes_product_id_fkey" FOREIGN KEY (product_id) REFERENCES products(product_id) ON DELETE CASCADE
     TABLE "product_categories" CONSTRAINT "product_categories_product_id_fkey" FOREIGN KEY (product_id) REFERENCES products(product_id) ON DELETE CASCADE
