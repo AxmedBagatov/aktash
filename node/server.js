@@ -117,16 +117,16 @@ const multer = require("multer");
 const router = express.Router();
 const storage = multer.diskStorage({
   destination: (req, file, cb) => {
-    const categoryName = req.body.categoryName || "default"; // Извлекаем categoryName из тела запроса
-    const uploadPath = path.join("images", categoryName); // Генерируем путь для сохранения
+    // Извлекаем categoryName из параметров запроса (URL)
+    const categoryName = req.query.categoryName || "default"; // Если нет, используем "default"
+    const uploadPath = path.join("images", categoryName); // Генерируем путь
 
-    // Логируем путь для отладки
-    console.log("Upload path:", uploadPath);
+    console.log("Upload path:", uploadPath); // Логирование пути для отладки
 
     // Создаем папку, если ее нет
     fs.mkdirSync(uploadPath, { recursive: true });
 
-    cb(null, uploadPath); // Указываем, куда сохранять файл
+    cb(null, uploadPath); // Указываем multer, куда сохранять файл
   },
   filename: (req, file, cb) => {
     cb(null, file.originalname); // Сохраняем файл с оригинальным именем
@@ -138,9 +138,10 @@ const upload = multer({ storage });
 // Маршрут для загрузки файла
 router.post("/api/files/upload", upload.single("file"), (req, res) => {
   try {
-    const categoryName = req.body.categoryName || "default"; // Убедитесь, что categoryName есть в body
+    const categoryName = req.body.categoryName; // Убедитесь, что categoryName есть в body
     const file = req.file;
-
+    const uploadPath = path.join("images", categoryName);
+    console.log("Upload path with category:", uploadPath);
     console.log("Received categoryName:", categoryName); // Логируем полученную категорию
     console.log("Received file:", file); // Логируем файл
 
