@@ -114,52 +114,32 @@ app.post('/logout', (req, res) => {
 // file start
 
 const multer = require("multer");
-const storage = multer.diskStorage({
-  destination: (req, file, cb) => {
-    const categoryName = req.body.categoryName; // Получаем имя категории из тела запроса
-
-    console.log("Received categoryName:", categoryName); // Логирование полученного значения
-
-    if (!categoryName) {
-      return cb(new Error("Category name is required"), null); // Если нет categoryName, возвращаем ошибку
-    }
-
-    const uploadPath = path.join(__dirname, "images", categoryName); // Создаем путь для сохранения файла
-
-    // Проверяем, существует ли директория, если нет — создаем
-    fs.mkdirSync(uploadPath, { recursive: true });
-
-    cb(null, uploadPath); // Указываем папку для сохранения файла
-  },
-  filename: (req, file, cb) => {
-    // Получаем оригинальное имя файла
-    const originalName = file.originalname;
-    
-    // Создаем имя файла с расширением
-    const fileName = originalName.replace(/\s+/g, "_"); // Заменяем пробелы на подчеркивания
-
-    cb(null, fileName); // Указываем имя файла
-  }
-});
-
-const upload = multer({ storage: storage });
 const router = express.Router();
 
-router.post("/api/files/upload", (req, res) => {
+const storage = multer.diskStorage({
+  destination: (req, file, cb) => {
+    cb(null, "uploads/"); // Папка, куда будут сохраняться файлы
+  },
+  filename: (req, file, cb) => {
+    cb(null, `${Date.now()}-${file.originalname}`); // Уникальное имя файла
+  },
+});
+
+const upload = multer({ storage });
+
+// Маршрут для загрузки файлов
+router.post("/api/files/upload", upload.single("file"), (req, res) => {
   try {
-    // Получаем имя категории из тела запроса
-    const categoryName = req.body.categoryName;
-    // Получаем файл из тела запроса
-    const file = req.body.file; // Предполагаем, что файл передается в теле запроса
+    const categoryName = req.body.categoryName; // Данные категории из FormData
+    const file = req.file; // Файл, обработанный multer
 
-    console.log("Received categoryName:", categoryName); // Логирование полученного значения
-    console.log("Received file:", file); // Логирование полученного файла
+    console.log("Received categoryName:", categoryName);
+    console.log("Received file:", file);
 
-    // Просто возвращаем имя категории и название файла
     res.json({
       message: "Данные получены",
       categoryName: categoryName,
-      fileName: file ? file.name : "Файл не найден"
+      fileName: file ? file.filename : "Файл не найден",
     });
   } catch (error) {
     console.error("Ошибка при обработке запроса:", error);
@@ -186,7 +166,7 @@ router.put('/api/files/rename', (req, res) => {
   res.status(200).json({ message: 'Переименование файла получено', oldPath, newPath });
 });
 
-module.exports = router;
+
 app.use('/', router);
 // file end
 
@@ -341,6 +321,7 @@ app.delete('/api/categories/:id', authenticateToken, async (req, res) => {
 
 
 // Запуск сервера
+module.exports = router;
 app.listen(port, () => {
   console.log(`Server running on http://localhost:${port}`);
 });
