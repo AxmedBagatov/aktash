@@ -156,7 +156,7 @@ router.post('/api/files/upload', upload.single('file'), (req, res) => {
     }
 
     // Формируем путь для сохранения файла в подкатегории
-    const destinationDir = path.join('images', categoryName);  // Папка для категории
+    const destinationDir = path.join('images', 'category', categoryName);  // Папка для категории
     const destinationFilePath = path.join(destinationDir, file.filename);  // Путь для окончательного сохранения файла
 
     // Создаем директорию, если её нет
@@ -166,6 +166,7 @@ router.post('/api/files/upload', upload.single('file'), (req, res) => {
 
     // Перемещаем файл из временной директории в нужную папку
     const tempFilePath = path.join('images', file.filename);  // Используем новое имя файла
+    console.log(destinationFilePath)
     fs.rename(tempFilePath, destinationFilePath, (err) => {
       if (err) {
         console.error('Ошибка при перемещении файла:', err);
