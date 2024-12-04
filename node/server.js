@@ -13,6 +13,9 @@ const JWT_SECRET = "cristianomessi"; // Лучше хранить это в .env
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 
+connectDB();
+app.use(cookieParser());
+
 app.use(
   cors({
     origin: (origin, callback) => {
@@ -32,9 +35,6 @@ app.use(
     allowedHeaders: ["Content-Type", "Authorization"],
   })
 );
-
-connectDB();
-app.use(cookieParser());
 
 // ======== Регистрация ========
 app.post("/register", async (req, res) => {
@@ -150,7 +150,8 @@ router.post('/api/files/upload', upload.single('file'), (req, res) => {
     const categoryName = req.body.categoryName || 'default';  // Получаем categoryName из тела запроса
     const categoryDescription = req.body.description
     const file = req.file;  // Получаем файл из запроса
-    
+    console.log(file);
+    const filetpype = file.mimetype;
     if (!file) {
       return res.status(400).json({ message: 'Файл не был загружен' });
     }
