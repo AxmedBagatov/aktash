@@ -240,7 +240,7 @@ export default {
           await this.uploadImage(formData); // Передаем formData в uploadImage
         }
 
-        await this.$store.dispatch("addCategory", this.newCategory); // Отправляем данные категории
+        // await this.$store.dispatch("addCategory", this.newCategory); // Отправляем данные категории
         this.showAddForm = false;
         this.newCategory = { name: "", description: "", image_url: "" }; // Сброс формы
         this.fetchData(); // Обновление данных
