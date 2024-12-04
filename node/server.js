@@ -123,6 +123,27 @@ router.delete('/api/files/delete', (req, res) => {
   res.status(200).json({ message: 'Удаление файла получено', path: filePath });
 });
 
+router.post('/api/files/upload', upload.single('file'), (req, res) => {
+  try {
+    console.log("Запрос для принятия файла")
+    // Если файл загружен успешно, возвращаем информацию о файле
+    if (req.file) {
+      console.log("upload file:",req.file)
+      res.json({
+        message: 'Файл успешно загружен',
+        path: req.file.path, // Возвращаем путь к загруженному файлу
+        filename: req.file.filename, // Возвращаем имя файла
+        originalname: req.file.originalname, // Оригинальное имя файла
+      });
+    } else {
+      res.status(400).json({ message: 'Файл не был загружен' });
+    }
+  } catch (error) {
+    console.error('Ошибка при загрузке файла:', error);
+    res.status(500).json({ message: 'Ошибка сервера при загрузке файла' });
+  }
+});
+
 router.put('/api/files/rename', (req, res) => {
   const { oldPath, newPath } = req.body;
   console.log('Запрос на переименование файла:');
