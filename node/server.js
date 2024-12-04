@@ -130,47 +130,57 @@ const multer = require("multer");
 const router = express.Router();
 const storage = multer.diskStorage({
   destination: (req, file, cb) => {
-    // Указываем папку для хранения файлов
-    cb(null, 'images/');
+    // Указываем базовую папку для хранения файлов
+    cb(null, 'images/');  // Все файлы будут сначала сохраняться в папку 'images'
   },
   filename: (req, file, cb) => {
-    // Формируем имя файла
-    cb(null, Date.now() + path.extname(file.originalname));  // уникальное имя
+    // Формируем уникальное имя для файла
+    cb(null, Date.now() + path.extname(file.originalname));  // Добавляем временную метку для уникальности
   }
 });
 
-// Инициализация multer
+// Инициализация multer с использованием настроенного хранилища
 const upload = multer({ storage: storage });
 
-// Настройка маршрута с загрузкой файлов
+// Настройка маршрута для загрузки файла
 router.post('/api/files/upload', upload.single('file'), (req, res) => {
   try {
-    const categoryName = req.body.categoryName || 'default'; // Получаем categoryName из тела запроса
-    const file = req.file; // Получаем файл из запроса
-    console.log(categoryName)
+    const categoryName = req.query.categoryName || 'default';  // Получаем categoryName из query-параметра
+    const file = req.file;  // Получаем файл из запроса
+
+    console.log(categoryName);
     console.log(file);
-    
+
     if (!file) {
       return res.status(400).json({ message: 'Файл не был загружен' });
     }
 
-    // Формируем путь для сохранения файла
-    const destinationDir = path.join(categoryName);  // директория для категории
-    const destinationFilePath = path.join(destinationDir, file.originalname);  // путь для сохранения файла
-    console.log(destinationFilePath);
-    
-    // Создаем директорию, если она не существует
+    // Формируем путь для сохранения файла в подкатегории
+    const destinationDir = path.join('images', categoryName);  // Папка для категории
+    const destinationFilePath = path.join(destinationDir, file.filename);  // Путь для окончательного сохранения файла
+
+    // Создаем директорию, если её нет
     if (!fs.existsSync(destinationDir)) {
       fs.mkdirSync(destinationDir, { recursive: true });
     }
 
-    // Возвращаем информацию о файле
-    res.json({
-      message: 'Файл успешно загружен',
-      categoryName: categoryName,
-      fileName: file.filename,
-      filePath: destinationFilePath, // Отправляем путь к файлу
+    // Перемещаем файл из временной директории в нужную папку
+    const tempFilePath = path.join('images', file.filename);  // Временный путь, куда файл сохраняет multer
+    fs.rename(tempFilePath, destinationFilePath, (err) => {
+      if (err) {
+        console.error('Ошибка при перемещении файла:', err);
+        return res.status(500).json({ message: 'Ошибка сервера при перемещении файла' });
+      }
+
+      // Возвращаем информацию о файле
+      res.json({
+        message: 'Файл успешно загружен',
+        categoryName: categoryName,
+        fileName: file.filename,
+        filePath: destinationFilePath,  // Отправляем путь к файлу
+      });
     });
+
   } catch (error) {
     console.error('Ошибка при обработке запроса:', error);
     res.status(500).json({ message: 'Ошибка сервера' });
