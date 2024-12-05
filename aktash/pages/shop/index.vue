@@ -249,7 +249,7 @@ export default {
       categoryId: categoryId 
     });
 
-        console.log("в запросе",imagesPath);
+        // console.log("в запросе",imagesPath);
         this.editCategoryData.image_url = null; // Убираем URL
       } catch (error) {
         console.error("Ошибка при удалении изображения:", error);
@@ -273,10 +273,10 @@ export default {
     // Метод для обновления категории
     async updateCategory() {
       try {
-        // console.log(this.editCategoryData.category_id);
-        // console.log(this.editCategoryData.name);
-        // console.log(this.editCategoryData.description);
-        // console.log(this.editCategoryData.image_url);
+        console.log(this.editCategoryData.category_id);
+        console.log(this.editCategoryData.name);
+        console.log(this.editCategoryData.description);
+        console.log(this.editCategoryData.image_url);
         // if (this.selectedFile) {
         //   await this.uploadImage(); // Загружаем и переименовываем файл перед обновлением категории
         // }

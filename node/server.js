@@ -240,12 +240,36 @@ router.post("/api/files/upload", upload.single("file"), (req, res) => {
   }
 });
 
+const saveImageToCategory = (file, categoryName) => {
+  return new Promise((resolve, reject) => {
+    const destinationDir = path.join("images", "category", categoryName);
+    const destinationFilePath = path.join(destinationDir, file.filename);
 
+    // Создаем директорию, если она не существует
+    if (!fs.existsSync(destinationDir)) {
+      fs.mkdirSync(destinationDir, { recursive: true });
+    }
+
+    // Перемещаем файл в нужную директорию
+    const tempFilePath = path.join("images", file.filename);
+
+    fs.rename(tempFilePath, destinationFilePath, (err) => {
+      if (err) {
+        return reject("Ошибка при перемещении файла");
+      }
+      resolve({
+        filePath: destinationFilePath,
+        fileName: file.filename,
+        fileType: file.mimetype,
+      });
+    });
+  });
+};
+// const imageData = await saveImageToCategory(file, categoryName);
 app.delete("/api/files/delete", async (req, res) => {
   const { filePath, categoryId } = req.body; // Извлекаем путь к файлу и ID категории
   console.log("Запрос на удаление файла:", filePath);
   console.log("ID категории:", categoryId);
-
   // Преобразуем путь файла (удаляем "images/")
   const imageUrl = filePath.replace("images/", "");
 
