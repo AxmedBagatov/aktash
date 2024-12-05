@@ -263,14 +263,38 @@ router.post("/api/categories/update", async (req, res) => {
       return res.status(500).json({ message: "Категория не найдена" });
     }
 
-    // Если путь к новому изображению был передан, обновляем его
+    // Если путь к новому изображению был передан
     if (filePath) {
-      const updateImageQuery = `
-        UPDATE images
-        SET image_url = $1
-        WHERE entity_id = $2 AND entity_type = 'category';
+      // Проверяем, существует ли запись в таблице images
+      const checkImageQuery = `
+        SELECT image_id FROM images
+        WHERE entity_id = $1 AND entity_type = 'category';
       `;
-      await queryDB(updateImageQuery, [filePath.replace("images/", ""), categoryId]); // Обновляем путь изображения
+
+      let imageResult;
+      try {
+        imageResult = await queryDB(checkImageQuery, [categoryId]);
+      } catch (error) {
+        console.error("Ошибка при выполнении запроса checkImageQuery:", error);
+        return res.status(500).json({ message: "Ошибка при проверке изображения" });
+      }
+
+      if (imageResult.length > 0) {
+        // Если запись существует, обновляем её
+        const updateImageQuery = `
+          UPDATE images
+          SET image_url = $1
+          WHERE entity_id = $2 AND entity_type = 'category';
+        `;
+        await queryDB(updateImageQuery, [filePath.replace("images/", ""), categoryId]);
+      } else {
+        // Если записи нет, добавляем её
+        const insertImageQuery = `
+          INSERT INTO images (entity_id, entity_type, image_url, image_type, image_order)
+          VALUES ($1, 'category', $2, 'image/jpeg', 1);
+        `;
+        await queryDB(insertImageQuery, [categoryId, filePath.replace("images/", "")]);
+      }
     }
 
     res.json({
