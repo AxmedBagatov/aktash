@@ -241,9 +241,9 @@ router.post("/api/files/upload", upload.single("file"), (req, res) => {
 });
 
 router.delete("/api/files/delete", (req, res) => {
-  const { filePath } = req.body;  // Извлекаем filePath
-  console.log("Запрос на удаление файла:", filePath);  // Логируем filePath
-  // Только логируем, файл пока не удаляем
+  const { filePath, categoryId } = req.body;
+  console.log("Запрос на удаление файла:", filePath);
+  console.log("ID категории:", categoryId);
   res.status(200).json({ message: "Удаление файла получено", path: filePath });
 }); 
 

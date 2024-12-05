@@ -244,7 +244,10 @@ export default {
       if (!this.editCategoryData.image_url) return;
 
       try {
-        await this.$store.dispatch("deleteImage", imagesPath);
+        await this.$store.dispatch("deleteImage", { 
+      filePath: imagesPath, 
+      categoryId: categoryId 
+    });
 
         console.log("в запросе",imagesPath);
         this.editCategoryData.image_url = null; // Убираем URL

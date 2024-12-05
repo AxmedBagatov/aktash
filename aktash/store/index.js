@@ -244,14 +244,17 @@ async deleteCategory({ commit, state }, id) {
 
   
   // Удаление файла
-  async deleteImage({ commit }, filePath) {
-    console.log("Запрос на удаление файла")
+  async deleteImage({ commit }, { filePath, categoryId }) {
+    console.log("Запрос на удаление файла и ID категории");
+    
     try {
       console.log("Удаление изображения с пути:", filePath);
+      console.log("ID категории:", categoryId);
+  
       const response = await fetch(`${BASE_URL}/api/files/delete`, {
         method: 'DELETE',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ filePath: filePath }), // Передаем путь файла
+        body: JSON.stringify({ filePath, categoryId }),  // Передаем как путь к изображению, так и ID категории
       });
   
       if (!response.ok) {
