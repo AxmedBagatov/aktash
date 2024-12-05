@@ -273,16 +273,19 @@ export default {
     // Метод для обновления категории
     async updateCategory() {
       try {
+        let changeImage = false;
         console.log(this.editCategoryData.category_id);
         console.log(this.editCategoryData.name);
         console.log(this.editCategoryData.description);
         console.log(this.editCategoryData.image_url);
         if  (this.editCategoryData.image_url == null){
-          
-        }
-        if (this.selectedFile) {
+          changeImage = true;
+          console.log("Добавлена картинка");
+          if (this.selectedFile) {
           console.log(this.selectedFile);
         }
+        }
+       
         // await this.$store.dispatch("updateCategory", {
         //   id: this.editCategoryData.category_id,
         //   name: this.editCategoryData.name,
@@ -296,6 +299,7 @@ export default {
         //   category_id: null,
         // }; // Сброс формы
         this.fetchData(); // Обновление данных
+
       } catch (error) {
         console.error("Ошибка при обновлении категории:", error);
       }
