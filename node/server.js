@@ -240,12 +240,41 @@ router.post("/api/files/upload", upload.single("file"), (req, res) => {
   }
 });
 
-router.delete("/api/files/delete", (req, res) => {
-  const { filePath, categoryId } = req.body;
+app.delete("/api/files/delete", async (req, res) => {
+  const { filePath, categoryId } = req.body; // Извлекаем путь к файлу и ID категории
   console.log("Запрос на удаление файла:", filePath);
   console.log("ID категории:", categoryId);
-  res.status(200).json({ message: "Удаление файла получено", path: filePath });
-}); 
+
+  // Преобразуем путь файла (удаляем "images/")
+  const imageUrl = filePath.replace("images/", "");
+
+  try {
+    // Выполняем запрос на удаление из базы данных
+    const query = `
+      DELETE FROM images
+      WHERE entity_type = 'category'
+        AND entity_id = $1
+        AND image_url = $2
+      RETURNING *;
+    `;
+    const values = [categoryId, imageUrl]; // Подставляем параметры
+
+    const result = await queryDB(query, values); // Выполняем запрос
+
+    if (result.length === 0) {
+      // Если не найдено соответствующих строк
+      return res.status(404).json({ message: "Изображение не найдено" });
+    }
+
+    // Если запись была удалена, возвращаем успешный ответ
+    console.log("Изображение успешно удалено");
+    res.status(200).json({ message: "Изображение успешно удалено", path: filePath });
+  } catch (error) {
+    // Обработка ошибок
+    console.error("Ошибка при удалении изображения:", error);
+    res.status(500).json({ message: "Ошибка сервера при удалении изображения" });
+  }
+});
 
 router.put("/api/files/rename", (req, res) => {
   const { oldPath, newPath } = req.body;
