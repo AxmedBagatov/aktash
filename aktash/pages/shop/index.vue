@@ -30,7 +30,7 @@
           </nuxt-link>
 
           <div v-if="isLoggedIn" class="admin-actions">
-            <button @click="showEditCategoryForm(catalog)">Edit</button>
+            <button @click="showEditCategoryForm(catalog.category_id)">Edit</button>
             <button @click="confirmDelete(catalog.category_id)">Delete</button>
           </div>
         </li>
@@ -162,8 +162,10 @@ export default {
 
     showEditCategoryForm(categoryId) {
       this.showEditForm = true;
+      console.log(this.catalogs);
       const category = this.catalogs.find((c) => c.category_id === categoryId);
-      this.editCategoryData = { name: this.categoryId.name, description: "", image_url: ""  }; // Заполняем поля формы данными категории
+      console.log(category);
+      this.editCategoryData = {category_id: category., name: this.catalogs.name, description: "123", image_url: ""  }; // Заполняем поля формы данными категории
       this.editingCategoryId = categoryId;
     },
 
