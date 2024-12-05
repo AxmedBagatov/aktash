@@ -172,21 +172,7 @@ export default {
       this.newCategory = { name: "", description: "", image_url: "" }; // Очистить поля
     },
 
-    showEditCategoryForm(categoryId) {
-      this.showEditForm = true;
-      console.log(this.catalogs);
-      const category = this.catalogs.find((c) => c.category_id === categoryId);
-      console.log(category);
-      console.log(category.image_url);
-      this.editCategoryData = {
-        category_id: category.category_id,
-        name: category.name,
-        description: category.description,
-        image_url: category.image_url,
-      }; // Заполняем поля формы данными категории
-      this.editingCategoryId = categoryId;
-    },
-
+    
     // Закрыть форму
     cancelAddCategory() {
       this.showAddForm = false;
@@ -265,6 +251,20 @@ export default {
         console.error("Ошибка при удалении изображения:", error);
       }
     },
+    showEditCategoryForm(categoryId) {
+      this.showEditForm = true;
+      console.log(this.catalogs);
+      const category = this.catalogs.find((c) => c.category_id === categoryId);
+      console.log(category);
+      console.log(category.image_url);
+      this.editCategoryData = {
+        category_id: category.category_id,
+        name: category.name,
+        description: category.description,
+        image_url: category.image_url,
+      }; // Заполняем поля формы данными категории
+      this.editingCategoryId = categoryId;
+    },
 
     // Метод для обновления категории
     async updateCategory() {
@@ -273,12 +273,12 @@ export default {
           await this.uploadImage(); // Загружаем и переименовываем файл перед обновлением категории
         }
         await this.$store.dispatch("updateCategory", {
-          id: this.newCategory.category_id,
-          name: this.newCategory.name,
-          description: this.newCategory.description,
-          image_url: this.newCategory.image_url,
+          id: this.editCategoryData.category_id,
+          name: this.editCategoryData.name,
+          description: this.editCategoryData.description,
+          image_url: this.editCategoryData.image_url,
         });
-        this.newCategory = {
+        this.editCategoryData = {
           name: "",
           description: "",
           image_url: "",
