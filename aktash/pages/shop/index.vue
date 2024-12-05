@@ -163,7 +163,7 @@ export default {
     showEditCategoryForm(categoryId) {
       this.showEditForm = true;
       const category = this.catalogs.find((c) => c.category_id === categoryId);
-      this.newCategory = { ...category }; // Заполняем поля формы данными категории
+      this.editCategoryData = { name: this.categoryId.name, description: "", image_url: ""  }; // Заполняем поля формы данными категории
       this.editingCategoryId = categoryId;
     },
 
