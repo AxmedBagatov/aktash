@@ -238,7 +238,8 @@ export default {
     },
 
     async removeImage() {
-      console.log(this.editCategoryData.image_url);
+      const imagesPath = ("images",this.editCategoryData.name,this.editCategoryData.image_url)
+      console.log(imagesPath);
 
       if (!this.newCategory.image_url) return;
 
@@ -246,7 +247,7 @@ export default {
       //   await this.$store.dispatch("deleteImage", {
       //     imageUrl: this.newCategory.image_url,
       //   });
-      //   this.newCategory.image_url = null; // Убираем URL
+      //   this.editCategoryData.image_url = null; // Убираем URL
       // } catch (error) {
       //   console.error("Ошибка при удалении изображения:", error);
       // }
