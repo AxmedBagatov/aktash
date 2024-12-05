@@ -243,9 +243,8 @@ export default {
       if (!this.newCategory.image_url) return;
 
       try {
-        await this.$store.dispatch("deleteImage", {
-          imageUrl: imagesPath,
-        });
+        await this.$store.dispatch("deleteImage", imagesPath);
+
         console.log("в запросе",imagesPath);
         this.editCategoryData.image_url = null; // Убираем URL
       } catch (error) {
@@ -254,10 +253,10 @@ export default {
     },
     showEditCategoryForm(categoryId) {
       this.showEditForm = true;
-      console.log(this.catalogs);
+      // console.log(this.catalogs);
       const category = this.catalogs.find((c) => c.category_id === categoryId);
-      console.log(category);
-      console.log(category.image_url);
+      // console.log(category);
+      // console.log(category.image_url);
       this.editCategoryData = {
         category_id: category.category_id,
         name: category.name,
@@ -270,10 +269,10 @@ export default {
     // Метод для обновления категории
     async updateCategory() {
       try {
-        console.log(this.editCategoryData.category_id);
-        console.log(this.editCategoryData.name);
-        console.log(this.editCategoryData.description);
-        console.log(this.editCategoryData.image_url);
+        // console.log(this.editCategoryData.category_id);
+        // console.log(this.editCategoryData.name);
+        // console.log(this.editCategoryData.description);
+        // console.log(this.editCategoryData.image_url);
         // if (this.selectedFile) {
         //   await this.uploadImage(); // Загружаем и переименовываем файл перед обновлением категории
         // }

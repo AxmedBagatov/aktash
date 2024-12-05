@@ -241,12 +241,12 @@ router.post("/api/files/upload", upload.single("file"), (req, res) => {
 });
 
 router.delete("/api/files/delete", (req, res) => {
-  const { path: filePath } = req.body;
-  console.log("Запрос на удаление файла:", req.body);
+  const { filePath } = req.body;  // Извлекаем filePath
+  console.log("Запрос на удаление файла:", filePath);  // Логируем filePath
 
   // Только логируем, файл пока не удаляем
   res.status(200).json({ message: "Удаление файла получено", path: filePath });
-});
+}); 
 
 router.put("/api/files/rename", (req, res) => {
   const { oldPath, newPath } = req.body;
