@@ -109,9 +109,14 @@ export default {
   data() {
     return {
       showAddForm: false,
-      isEditMode: false,
       showEditForm: false,
       newCategory: {
+        name: "",
+        description: "",
+        image_url: "",
+        category_id: null, // Добавленное поле для хранения ID
+      },
+      editCategoryData: {
         name: "",
         description: "",
         image_url: "",
@@ -152,13 +157,11 @@ export default {
     // Показать форму добавления категории
     showAddCategoryForm() {
       this.showAddForm = true;
-      this.isEditMode = false;
       this.newCategory = { name: "", description: "", image_url: "" }; // Очистить поля
     },
 
-    editCategory(categoryId) {
-      this.showEditForm = false;
-      this.isEditMode = true;
+    showEditCategoryForm(categoryId) {
+      this.showEditForm = true;
       const category = this.catalogs.find((c) => c.category_id === categoryId);
       this.newCategory = { ...category }; // Заполняем поля формы данными категории
       this.editingCategoryId = categoryId;
