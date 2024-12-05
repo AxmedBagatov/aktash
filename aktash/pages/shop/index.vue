@@ -30,7 +30,9 @@
           </nuxt-link>
 
           <div v-if="isLoggedIn" class="admin-actions">
-            <button @click="showEditCategoryForm(catalog.category_id)">Edit</button>
+            <button @click="showEditCategoryForm(catalog.category_id)">
+              Edit
+            </button>
             <button @click="confirmDelete(catalog.category_id)">Delete</button>
           </div>
         </li>
@@ -83,6 +85,8 @@
             placeholder="Category Description"
             required
           ></textarea>
+
+          <!-- Если есть изображение -->
           <div v-if="editCategoryData.image_url">
             <p>Current Image:</p>
             <img
@@ -90,12 +94,20 @@
               alt="Preview"
               class="preview-image"
             />
-            <button @click="removeImage">Remove Image</button>
+            <button type="button" @click="removeImage">Remove Image</button>
           </div>
-          <input type="file" accept="image/*" @change="onFileChange" />
+
+          <!-- Поле для загрузки файла отображается только если image_url пустой -->
+          <input
+            v-if="!editCategoryData.image_url"
+            type="file"
+            accept="image/*"
+            @change="onFileChange"
+          />
+
           <div class="modal-actions">
             <button type="submit">Update Category</button>
-            <button @click="cancelEditCategory">Cancel</button>
+            <button type="button" @click="cancelEditCategory">Cancel</button>
           </div>
         </form>
       </div>
@@ -165,7 +177,13 @@ export default {
       console.log(this.catalogs);
       const category = this.catalogs.find((c) => c.category_id === categoryId);
       console.log(category);
-      this.editCategoryData = {category_id: category.category_id, name: category.name, description: category.description, image_url: category.image_url  }; // Заполняем поля формы данными категории
+      console.log(category.image_url);
+      this.editCategoryData = {
+        category_id: category.category_id,
+        name: category.name,
+        description: category.description,
+        image_url: category.image_url,
+      }; // Заполняем поля формы данными категории
       this.editingCategoryId = categoryId;
     },
 
@@ -281,12 +299,12 @@ export default {
       }
     },
     confirmDelete(categoryId) {
-    // Отображаем предупреждение
-    const confirmed = confirm("Подтвердить удаление категории?");
-    if (confirmed) {
-      this.deleteCategory(categoryId);
-    }
-  },
+      // Отображаем предупреждение
+      const confirmed = confirm("Подтвердить удаление категории?");
+      if (confirmed) {
+        this.deleteCategory(categoryId);
+      }
+    },
   },
 };
 </script>
