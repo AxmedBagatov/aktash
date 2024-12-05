@@ -1,4 +1,4 @@
-const BASE_URL = 'http://192.168.62.129:4000';
+const BASE_URL = 'http://10.30.74.229:4000';
 export const state = () => ({
   products: [],
   categories: [],
