@@ -31,7 +31,7 @@
 
           <div v-if="isLoggedIn" class="admin-actions">
             <button @click="showEditCategoryForm(catalog)">Edit</button>
-            <button @click="deleteCategory(catalog.category_id)">Delete</button>
+            <button @click="confirmDelete(catalog.category_id)">Delete</button>
           </div>
         </li>
       </ul>
@@ -192,27 +192,6 @@ export default {
       }
     },
 
-    // Загрузка изображения
-    //   async uploadImage() {
-    //   if (!this.selectedFile) return;
-
-    //   const formData = new FormData();
-    //   formData.append("file", this.selectedFile);
-
-    //   try {
-    //     // Загружаем файл
-    //     const fileData = await this.$store.dispatch("uploadFile", formData);
-
-    //     // Формируем новый путь файла
-    //     const extension = fileData.path.split('.').pop(); // Получаем расширение файла
-    //     const newFileName = `category/${this.newCategory.name.replace(/\s+/g, '_')}.${extension}`; // Формируем имя
-    //     await this.renameImage(newFileName);
-
-    //   } catch (error) {
-    //     console.error("Ошибка загрузки файла:", error);
-    //   }
-    // },
-
     async uploadImage(formData) {
       if (!formData) return; // Если нет данных для отправки, выходим
       try {
@@ -298,7 +277,7 @@ export default {
     },
     confirmDelete(categoryId) {
     // Отображаем предупреждение
-    const confirmed = confirm("Are you sure you want to delete this category?");
+    const confirmed = confirm("Подтвердить удаление категории?");
     if (confirmed) {
       this.deleteCategory(categoryId);
     }
