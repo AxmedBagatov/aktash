@@ -240,6 +240,7 @@ router.post("/api/files/upload", upload.single("file"), (req, res) => {
   }
 });
 
+
 app.delete("/api/files/delete", async (req, res) => {
   const { filePath, categoryId } = req.body; // Извлекаем путь к файлу и ID категории
   console.log("Запрос на удаление файла:", filePath);
@@ -263,12 +264,27 @@ app.delete("/api/files/delete", async (req, res) => {
 
     if (result.length === 0) {
       // Если не найдено соответствующих строк
-      return res.status(404).json({ message: "Изображение не найдено" });
+      console.log("Запись не найдена в базе данных.");
+      return res.status(404).json({ message: "Изображение не найдено в базе данных" });
     }
 
-    // Если запись была удалена, возвращаем успешный ответ
-    console.log("Изображение успешно удалено");
-    res.status(200).json({ message: "Изображение успешно удалено", path: filePath });
+    // Логируем успешное удаление записи из базы данных
+    console.log(`Запись с ID категории ${categoryId} и image_url ${imageUrl} успешно удалена из базы данных`);
+
+    // Если запись была удалена из базы данных, пытаемся удалить файл с диска
+    const fileToDelete = path.join(__dirname, filePath); // Полный путь к файлу на сервере
+
+    // Проверяем, существует ли файл
+    fs.unlink(fileToDelete, (err) => {
+      if (err) {
+        console.error("Ошибка при удалении файла:", err);
+        return res.status(500).json({ message: "Ошибка при удалении файла с диска" });
+      }
+
+      console.log("Файл успешно удален с диска");
+      res.status(200).json({ message: "Изображение и файл успешно удалены", path: filePath });
+    });
+
   } catch (error) {
     // Обработка ошибок
     console.error("Ошибка при удалении изображения:", error);
