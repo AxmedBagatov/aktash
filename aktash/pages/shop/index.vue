@@ -240,7 +240,7 @@ export default {
       const imagesPath = `images/${this.editCategoryData.image_url}`;
       console.log(imagesPath);
 
-      if (!this.newCategory.image_url) return;
+      if (!this.editCategoryData.image_url) return;
 
       try {
         await this.$store.dispatch("deleteImage", imagesPath);
