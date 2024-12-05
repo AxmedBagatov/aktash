@@ -181,6 +181,7 @@ export default {
     cancelEditCategory() {
       this.showEditForm = false;
     },
+
     onFileChange(event) {
       const file = event.target.files[0];
       if (file) {
@@ -301,8 +302,9 @@ export default {
         //   image_url: "",
         //   category_id: null,
         // }; // Сброс формы
+        this.showEditForm = false;
         this.fetchData(); // Обновление данных
-
+        
       } catch (error) {
         console.error("Ошибка при обновлении категории:", error);
       }
