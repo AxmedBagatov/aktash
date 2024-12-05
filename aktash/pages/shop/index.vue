@@ -165,7 +165,7 @@ export default {
       console.log(this.catalogs);
       const category = this.catalogs.find((c) => c.category_id === categoryId);
       console.log(category);
-      this.editCategoryData = {category_id: category., name: this.catalogs.name, description: "123", image_url: ""  }; // Заполняем поля формы данными категории
+      this.editCategoryData = {category_id: category.category_id, name: category.name, description: category.description, image_url: category.image_url  }; // Заполняем поля формы данными категории
       this.editingCategoryId = categoryId;
     },
 
