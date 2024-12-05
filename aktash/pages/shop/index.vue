@@ -246,6 +246,7 @@ export default {
         await this.$store.dispatch("deleteImage", {
           imageUrl: imagesPath,
         });
+        console.log("в запросе",imagesPath);
         this.editCategoryData.image_url = null; // Убираем URL
       } catch (error) {
         console.error("Ошибка при удалении изображения:", error);

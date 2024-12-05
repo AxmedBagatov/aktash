@@ -250,9 +250,9 @@ async deleteCategory({ commit, state }, id) {
       const response = await fetch(`${BASE_URL}/api/files/delete`, {
         method: 'DELETE',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ path: filePath }), // передаем путь файла
+        body: JSON.stringify({ path: filePath }), // Передаем путь файла
       });
-
+  
       if (!response.ok) {
         commit('setErrorMessage', 'Ошибка при удалении изображения');
         console.error('Ошибка при удалении изображения');
