@@ -219,28 +219,52 @@ async deleteCategory({ commit, state }, id) {
       commit('setLoading', false);
     }
   },
+// Действие для загрузки файла
+async uploadFile({ commit }, formData) {
+  try {
+    const response = await fetch(`${BASE_URL}/api/files/uploadFile`, {
+      method: 'POST',
+      body: formData,
+    });
 
-  async uploadFile({ commit }, formData) {
-    try {
-      const response = await fetch(`${BASE_URL}/api/files/upload`, {
-        method: 'POST',
-        body: formData,
-      });
-      
-      
-      if (response.ok) {
-        const data = await response.json();
-        return data; // Возвращаем данные о файле, включая путь
-      } else {
-        commit('setErrorMessage', 'Ошибка при загрузке файла');
-        console.error('Ошибка при загрузке файла');
-      }
-    } catch (error) {
-      commit('setErrorMessage', 'Ошибка сети: ' + error.message);
-      console.error('Ошибка сети:', error);
-      throw error;
+    if (response.ok) {
+      const data = await response.json();
+      return data; // Возвращаем данные о файле, включая путь
+    } else {
+      commit('setErrorMessage', 'Ошибка при загрузке файла');
+      console.error('Ошибка при загрузке файла');
     }
-  },
+  } catch (error) {
+    commit('setErrorMessage', 'Ошибка сети: ' + error.message);
+    console.error('Ошибка сети:', error);
+    throw error;
+  }
+},
+
+// Действие для создания категории
+async createCategory({ commit }, categoryData) {
+  try {
+    const response = await fetch(`${BASE_URL}/api/categories/create`, {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify(categoryData),
+    });
+
+    if (response.ok) {
+      const data = await response.json();
+      return data; // Возвращаем данные о категории
+    } else {
+      commit('setErrorMessage', 'Ошибка при создании категории');
+      console.error('Ошибка при создании категории');
+    }
+  } catch (error) {
+    commit('setErrorMessage', 'Ошибка сети: ' + error.message);
+    console.error('Ошибка сети:', error);
+    throw error;
+  }
+},
 
   
   // Удаление файла

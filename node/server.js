@@ -148,90 +148,36 @@ const storage = multer.diskStorage({
 const upload = multer({ storage: storage });
 
 // Настройка маршрута для загрузки файла
-router.post("/api/files/upload", upload.single("file"), (req, res) => {
+router.post("/api/files/uploadFile", upload.single("file"), (req, res) => {
   try {
-    const categoryName = req.body.categoryName || "default"; // Получаем categoryName из тела запроса
-    const categoryDescription = req.body.description;
-    const file = req.file; // Получаем файл из запроса
-    console.log(file);
-    
-    
+    const file = req.file;
+
     if (!file) {
       return res.status(400).json({ message: "Файл не был загружен" });
     }
 
-    // Формируем путь для сохранения файла в подкатегории
-    const destinationDir = path.join("images", "category", categoryName); // Папка для категории
-    const destinationFilePath = path.join(destinationDir, file.filename); // Путь для окончательного сохранения файла
-    const filetype = file.mimetype;
-    console.log(filetype);
-    
+    const uniqueName = Date.now() + path.extname(file.originalname); // Уникальное имя для файла
+    const destinationDir = path.join("images", "uploads");
+    const destinationFilePath = path.join(destinationDir, uniqueName); // Путь для окончательного сохранения файла
+
     // Создаем директорию, если её нет
     if (!fs.existsSync(destinationDir)) {
       fs.mkdirSync(destinationDir, { recursive: true });
     }
 
+    const tempFilePath = path.join("images", file.filename); // Временный путь файла
+
     // Перемещаем файл из временной директории в нужную папку
-    const tempFilePath = path.join("images", file.filename); // Используем новое имя файла
-    console.log(destinationFilePath);
-    fs.rename(tempFilePath, destinationFilePath, async (err) => {
+    fs.rename(tempFilePath, destinationFilePath, (err) => {
       if (err) {
         console.error("Ошибка при перемещении файла:", err);
-        return res
-          .status(500)
-          .json({ message: "Ошибка сервера при перемещении файла" });
+        return res.status(500).json({ message: "Ошибка сервера при перемещении файла" });
       }
 
-      const insertCategoryQuery = `
-        INSERT INTO categories (name, description)
-        VALUES ($1, $2)
-        RETURNING category_id;
-      `;
-      let categoryResult;
-      try {
-        categoryResult = await queryDB(insertCategoryQuery, [
-          categoryName,
-          categoryDescription,
-        ]);
-        console.log("categoryResult:", categoryResult); // Логируем результат запроса
-      } catch (error) {
-        console.error(
-          "Ошибка при выполнении запроса insertCategoryQuery:",
-          error
-        );
-        return res
-          .status(500)
-          .json({ message: "Ошибка при создании категории" });
-      }
-
-      // Проверяем, если нет результата или ошибка в запросе
-      if (categoryResult.length === 0) {
-        // Исправлено: удаляем .rows и проверяем длину массива
-        return res
-          .status(500)
-          .json({ message: "Ошибка при создании категории. Нет результата." });
-      }
-
-      const categoryId = categoryResult[0].category_id;
-
-      // 2. Добавление изображения для категории в таблицу images
-      const insertImageQuery = `
-        INSERT INTO images (entity_id, entity_type, image_url, image_type, image_order)
-        VALUES ($1, 'category', $2, $3, 1);
-      `;
-      await queryDB(insertImageQuery, [
-        categoryId, // entity_id из таблицы categories
-        destinationFilePath.replace("images/", ""), // Убираем 'images/' в начале пути
-        filetype, // Тип файла (например, 'image/jpeg')
-      ]);
-
-      // Возвращаем информацию о файле
       res.json({
-        message: "Категория и изображение успешно загружены",
-        categoryName: categoryName,
-        fileName: file.filename, // Используем уникальное имя файла
-        filePath: destinationFilePath, // Отправляем путь к файлу
-        categoryId: categoryId, // Отправляем id новой категории
+        message: "Файл успешно загружен",
+        fileName: file.filename,
+        filePath: destinationFilePath,
       });
     });
   } catch (error) {
@@ -239,32 +185,55 @@ router.post("/api/files/upload", upload.single("file"), (req, res) => {
     res.status(500).json({ message: "Ошибка сервера" });
   }
 });
+router.post("/api/categories/create", async (req, res) => {
+  try {
+    const { categoryName, description, filePath } = req.body;
 
-const saveImageToCategory = (file, categoryName) => {
-  return new Promise((resolve, reject) => {
-    const destinationDir = path.join("images", "category", categoryName);
-    const destinationFilePath = path.join(destinationDir, file.filename);
-
-    // Создаем директорию, если она не существует
-    if (!fs.existsSync(destinationDir)) {
-      fs.mkdirSync(destinationDir, { recursive: true });
+    if (!categoryName || !filePath) {
+      return res.status(400).json({ message: "Не указано имя категории или путь к файлу" });
     }
 
-    // Перемещаем файл в нужную директорию
-    const tempFilePath = path.join("images", file.filename);
+    // Создание записи в таблице категорий
+    const insertCategoryQuery = `
+      INSERT INTO categories (name, description)
+      VALUES ($1, $2)
+      RETURNING category_id;
+    `;
+    let categoryResult;
+    try {
+      categoryResult = await queryDB(insertCategoryQuery, [categoryName, description]);
+    } catch (error) {
+      console.error("Ошибка при выполнении запроса insertCategoryQuery:", error);
+      return res.status(500).json({ message: "Ошибка при создании категории" });
+    }
 
-    fs.rename(tempFilePath, destinationFilePath, (err) => {
-      if (err) {
-        return reject("Ошибка при перемещении файла");
-      }
-      resolve({
-        filePath: destinationFilePath,
-        fileName: file.filename,
-        fileType: file.mimetype,
-      });
+    if (categoryResult.length === 0) {
+      return res.status(500).json({ message: "Ошибка при создании категории. Нет результата." });
+    }
+
+    const categoryId = categoryResult[0].category_id;
+
+    // Добавление изображения для категории в таблицу images
+    const insertImageQuery = `
+      INSERT INTO images (entity_id, entity_type, image_url, image_type, image_order)
+      VALUES ($1, 'category', $2, 'image/jpeg', 1);
+    `;
+    await queryDB(insertImageQuery, [
+      categoryId, // ID категории
+      filePath.replace("images/", ""), // Путь к файлу без 'images/' в начале
+    ]);
+
+    res.json({
+      message: "Категория и изображение успешно добавлены",
+      categoryId: categoryId,
+      categoryName: categoryName,
     });
-  });
-};
+  } catch (error) {
+    console.error("Ошибка при добавлении категории:", error);
+    res.status(500).json({ message: "Ошибка при добавлении категории" });
+  }
+});
+
 // const imageData = await saveImageToCategory(file, categoryName);
 app.delete("/api/files/delete", async (req, res) => {
   const { filePath, categoryId } = req.body; // Извлекаем путь к файлу и ID категории
