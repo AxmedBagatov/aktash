@@ -283,18 +283,6 @@ export default {
         }
         
        
-        // await this.$store.dispatch("updateCategory", {
-        //   id: this.editCategoryData.category_id,
-        //   name: this.editCategoryData.name,
-        //   description: this.editCategoryData.description,
-        //   image_url: this.editCategoryData.image_url,
-        // });
-        // this.editCategoryData = {
-        //   name: "",
-        //   description: "",
-        //   image_url: "",
-        //   category_id: null,
-        // }; // Сброс формы
         this.showEditForm = false;
         this.fetchData(); // Обновление данных
         

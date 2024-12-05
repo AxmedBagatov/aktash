@@ -66,30 +66,30 @@ export const actions = {
     }
   },
 // Добавление категории
-async addCategory({ commit, state }, { name, description, image_url }) {
-  try {
-    commit('setLoading', true);
-    const response = await fetch(`${BASE_URL}/api/categories`, {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ name, description, image_url }),
-      credentials: 'include',
-    });
+// async addCategory({ commit, state }, { name, description, image_url }) {
+//   try {
+//     commit('setLoading', true);
+//     const response = await fetch(`${BASE_URL}/api/categories`, {
+//       method: 'POST',
+//       headers: { 'Content-Type': 'application/json' },
+//       body: JSON.stringify({ name, description, image_url }),
+//       credentials: 'include',
+//     });
 
-    if (response.ok) {
-      const data = await response.json();
-      commit('setCategories', [...state.categories, data]); // Добавляем категорию
-    } else {
-      commit('setErrorMessage', 'Ошибка при добавлении категории');
-      console.error('Ошибка при добавлении категории');
-    }
-  } catch (error) {
-    commit('setErrorMessage', 'Ошибка сети: ' + error.message);
-    console.error('Ошибка сети:', error);
-  } finally {
-    commit('setLoading', false);
-  }
-},
+//     if (response.ok) {
+//       const data = await response.json();
+//       commit('setCategories', [...state.categories, data]); // Добавляем категорию
+//     } else {
+//       commit('setErrorMessage', 'Ошибка при добавлении категории');
+//       console.error('Ошибка при добавлении категории');
+//     }
+//   } catch (error) {
+//     commit('setErrorMessage', 'Ошибка сети: ' + error.message);
+//     console.error('Ошибка сети:', error);
+//   } finally {
+//     commit('setLoading', false);
+//   }
+// },
 
 
 // Редактирование категории
