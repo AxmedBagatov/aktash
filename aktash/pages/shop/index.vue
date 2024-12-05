@@ -244,7 +244,7 @@ export default {
 
       try {
         await this.$store.dispatch("deleteImage", {
-          imageUrl: this.newCategory.image_url,
+          imageUrl: imagesPath,
         });
         this.editCategoryData.image_url = null; // Убираем URL
       } catch (error) {
