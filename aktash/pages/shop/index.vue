@@ -277,6 +277,9 @@ export default {
         console.log(this.editCategoryData.name);
         console.log(this.editCategoryData.description);
         console.log(this.editCategoryData.image_url);
+        if  (this.editCategoryData.image_url == null){
+          
+        }
         if (this.selectedFile) {
           console.log(this.selectedFile);
         }
