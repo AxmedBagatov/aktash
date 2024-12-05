@@ -268,27 +268,46 @@ export default {
 
     // Метод для обновления категории
     async updateCategory() {
-      try {
-        console.log(this.editCategoryData.category_id);
-        console.log(this.editCategoryData.name);
-        console.log(this.editCategoryData.description);
-        if (this.selectedFile) {
-          console.log(this.selectedFile);
-          const formData = new FormData();
-          formData.append("file", this.selectedFile); // Добавляем файл
-          const fileData = await this.$store.dispatch("uploadFile", formData);
-          console.log("Файл успешно загружен:", fileData);
-        }
+  try {
+    const categoryId = this.editCategoryData.category_id;
+    const categoryName = this.editCategoryData.name;
+    const description = this.editCategoryData.description;
 
-        this.showEditForm = false;
-        this.fetchData(); // Обновление данных
-      } catch (error) {
-        console.error("Ошибка при обновлении категории:", error);
-      }
-    },
+    // Если выбрали новый файл
+    let filePath = this.editCategoryData.filePath; // Путь файла, если не обновляется, оставляем старый
+
+    if (this.selectedFile) {
+      console.log(this.selectedFile);
+      const formData = new FormData();
+      formData.append("file", this.selectedFile); // Добавляем новый файл
+      const fileData = await this.$store.dispatch("uploadFile", formData);
+      filePath = fileData.filePath; // Обновляем путь к файлу
+      console.log("Файл успешно загружен:", fileData);
+    }
+
+    // Создание данных для обновления категории
+    const categoryData = {
+      categoryId,
+      categoryName,
+      description,
+      filePath, // Путь к файлу
+    };
+
+    // Обновляем категорию
+    const updateResult = await this.$store.dispatch("updateCategory", categoryData);
+    console.log("Категория успешно обновлена:", updateResult);
+
+    // Сбрасываем форму
+    this.showEditForm = false;
+    this.editCategoryData = { name: "", description: "", image_url: "" }; // Сброс формы
+    this.fetchData(); // Обновление данных
+  } catch (error) {
+    console.error("Ошибка при обновлении категории:", error);
+  }
+},
 
 
-    
+
     // Удалить категорию
     async deleteCategory(categoryId) {
       try {

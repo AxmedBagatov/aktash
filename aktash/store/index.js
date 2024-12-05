@@ -93,22 +93,19 @@ export const actions = {
 
 
 // Редактирование категории
-async updateCategory({ commit, state }, { id, name, description, image_url }) {
+async updateCategory({ commit }, categoryData) {
   try {
-    commit('setLoading', true);
-    const response = await fetch(`${BASE_URL}/api/categories/${id}`, {
-      method: 'PUT',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ name, description, image_url }),
-      credentials: 'include',
+    const response = await fetch(`${BASE_URL}/api/categories/update`, {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify(categoryData),
     });
 
     if (response.ok) {
-      const updatedCategory = await response.json();
-      const updatedCategories = state.categories.map(category =>
-        category.category_id === updatedCategory.category_id ? updatedCategory : category
-      );
-      commit('setCategories', updatedCategories); // Обновляем категорию в списке
+      const data = await response.json();
+      return data; // Возвращаем данные об обновленной категории
     } else {
       commit('setErrorMessage', 'Ошибка при обновлении категории');
       console.error('Ошибка при обновлении категории');
@@ -116,8 +113,7 @@ async updateCategory({ commit, state }, { id, name, description, image_url }) {
   } catch (error) {
     commit('setErrorMessage', 'Ошибка сети: ' + error.message);
     console.error('Ошибка сети:', error);
-  } finally {
-    commit('setLoading', false);
+    throw error;
   }
 },
 

@@ -234,6 +234,56 @@ router.post("/api/categories/create", async (req, res) => {
   }
 });
 
+// server.js
+router.post("/api/categories/update", async (req, res) => {
+  try {
+    const { categoryId, categoryName, description, filePath } = req.body;
+
+    if (!categoryId || !categoryName) {
+      return res.status(400).json({ message: "Не указано имя категории или id" });
+    }
+
+    // Обновление категории в таблице categories
+    const updateCategoryQuery = `
+      UPDATE categories
+      SET name = $1, description = $2
+      WHERE category_id = $3
+      RETURNING category_id;
+    `;
+
+    let categoryResult;
+    try {
+      categoryResult = await queryDB(updateCategoryQuery, [categoryName, description, categoryId]);
+    } catch (error) {
+      console.error("Ошибка при выполнении запроса updateCategoryQuery:", error);
+      return res.status(500).json({ message: "Ошибка при обновлении категории" });
+    }
+
+    if (categoryResult.length === 0) {
+      return res.status(500).json({ message: "Категория не найдена" });
+    }
+
+    // Если путь к новому изображению был передан, обновляем его
+    if (filePath) {
+      const updateImageQuery = `
+        UPDATE images
+        SET image_url = $1
+        WHERE entity_id = $2 AND entity_type = 'category';
+      `;
+      await queryDB(updateImageQuery, [filePath.replace("images/", ""), categoryId]); // Обновляем путь изображения
+    }
+
+    res.json({
+      message: "Категория успешно обновлена",
+      categoryId: categoryId,
+      categoryName: categoryName,
+    });
+  } catch (error) {
+    console.error("Ошибка при обновлении категории:", error);
+    res.status(500).json({ message: "Ошибка при обновлении категории" });
+  }
+});
+
 // const imageData = await saveImageToCategory(file, categoryName);
 app.delete("/api/files/delete", async (req, res) => {
   const { filePath, categoryId } = req.body; // Извлекаем путь к файлу и ID категории
