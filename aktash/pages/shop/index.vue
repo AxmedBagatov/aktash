@@ -172,7 +172,6 @@ export default {
       this.newCategory = { name: "", description: "", image_url: "" }; // Очистить поля
     },
 
-    
     // Закрыть форму
     cancelAddCategory() {
       this.showAddForm = false;
@@ -238,7 +237,7 @@ export default {
     },
 
     async removeImage() {
-      const imagesPath = ("images",this.editCategoryData.name,this.editCategoryData.image_url)
+      const imagesPath = `images/${this.editCategoryData.image_url}`;
       console.log(imagesPath);
 
       if (!this.newCategory.image_url) return;
@@ -270,7 +269,6 @@ export default {
     // Метод для обновления категории
     async updateCategory() {
       try {
-
         console.log(this.editCategoryData.category_id);
         console.log(this.editCategoryData.name);
         console.log(this.editCategoryData.description);
