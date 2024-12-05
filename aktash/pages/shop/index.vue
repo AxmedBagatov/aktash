@@ -213,62 +213,44 @@ export default {
 
     // Метод для добавления новой категории
     async addCategory() {
-  try {
-    if (this.selectedFile) {
-      console.log(this.selectedFile);
-      const categoryName = this.newCategory.name;
-      const description = this.newCategory.description;
-
-      // Формируем FormData для загрузки файла
-      const formData = new FormData();
-      formData.append("file", this.selectedFile); // Добавляем файл
-
-      // Загружаем файл
-      const fileData = await this.$store.dispatch("uploadFile", formData);
-      console.log("Файл успешно загружен:", fileData);
-
-      // Формируем данные для создания категории
-      const categoryData = {
-        categoryName: categoryName,
-        description: description,
-        filePath: fileData.filePath, // Передаем путь к файлу
-      };
-
-      // Создаем категорию
-      const categoryResult = await this.$store.dispatch("createCategory", categoryData);
-      console.log("Категория успешно создана:", categoryResult);
-
-      // Сбрасываем форму
-      this.showAddForm = false;
-      this.newCategory = { name: "", description: "", image_url: "" };
-      this.fetchData(); // Обновление данных
-    }
-  } catch (error) {
-    console.error("Ошибка при добавлении категории:", error);
-  }
-},
-
-
-    async removeImage() {
-      const categoryId = this.editCategoryData.category_id;
-      const imagesPath = `images/${this.editCategoryData.image_url}`;
-      console.log(imagesPath);
-
-      if (!this.editCategoryData.image_url) return;
-
       try {
-        await this.$store.dispatch("deleteImage", { 
-      filePath: imagesPath, 
-      categoryId: categoryId 
-    });
+        if (this.selectedFile) {
+          console.log(this.selectedFile);
+          const categoryName = this.newCategory.name;
+          const description = this.newCategory.description;
 
-        // console.log("в запросе",imagesPath);
-        this.editCategoryData.image_url = null; // Убираем URL
-        this.selectedFile = null;
+          // Формируем FormData для загрузки файла
+          const formData = new FormData();
+          formData.append("file", this.selectedFile); // Добавляем файл
+
+          // Загружаем файл
+          const fileData = await this.$store.dispatch("uploadFile", formData);
+          console.log("Файл успешно загружен:", fileData);
+
+          // Формируем данные для создания категории
+          const categoryData = {
+            categoryName: categoryName,
+            description: description,
+            filePath: fileData.filePath, // Передаем путь к файлу
+          };
+
+          // Создаем категорию
+          const categoryResult = await this.$store.dispatch(
+            "createCategory",
+            categoryData
+          );
+          console.log("Категория успешно создана:", categoryResult);
+
+          // Сбрасываем форму
+          this.showAddForm = false;
+          this.newCategory = { name: "", description: "", image_url: "" };
+          this.fetchData(); // Обновление данных
+        }
       } catch (error) {
-        console.error("Ошибка при удалении изображения:", error);
+        console.error("Ошибка при добавлении категории:", error);
       }
     },
+
     showEditCategoryForm(categoryId) {
       this.showEditForm = true;
       // console.log(this.catalogs);
@@ -290,19 +272,23 @@ export default {
         console.log(this.editCategoryData.category_id);
         console.log(this.editCategoryData.name);
         console.log(this.editCategoryData.description);
-        console.log(this.editCategoryData.image_url);
-          if (this.selectedFile) {
+        if (this.selectedFile) {
           console.log(this.selectedFile);
+          const formData = new FormData();
+          formData.append("file", this.selectedFile); // Добавляем файл
+          const fileData = await this.$store.dispatch("uploadFile", formData);
+          console.log("Файл успешно загружен:", fileData);
         }
-        
-       
+
         this.showEditForm = false;
         this.fetchData(); // Обновление данных
-        
       } catch (error) {
         console.error("Ошибка при обновлении категории:", error);
       }
     },
+
+
+    
     // Удалить категорию
     async deleteCategory(categoryId) {
       try {
@@ -310,6 +296,26 @@ export default {
         await this.fetchData(); // Обновить список категорий
       } catch (error) {
         console.error("Ошибка при удалении категории:", error);
+      }
+    },
+    async removeImage() {
+      const categoryId = this.editCategoryData.category_id;
+      const imagesPath = `images/${this.editCategoryData.image_url}`;
+      console.log(imagesPath);
+
+      if (!this.editCategoryData.image_url) return;
+
+      try {
+        await this.$store.dispatch("deleteImage", {
+          filePath: imagesPath,
+          categoryId: categoryId,
+        });
+
+        // console.log("в запросе",imagesPath);
+        this.editCategoryData.image_url = null; // Убираем URL
+        this.selectedFile = null;
+      } catch (error) {
+        console.error("Ошибка при удалении изображения:", error);
       }
     },
     confirmDelete(categoryId) {
