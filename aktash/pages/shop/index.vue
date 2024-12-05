@@ -237,6 +237,7 @@ export default {
     },
 
     async removeImage() {
+      const categoryId = this.editCategoryData.category_id;
       const imagesPath = `images/${this.editCategoryData.image_url}`;
       console.log(imagesPath);
 

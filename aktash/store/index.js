@@ -251,7 +251,7 @@ async deleteCategory({ commit, state }, id) {
       const response = await fetch(`${BASE_URL}/api/files/delete`, {
         method: 'DELETE',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ path: filePath }), // Передаем путь файла
+        body: JSON.stringify({ filePath: filePath }), // Передаем путь файла
       });
   
       if (!response.ok) {
