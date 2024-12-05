@@ -132,7 +132,8 @@ export default {
         name: "",
         description: "",
         image_url: "",
-        category_id: null, // Добавленное поле для хранения ID
+        category_id: null,
+        deleteImage: false, // Добавленное поле для хранения ID
       },
       editingCategoryId: null,
     };
@@ -180,7 +181,6 @@ export default {
     cancelEditCategory() {
       this.showEditForm = false;
     },
-
     onFileChange(event) {
       const file = event.target.files[0];
       if (file) {
@@ -237,6 +237,7 @@ export default {
     },
 
     async removeImage() {
+      this.editCategoryData.deleteImage = true; 
       const categoryId = this.editCategoryData.category_id;
       const imagesPath = `images/${this.editCategoryData.image_url}`;
       console.log(imagesPath);
@@ -273,14 +274,16 @@ export default {
     // Метод для обновления категории
     async updateCategory() {
       try {
-        let changeImage = false;
         console.log(this.editCategoryData.category_id);
         console.log(this.editCategoryData.name);
         console.log(this.editCategoryData.description);
         console.log(this.editCategoryData.image_url);
+        if (this.editCategoryData.deleteImage == true){
+          console.log("картинка удалена");
+                    
+        }
         if  (this.editCategoryData.image_url == null){
-          changeImage = true;
-          console.log("Добавлена картинка");
+
           if (this.selectedFile) {
           console.log(this.selectedFile);
         }
