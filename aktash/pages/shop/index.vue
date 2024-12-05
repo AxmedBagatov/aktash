@@ -238,18 +238,18 @@ export default {
     },
 
     async removeImage() {
-      console.log(this.newCategory.image_url);
+      console.log(this.editCategoryData.image_url);
 
       if (!this.newCategory.image_url) return;
 
-      try {
-        await this.$store.dispatch("deleteImage", {
-          imageUrl: this.newCategory.image_url,
-        });
-        this.newCategory.image_url = null; // Убираем URL
-      } catch (error) {
-        console.error("Ошибка при удалении изображения:", error);
-      }
+      // try {
+      //   await this.$store.dispatch("deleteImage", {
+      //     imageUrl: this.newCategory.image_url,
+      //   });
+      //   this.newCategory.image_url = null; // Убираем URL
+      // } catch (error) {
+      //   console.error("Ошибка при удалении изображения:", error);
+      // }
     },
     showEditCategoryForm(categoryId) {
       this.showEditForm = true;
@@ -269,21 +269,26 @@ export default {
     // Метод для обновления категории
     async updateCategory() {
       try {
-        if (this.selectedFile) {
-          await this.uploadImage(); // Загружаем и переименовываем файл перед обновлением категории
-        }
-        await this.$store.dispatch("updateCategory", {
-          id: this.editCategoryData.category_id,
-          name: this.editCategoryData.name,
-          description: this.editCategoryData.description,
-          image_url: this.editCategoryData.image_url,
-        });
-        this.editCategoryData = {
-          name: "",
-          description: "",
-          image_url: "",
-          category_id: null,
-        }; // Сброс формы
+
+        console.log(this.editCategoryData.category_id);
+        console.log(this.editCategoryData.name);
+        console.log(this.editCategoryData.description);
+        console.log(this.editCategoryData.image_url);
+        // if (this.selectedFile) {
+        //   await this.uploadImage(); // Загружаем и переименовываем файл перед обновлением категории
+        // }
+        // await this.$store.dispatch("updateCategory", {
+        //   id: this.editCategoryData.category_id,
+        //   name: this.editCategoryData.name,
+        //   description: this.editCategoryData.description,
+        //   image_url: this.editCategoryData.image_url,
+        // });
+        // this.editCategoryData = {
+        //   name: "",
+        //   description: "",
+        //   image_url: "",
+        //   category_id: null,
+        // }; // Сброс формы
         this.fetchData(); // Обновление данных
       } catch (error) {
         console.error("Ошибка при обновлении категории:", error);

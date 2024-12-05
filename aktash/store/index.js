@@ -220,10 +220,6 @@ async deleteCategory({ commit, state }, id) {
   },
 
   async uploadFile({ commit }, formData) {
-    console.log(formData);
-    for (let [key, value] of formData.entries()) {
-      console.log(`${key}:`, value instanceof File ? value.name : value);
-    }
     try {
       const response = await fetch(`${BASE_URL}/api/files/upload`, {
         method: 'POST',
