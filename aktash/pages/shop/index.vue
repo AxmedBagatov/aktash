@@ -296,6 +296,13 @@ export default {
         console.error("Ошибка при удалении категории:", error);
       }
     },
+    confirmDelete(categoryId) {
+    // Отображаем предупреждение
+    const confirmed = confirm("Are you sure you want to delete this category?");
+    if (confirmed) {
+      this.deleteCategory(categoryId);
+    }
+  },
   },
 };
 </script>
