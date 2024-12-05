@@ -242,14 +242,14 @@ export default {
 
       if (!this.newCategory.image_url) return;
 
-      // try {
-      //   await this.$store.dispatch("deleteImage", {
-      //     imageUrl: this.newCategory.image_url,
-      //   });
-      //   this.editCategoryData.image_url = null; // Убираем URL
-      // } catch (error) {
-      //   console.error("Ошибка при удалении изображения:", error);
-      // }
+      try {
+        await this.$store.dispatch("deleteImage", {
+          imageUrl: this.newCategory.image_url,
+        });
+        this.editCategoryData.image_url = null; // Убираем URL
+      } catch (error) {
+        console.error("Ошибка при удалении изображения:", error);
+      }
     },
     showEditCategoryForm(categoryId) {
       this.showEditForm = true;
