@@ -133,7 +133,6 @@ export default {
         description: "",
         image_url: "",
         category_id: null,
-        deleteImage: false, // Добавленное поле для хранения ID
       },
       editingCategoryId: null,
     };
@@ -238,7 +237,6 @@ export default {
     },
 
     async removeImage() {
-      this.editCategoryData.deleteImage = true; 
       const categoryId = this.editCategoryData.category_id;
       const imagesPath = `images/${this.editCategoryData.image_url}`;
       console.log(imagesPath);
@@ -253,6 +251,7 @@ export default {
 
         // console.log("в запросе",imagesPath);
         this.editCategoryData.image_url = null; // Убираем URL
+        this.selectedFile = null;
       } catch (error) {
         console.error("Ошибка при удалении изображения:", error);
       }
@@ -279,16 +278,10 @@ export default {
         console.log(this.editCategoryData.name);
         console.log(this.editCategoryData.description);
         console.log(this.editCategoryData.image_url);
-        if (this.editCategoryData.deleteImage == true){
-          console.log("картинка удалена");
-                    
-        }
-        if  (this.editCategoryData.image_url == null){
-
           if (this.selectedFile) {
           console.log(this.selectedFile);
         }
-        }
+        
        
         // await this.$store.dispatch("updateCategory", {
         //   id: this.editCategoryData.category_id,
