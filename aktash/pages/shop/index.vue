@@ -277,9 +277,9 @@ export default {
         console.log(this.editCategoryData.name);
         console.log(this.editCategoryData.description);
         console.log(this.editCategoryData.image_url);
-        // if (this.selectedFile) {
-        //   await this.uploadImage(); // Загружаем и переименовываем файл перед обновлением категории
-        // }
+        if (this.selectedFile) {
+          console.log(this.selectedFile);
+        }
         // await this.$store.dispatch("updateCategory", {
         //   id: this.editCategoryData.category_id,
         //   name: this.editCategoryData.name,
