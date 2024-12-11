@@ -35,6 +35,9 @@
           <div class="product_modal_own_card">
             <div class="left-side">
               <div>
+                <input type="hidden" v-model="newProduct.category_id" />
+              </div>
+              <div>
                 <label for="productName">Название</label>
                 <input
                   type="text"
@@ -189,7 +192,13 @@ export default {
       currentSlide: {},
       carouselInterval: {},
       showCreateModal: false,
-      newProduct: { name: "", price: "", description: "", images: [] }, // Добавлено свойство images
+      newProduct: {
+        name: "",
+        price: "",
+        description: "",
+        images: [],
+        category_id: this.$route.params.catalogId,
+      }, // Добавлено свойство images
     };
   },
   async asyncData({ params, store }) {
@@ -280,65 +289,74 @@ export default {
 
     async createProduct() {
       try {
-        // Загружаем изображения
-        // Только выполняем загрузку, без ожидания данных
-        const images = await this.uploadImages(); // Результат загрузки изображений (массив с URL)
-
-        console.log("Полученные изображения внутри createProduct:", images);
-        // // Добавляем ссылки на загруженные изображения в данные продукта
+        // Добавляем category_id в newProduct, используя catalogId
         const productData = {
           ...this.newProduct,
-          images: [], // Просто оставляем пустой массив, если изображения не возвращаются
+          category_id: this.catalogId, // Используем catalogId, так как это правильное имя переменной
         };
 
-        // Создаем продукт
+        // Загружаем изображения
+        const upload_images = await this.uploadImages();
+        console.log(
+          "Полученные изображения внутри createProduct:",
+          upload_images
+        );
+
+        // Обновляем список изображений в productData
+        productData.images = upload_images;
+
+        // Логируем данные
+        console.log(productData);
+
+        // Отправляем данные на сервер
         await this.$store.dispatch("createProduct", productData);
 
-        // Сброс данных и закрытие модального окна
+        // Закрываем модальное окно и сбрасываем данные
         this.closeCreateProductModal();
         this.newProduct = {
           name: "",
           price: "",
           description: "",
           images: [],
+          category_id: this.catalogId, // Обязательно сбрасываем category_id
         };
       } catch (error) {
         console.error("Ошибка при создании товара с изображениями:", error);
       }
     },
     async uploadImages() {
-  try {
-    const formData = new FormData();
+      try {
+        const formData = new FormData();
 
-    // Преобразуем изображения в объект с индексами
-    this.newProduct.images.forEach((imageObj) => {
-      formData.append("images[]", imageObj.file);
-      formData.append("indexes[]", imageObj.index);
-    });
+        // Преобразуем изображения в объект с индексами
+        this.newProduct.images.forEach((imageObj) => {
+          formData.append("images[]", imageObj.file);
+          formData.append("indexes[]", imageObj.index);
+        });
 
-    // Отправляем FormData в Vuex
-    const response = await this.$store.dispatch("setImages", formData);
+        // Отправляем FormData в Vuex
+        const response = await this.$store.dispatch("setImages", formData);
 
-    // Проверяем и логируем полученные изображения
-    console.log("Ответ от сервера с изображениями:", response);
+        // Проверяем и логируем полученные изображения
+        console.log("Ответ от сервера с изображениями:", response);
 
-    // Извлекаем значения из реактивных объектов
-    if (response && response.data && Array.isArray(response.data.images)) {
-      return response.data.images.map(item => {
-        return {
-          index: item.index,
-          url: item.url
-        };
-      });
-    } else {
-      console.error("Ошибка: Некорректная структура данных в ответе:", response);
-      return [];  // Возвращаем пустой массив в случае ошибки
-    }
-  } catch (error) {
-    console.error("Ошибка при загрузке изображений:", error);
-    throw error;
-  }
-},
+        // Извлекаем значения из реактивных объектов
+        if (response && response.data && Array.isArray(response.data.images)) {
+          // Возвращаем полученные изображения без использования итерации
+          return response.data.images; // Просто возвращаем полученный массив
+        } else {
+          console.error(
+            "Ошибка: Некорректная структура данных в ответе:",
+            response
+          );
+          return []; // Возвращаем пустой массив в случае ошибки
+        }
+      } catch (error) {
+        console.error("Ошибка при загрузке изображений:", error);
+        throw error;
+      }
+    },
+
     deleteProduct(productId) {
       this.$store.dispatch("deleteProduct", productId).catch((error) => {
         console.error("Ошибка при удалении товара:", error);

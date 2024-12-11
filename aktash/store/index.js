@@ -3,13 +3,14 @@
 const BASE_URL = "http://10.30.74.112:4000";
 export const state = () => ({
   products: [],
+  create_products: [],
+  galleryImages: [],
   categories: [],
   searchResults: [],
   selectedProduct: null,
   galleryImages: [],
   errorMessage: "",
   loading: false,
-  products: [],
   images: [],
   auth: {
     loggedIn: false, // Флаг для проверки авторизован ли пользователь
@@ -49,8 +50,8 @@ export const mutations = {
     state.auth.loggedIn = false;
     state.auth.user = null;
   },
-  SET_PRODUCTS(state, products) {
-    state.products = products;
+  SET_PRODUCTS(state, create_products) {
+    state.create_products = create_products;
   },
   SET_IMAGES(state, images) {
     state.images = images;
@@ -380,11 +381,18 @@ export const actions = {
       commit("setLoading", false);
     }
   },
-  async createProduct({ commit }, productData) {
+  async createProduct({ commit, state }, productData) {
     try {
-      // Здесь будет запрос на сервер для создания нового продукта
+      // Запрос на сервер для создания нового продукта
       const response = await this.$axios.post("/create-products", productData);
-      commit("SET_PRODUCTS", [...state.products, response.data]);
+      console.log("проверка данных перед итерацией", response.data);
+  
+      // Используем push для добавления нового продукта в массив
+      const updatedProducts = [...state.create_products];
+      updatedProducts.push(response.data);
+  
+      commit("SET_PRODUCTS", updatedProducts);
+  
       return response.data; // Возвращаем созданный продукт
     } catch (error) {
       console.error("Ошибка при создании товара:", error);
@@ -392,6 +400,7 @@ export const actions = {
     }
   },
   async setImages({ commit }, formData) {
+  
     try {
       const response = await this.$axios.post("/upload-images", formData, {
         headers: {
@@ -421,10 +430,11 @@ export const actions = {
 export const getters = {
   // Продукты
   getProducts: (state) => state.products,
+  getCreateProducts: (state) => state.create_products,
   getImages: (state) => state.images,
-  getProducts(state) {
-    return state.products;
-  },
+  // getProducts(state) {
+  //   return state.products;
+  // },
   getCategories(state) {
     return state.categories;
   },

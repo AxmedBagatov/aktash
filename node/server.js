@@ -36,6 +36,37 @@ app.use(
   })
 );
 
+const multer = require("multer");
+const router = express.Router();
+const storage = multer.diskStorage({
+  destination: (req, file, cb) => {
+    cb(null, "images/"); 
+  },
+  filename: (req, file, cb) => {
+    const uniqueName = Date.now() + path.extname(file.originalname); 
+    const finalFileName =
+      uniqueName.replace(path.extname(file.originalname), "") +
+      "_" +
+      file.originalname; 
+    cb(null, finalFileName);
+  },
+});
+const upload = multer({ storage: storage });
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 // ======== Регистрация ========
 app.post("/register", async (req, res) => {
   const { username, password } = req.body;
@@ -124,28 +155,6 @@ app.post("/logout", (req, res) => {
 });
 // login end
 
-// file start
-
-const multer = require("multer");
-const router = express.Router();
-const storage = multer.diskStorage({
-  destination: (req, file, cb) => {
-    // Указываем базовую папку для хранения файлов
-    cb(null, "images/"); // Все файлы будут сначала сохраняться в папку 'images'
-  },
-  filename: (req, file, cb) => {
-    // Формируем уникальное имя для файла и добавляем оригинальное имя
-    const uniqueName = Date.now() + path.extname(file.originalname); // уникальное имя
-    const finalFileName =
-      uniqueName.replace(path.extname(file.originalname), "") +
-      "_" +
-      file.originalname; // добавляем оригинальное имя
-    cb(null, finalFileName); // сохраняем с новым именем
-  },
-});
-
-// Инициализация multer с использованием настроенного хранилища
-const upload = multer({ storage: storage });
 
 // Настройка маршрута для загрузки файла
 router.post("/api/files/uploadFile", upload.single("file"), (req, res) => {
@@ -171,7 +180,9 @@ router.post("/api/files/uploadFile", upload.single("file"), (req, res) => {
     fs.rename(tempFilePath, destinationFilePath, (err) => {
       if (err) {
         console.error("Ошибка при перемещении файла:", err);
-        return res.status(500).json({ message: "Ошибка сервера при перемещении файла" });
+        return res
+          .status(500)
+          .json({ message: "Ошибка сервера при перемещении файла" });
       }
 
       res.json({
@@ -190,7 +201,9 @@ router.post("/api/categories/create", async (req, res) => {
     const { categoryName, description, filePath } = req.body;
 
     if (!categoryName || !filePath) {
-      return res.status(400).json({ message: "Не указано имя категории или путь к файлу" });
+      return res
+        .status(400)
+        .json({ message: "Не указано имя категории или путь к файлу" });
     }
 
     // Создание записи в таблице категорий
@@ -201,14 +214,22 @@ router.post("/api/categories/create", async (req, res) => {
     `;
     let categoryResult;
     try {
-      categoryResult = await queryDB(insertCategoryQuery, [categoryName, description]);
+      categoryResult = await queryDB(insertCategoryQuery, [
+        categoryName,
+        description,
+      ]);
     } catch (error) {
-      console.error("Ошибка при выполнении запроса insertCategoryQuery:", error);
+      console.error(
+        "Ошибка при выполнении запроса insertCategoryQuery:",
+        error
+      );
       return res.status(500).json({ message: "Ошибка при создании категории" });
     }
 
     if (categoryResult.length === 0) {
-      return res.status(500).json({ message: "Ошибка при создании категории. Нет результата." });
+      return res
+        .status(500)
+        .json({ message: "Ошибка при создании категории. Нет результата." });
     }
 
     const categoryId = categoryResult[0].category_id;
@@ -240,7 +261,9 @@ router.post("/api/categories/update", async (req, res) => {
     const { categoryId, categoryName, description, filePath } = req.body;
 
     if (!categoryId || !categoryName) {
-      return res.status(400).json({ message: "Не указано имя категории или id" });
+      return res
+        .status(400)
+        .json({ message: "Не указано имя категории или id" });
     }
 
     // Обновление категории в таблице categories
@@ -253,10 +276,19 @@ router.post("/api/categories/update", async (req, res) => {
 
     let categoryResult;
     try {
-      categoryResult = await queryDB(updateCategoryQuery, [categoryName, description, categoryId]);
+      categoryResult = await queryDB(updateCategoryQuery, [
+        categoryName,
+        description,
+        categoryId,
+      ]);
     } catch (error) {
-      console.error("Ошибка при выполнении запроса updateCategoryQuery:", error);
-      return res.status(500).json({ message: "Ошибка при обновлении категории" });
+      console.error(
+        "Ошибка при выполнении запроса updateCategoryQuery:",
+        error
+      );
+      return res
+        .status(500)
+        .json({ message: "Ошибка при обновлении категории" });
     }
 
     if (categoryResult.length === 0) {
@@ -276,7 +308,9 @@ router.post("/api/categories/update", async (req, res) => {
         imageResult = await queryDB(checkImageQuery, [categoryId]);
       } catch (error) {
         console.error("Ошибка при выполнении запроса checkImageQuery:", error);
-        return res.status(500).json({ message: "Ошибка при проверке изображения" });
+        return res
+          .status(500)
+          .json({ message: "Ошибка при проверке изображения" });
       }
 
       if (imageResult.length > 0) {
@@ -286,14 +320,20 @@ router.post("/api/categories/update", async (req, res) => {
           SET image_url = $1
           WHERE entity_id = $2 AND entity_type = 'category';
         `;
-        await queryDB(updateImageQuery, [filePath.replace("images/", ""), categoryId]);
+        await queryDB(updateImageQuery, [
+          filePath.replace("images/", ""),
+          categoryId,
+        ]);
       } else {
         // Если записи нет, добавляем её
         const insertImageQuery = `
           INSERT INTO images (entity_id, entity_type, image_url, image_type, image_order)
           VALUES ($1, 'category', $2, 'image/jpeg', 1);
         `;
-        await queryDB(insertImageQuery, [categoryId, filePath.replace("images/", "")]);
+        await queryDB(insertImageQuery, [
+          categoryId,
+          filePath.replace("images/", ""),
+        ]);
       }
     }
 
@@ -332,11 +372,15 @@ app.delete("/api/files/delete", async (req, res) => {
     if (result.length === 0) {
       // Если не найдено соответствующих строк
       console.log("Запись не найдена в базе данных.");
-      return res.status(404).json({ message: "Изображение не найдено в базе данных" });
+      return res
+        .status(404)
+        .json({ message: "Изображение не найдено в базе данных" });
     }
 
     // Логируем успешное удаление записи из базы данных
-    console.log(`Запись с ID категории ${categoryId} и image_url ${imageUrl} успешно удалена из базы данных`);
+    console.log(
+      `Запись с ID категории ${categoryId} и image_url ${imageUrl} успешно удалена из базы данных`
+    );
 
     // Если запись была удалена из базы данных, пытаемся удалить файл с диска
     const fileToDelete = path.join(__dirname, filePath); // Полный путь к файлу на сервере
@@ -345,17 +389,25 @@ app.delete("/api/files/delete", async (req, res) => {
     fs.unlink(fileToDelete, (err) => {
       if (err) {
         console.error("Ошибка при удалении файла:", err);
-        return res.status(500).json({ message: "Ошибка при удалении файла с диска" });
+        return res
+          .status(500)
+          .json({ message: "Ошибка при удалении файла с диска" });
       }
 
       console.log("Файл успешно удален с диска");
-      res.status(200).json({ message: "Изображение и файл успешно удалены", path: filePath });
+      res
+        .status(200)
+        .json({
+          message: "Изображение и файл успешно удалены",
+          path: filePath,
+        });
     });
-
   } catch (error) {
     // Обработка ошибок
     console.error("Ошибка при удалении изображения:", error);
-    res.status(500).json({ message: "Ошибка сервера при удалении изображения" });
+    res
+      .status(500)
+      .json({ message: "Ошибка сервера при удалении изображения" });
   }
 });
 
@@ -551,10 +603,7 @@ app.delete("/api/categories/:id", authenticateToken, async (req, res) => {
 
 app.get("/api/gallery-images", async (req, res) => {
   try {
-    const {
-      gallery_id: galleryId,
-      search,
-    } = req.query;
+    const { gallery_id: galleryId, search } = req.query;
 
     // Основной запрос для получения изображений галереи
     let query = `
@@ -574,10 +623,7 @@ app.get("/api/gallery-images", async (req, res) => {
 
     const conditions = [];
     if (galleryId) conditions.push(`i.entity_id = ${galleryId}`);
-    if (search)
-      conditions.push(
-        `(i.image_url ILIKE '%${search}%')`
-      );
+    if (search) conditions.push(`(i.image_url ILIKE '%${search}%')`);
 
     if (conditions.length > 0) {
       query += ` AND ` + conditions.join(" AND ");
@@ -601,40 +647,117 @@ app.get("/api/gallery-images", async (req, res) => {
   }
 });
 
-
-app.post("/api/create-products", (req, res) => {
+app.post("/api/create-products", async (req, res) => {
   const productData = req.body;
 
   console.log("Получен новый продукт:");
+  console.log("id категории:", productData.category_id);
   console.log("Название:", productData.name);
   console.log("Цена:", productData.price);
   console.log("Описание:", productData.description);
+  console.log("Длина массива:", productData.images.length);
+  console.log("Фото:", productData.images);
 
-  // Имитация сохранения данных
-  const newProduct = {
-    id: Date.now(),
-    ...productData,
-  };
+  try {
+    // Проверка на наличие данных в productData.images
+    if (!Array.isArray(productData.images) || productData.images.length === 0) {
+      return res.status(400).json({ error: "Нет изображений для добавления." });
+    }
 
-  // Возвращаем созданный продукт
-  res.status(201).json(newProduct);
+    // 1. Добавляем новый продукт в таблицу `products`
+    const insertProductQuery = `
+      INSERT INTO products (category_id, name, description, price)
+      VALUES ($1, $2, $3, $4)
+      RETURNING product_id;
+    `;
+    const values = [
+      productData.category_id,
+      productData.name,
+      productData.description,
+      productData.price,
+    ];
+
+    const result = await queryDB(insertProductQuery, values);
+
+    // Логирование результата запроса
+    console.log("Результат запроса insertProductQuery:", result);
+    const newProductId = Array.isArray(result)
+      ? result[0].product_id
+      : result.rows[0].product_id;
+    console.log("Новый продукт добавлен с test ID:", newProductId);
+    // // Проверяем, что результат содержит строки
+    // if (!result || !result.rows || result.rows.length === 0) {
+    //   return res.status(400).json({ error: "Не удалось создать продукт." });
+    // }
+
+    // 2. Добавляем изображения для нового продукта в таблицу `images`
+    for (let i = 0; i < productData.images.length; i++) {
+      const image = productData.images[i];
+      const imageOrder = parseInt(image.index, 10);
+
+      if (isNaN(imageOrder)) {
+        return res
+          .status(400)
+          .json({ error: "Некорректный индекс изображения." });
+      }
+
+      const imageInsertQuery = `
+        INSERT INTO images (entity_type, entity_id, image_url, image_order)
+        VALUES ('product', $1, $2, $3);
+      `;
+      const imageValues = [newProductId, image.url, imageOrder];
+
+      console.log(
+        "Выполняем запрос:",
+        imageInsertQuery,
+        "с параметрами:",
+        imageValues
+      );
+
+      try {
+        await queryDB(imageInsertQuery, imageValues);
+        console.log(
+          `Изображение добавлено: ${image.url} с порядковым номером ${imageOrder}`
+        );
+      } catch (error) {
+        console.error(
+          "Ошибка при добавлении изображения:",
+          error,
+          "Параметры:",
+          imageValues
+        );
+      }
+    }
+
+    // 3. Возвращаем данные о новом продукте
+    const newProduct = {
+      product_id: newProductId,
+      ...productData,
+    };
+
+    res.status(201).json(newProduct);
+  } catch (error) {
+    console.error("Ошибка при создании продукта:", error);
+    res.status(500).json({ error: "Произошла ошибка при создании продукта." });
+  }
 });
+
 app.post("/api/upload-images", upload.array("images[]"), (req, res) => {
   const uploadedFiles = req.files;
   const indexes = req.body.indexes; // Извлекаем индексы из FormData
 
   // Логируем имена файлов и индексы
-  console.log("Файлы успешно загружены:");
+  // console.log("Файлы успешно загружены:");
   uploadedFiles.forEach((file, index) => {
-    console.log(`Имя файла: ${file.filename}`);
-    console.log(`Путь: ${file.path}`);
-    console.log(`Индекс: ${indexes[index]}`); // Индекс изображения
+    // console.log(`Имя файла: ${file.filename}`);
+    // console.log(`Путь: ${file.path}`);
+    // console.log(`Индекс: ${indexes[index]}`); // Индекс изображения
   });
 
   // Формируем массив URL для изображений с индексами
   const imageUrls = uploadedFiles.map((file, index) => ({
     index: indexes[index], // Возвращаем индекс
-    url: `/images/${file.filename}`, // Путь к изображению
+    url: `/shop/Article/${file.filename}`, // Путь к изображению
   }));
 
   // Отправляем успешный ответ с URL
