@@ -5,9 +5,10 @@ export default {
   rootAttrs: {
    class: "h-full",
   },
+  
   server: {
     port: 80,
-    host: '0.0.0.0',
+    host: '10.30.74.112',
   },
   head: {
     titleTemplate: '%s - aktash',
@@ -32,6 +33,7 @@ export default {
 
   // Plugins to run before rendering page: https://go.nuxtjs.dev/config-plugins
   plugins: [
+    { src: '~/plugins/vuedraggable.js', mode: 'client' }
   ],
 
   // Auto import components: https://go.nuxtjs.dev/config-components
@@ -68,7 +70,7 @@ export default {
   },
   axios: {
     // baseURL: 'http://192.168.62.129:4000/api', 
-    baseURL: 'http://10.30.74.229:4000/api', 
+    baseURL: 'http://10.30.74.112:4000/api', 
     credentials: true,// Укажите адрес вашего сервера
   },
   auth: {

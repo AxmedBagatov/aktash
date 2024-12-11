@@ -3,7 +3,7 @@ const { Client } = require('pg');
 // Настройка подключения к базе данных
 const client = new Client({
   user: 'postgres',
-  host: '192.168.62.129',
+  host: '10.30.74.112',
   database: 'db_vueshop',
   password: '', // Убедитесь, что пароль указан, если он установлен
   port: 5432,

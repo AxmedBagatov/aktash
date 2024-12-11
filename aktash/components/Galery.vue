@@ -22,7 +22,7 @@
     <!-- Правая часть (слайдер изображений) -->
     <div class="carousel-images-gallery">
       <div class="image-slider-gallery" :style="{ transform: `translateX(-${currentIndex * 100}%)` }">
-        <div class="slide-gallery" v-for="(product, index) in formattedProducts" :key="product.id">
+        <div class="slide-gallery" v-for="(product, index) in products" :key="product.id">
           <div class="img-container-gallery">
             <img class="images_123-gallery" :src="`/shop/${product.image_url}`" :alt="product.name" />
           </div>
@@ -31,7 +31,7 @@
 
       <!-- Индикаторы -->
       <div class="indicators-gallery">
-        <span v-for="(product, index) in formattedProducts" :key="index" class="indicator-gallery"
+        <span v-for="(product, index) in products" :key="index" class="indicator-gallery"
           :class="{ active: index === currentIndex }" @click="goToSlide(index)"></span>
       </div>
     </div>
@@ -44,75 +44,43 @@ export default {
     return {
       currentIndex: 0,
       autoScrollInterval: null,
+      loading: false, // добавил для отображения индикатора загрузки
       slides: [
         { line1: "Смарт-часы \"TimePro X\"", line2: "Ультратонкие смарт-часы с AMOLED-дисплеем, измерением пульса, уровня кислорода в крови и поддержкой уведомлений. Идеальны для активного образа жизни и деловых встреч." },
         { line1: "Робот-пылесос \"CleanBot 360\"", line2: "Интеллектуальный робот-пылесос с функцией влажной уборки, мощным всасыванием и управлением через мобильное приложение. Подходит для всех типов полов." },
         { line1: "Беспроводные наушники \"SoundMax Air\"", line2: "Легкие наушники с активным шумоподавлением и высоким качеством звука. До 24 часов работы от батареи. Комфортное использование даже при длительном ношении." },
         { line1: "Электрогриль \"GrillMaster Pro\"", line2: "Компактный электрогриль с антипригарным покрытием и регулировкой температуры. Идеален для приготовления стейков, овощей и бутербродов в домашних условиях." },
       ],
+      // Массив данных о продуктах
+      products: [
+        { id: 1, name: 'TimePro X', image_url: 'galery/b1.png' },
+        { id: 2, name: 'CleanBot 360', image_url: 'galery/3.jpg' },
+        { id: 3, name: 'SoundMax Air', image_url: 'galery/b2.png' },
+        { id: 4, name: 'GrillMaster Pro', image_url: 'galery/1.jpg' },
+      ],
     };
   },
-
-  computed: {
-    // Получаем продукты из Vuex
-    products() {
-      return this.$store.getters.getProducts.slice(0, 4);
-    },
-
-    // Форматируем продукты для карусели
-    formattedProducts() {
-      return this.products.map((product) => {
-        const firstImage = product.images?.[0]?.url || "default-image.png"; // Берём первый URL или дефолтное изображение
-        return {
-          ...product,
-          image_url: firstImage, // Добавляем ожидаемое поле image_url
-        };
-      });
-    },
-
-    // Проверка на загрузку продуктов
-    loading() {
-      return this.$store.getters.isLoading;
-    },
+  mounted() {
+    this.loadProductsIfNeeded(); // Загружаем продукты, если это необходимо
+    this.startAutoScroll(); // Запускаем автопрокрутку при монтировании
   },
-
   methods: {
-    nextSlide() {
-      this.currentIndex = (this.currentIndex + 1) % this.formattedProducts.length;
-    },
-
-    prevSlide() {
-      this.currentIndex =
-        (this.currentIndex - 1 + this.formattedProducts.length) % this.formattedProducts.length;
-    },
-
     goToSlide(index) {
       this.currentIndex = index;
     },
-
+    loadProductsIfNeeded() {
+      // Загрузка продуктов (можно настроить как асинхронную функцию)
+      this.loading = true;
+      setTimeout(() => {
+        this.loading = false;
+      }, 1000); // Симуляция загрузки
+    },
     startAutoScroll() {
-      this.autoScrollInterval = setInterval(this.nextSlide, 3000); // Переключаем каждые 3 секунды
+      // Логика для автопрокрутки (при необходимости)
+      this.autoScrollInterval = setInterval(() => {
+        this.currentIndex = (this.currentIndex + 1) % this.products.length;
+      }, 3000); // смена слайда каждые 3 секунды
     },
-
-    stopAutoScroll() {
-      clearInterval(this.autoScrollInterval); // Останавливаем автопрокрутку
-    },
-
-    // Метод для загрузки продуктов, если они еще не загружены
-    async loadProductsIfNeeded() {
-      if (this.products.length === 0 && !this.loading) {
-        await this.$store.dispatch("fetchProducts");
-      }
-    },
-  },
-
-  mounted() {
-    this.loadProductsIfNeeded(); // Загружаем продукты, если они не загружены
-    this.startAutoScroll(); // Запускаем автопрокрутку при загрузке
-  },
-
-  beforeDestroy() {
-    this.stopAutoScroll(); // Очищаем таймер при уничтожении компонента
   },
 };
 </script>

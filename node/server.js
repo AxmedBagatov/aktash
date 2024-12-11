@@ -22,7 +22,7 @@ app.use(
       const allowedOrigins = [
         "http://192.168.62.129",
         "http://localhost:80",
-        "http://10.30.74.229",
+        "http://10.30.74.112",
       ];
       if (allowedOrigins.includes(origin) || !origin) {
         callback(null, true);
@@ -549,7 +549,97 @@ app.delete("/api/categories/:id", authenticateToken, async (req, res) => {
   }
 });
 
-// Запуск сервера
+app.get("/api/gallery-images", async (req, res) => {
+  try {
+    const {
+      gallery_id: galleryId,
+      search,
+    } = req.query;
+
+    // Основной запрос для получения изображений галереи
+    let query = `
+      SELECT 
+        i.image_id,
+        i.entity_type,
+        i.entity_id,
+        i.image_url,
+        i.image_type,
+        i.created_at,
+        i.image_order
+      FROM 
+        images i
+      WHERE 
+        i.entity_type = 'gallery'
+    `;
+
+    const conditions = [];
+    if (galleryId) conditions.push(`i.entity_id = ${galleryId}`);
+    if (search)
+      conditions.push(
+        `(i.image_url ILIKE '%${search}%')`
+      );
+
+    if (conditions.length > 0) {
+      query += ` AND ` + conditions.join(" AND ");
+    }
+
+    query += ` ORDER BY i.image_order ASC`; // Упорядочиваем изображения по полю image_order
+
+    // Выполнение запроса к базе данных
+    const galleryImages = await queryDB(query);
+    console.log(galleryImages);
+
+    // Возвращаем изображения галереи
+    if (galleryImages.length > 0) {
+      res.json(galleryImages);
+    } else {
+      res.status(404).json({ error: "Gallery images not found" });
+    }
+  } catch (err) {
+    console.error("Error fetching gallery images:", err);
+    res.status(500).json({ error: "Internal server error" });
+  }
+});
+
+
+app.post("/api/create-products", (req, res) => {
+  const productData = req.body;
+
+  console.log("Получен новый продукт:");
+  console.log("Название:", productData.name);
+  console.log("Цена:", productData.price);
+  console.log("Описание:", productData.description);
+
+  // Имитация сохранения данных
+  const newProduct = {
+    id: Date.now(),
+    ...productData,
+  };
+
+  // Возвращаем созданный продукт
+  res.status(201).json(newProduct);
+});
+app.post("/api/upload-images", upload.array("images[]"), (req, res) => {
+  const uploadedFiles = req.files;
+  const indexes = req.body.indexes; // Извлекаем индексы из FormData
+
+  // Логируем имена файлов и индексы
+  console.log("Файлы успешно загружены:");
+  uploadedFiles.forEach((file, index) => {
+    console.log(`Имя файла: ${file.filename}`);
+    console.log(`Путь: ${file.path}`);
+    console.log(`Индекс: ${indexes[index]}`); // Индекс изображения
+  });
+
+  // Формируем массив URL для изображений с индексами
+  const imageUrls = uploadedFiles.map((file, index) => ({
+    index: indexes[index], // Возвращаем индекс
+    url: `/images/${file.filename}`, // Путь к изображению
+  }));
+
+  // Отправляем успешный ответ с URL
+  res.status(200).json({ success: true, images: imageUrls });
+});
 
 app.listen(port, () => {
   console.log(`Server running on http://localhost:${port}`);

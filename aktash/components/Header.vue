@@ -89,7 +89,10 @@ export default {
   display: flex;
   align-items: center;
   flex-wrap: wrap;
-  font-family: 'Gill Sans', 'Gill Sans MT', Calibri, 'Trebuchet MS', sans-serif;
+  /* font-family: 'Gill Sans', 'Gill Sans MT', Calibri, 'Trebuchet MS', sans-serif; */
+  font-family: 'Franklin Gothic Medium', 'Arial Narrow', Arial, sans-serif;
+  letter-spacing: 2px;
+  font-size: 20px;
   background-color: #c32222;
   color: white;
   padding: var(--header-padding);
