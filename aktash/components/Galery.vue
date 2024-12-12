@@ -126,7 +126,8 @@ export default {
   transition: 0.5s;
   display: flex;
   justify-content: space-between;
-  /* Ensures space between the two groups */
+  /* Ensures space between the two group */
+  transition: 0.5s;
   align-items: flex-start;
   font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
   /* background-color: rgba(255, 255, 255, 0.5); */

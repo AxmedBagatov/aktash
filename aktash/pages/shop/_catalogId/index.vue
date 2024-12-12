@@ -334,6 +334,9 @@ export default {
           formData.append("indexes[]", imageObj.index);
         });
 
+        // Укажите путь к папке, где нужно сохранить изображения
+        formData.append("path", "static/shop/Article/"); // Пример пути
+
         // Отправляем FormData в Vuex
         const response = await this.$store.dispatch("setImages", formData);
 
@@ -342,7 +345,6 @@ export default {
 
         // Извлекаем значения из реактивных объектов
         if (response && response.data && Array.isArray(response.data.images)) {
-          // Возвращаем полученные изображения без использования итерации
           return response.data.images; // Просто возвращаем полученный массив
         } else {
           console.error(
@@ -358,10 +360,27 @@ export default {
     },
 
     deleteProduct(productId) {
-      this.$store.dispatch("deleteProduct", productId).catch((error) => {
+  if (window.confirm("Вы точно хотите удалить этот товар?")) {
+    // Находим товар по ID и собираем изображения для удаления
+    const product = this.sortedProducts.find((product) => product.product_id === productId);
+    
+    // Собираем изображения для удаления
+    const imagesToDelete = product.images.map((image) => ({
+      url: image.url, // Путь к изображению
+      product_id: productId,
+    }));
+
+    // Отправляем запрос через Vuex для удаления изображений и товара
+    this.$store
+      .dispatch("deleteProduct", { productId, imagesToDelete })
+      .then(() => {
+        console.log("Товар и изображения успешно удалены");
+      })
+      .catch((error) => {
         console.error("Ошибка при удалении товара:", error);
       });
-    },
+  }
+},
     startCarousel(productId) {
       if (this.carouselInterval[productId]) return;
       this.carouselInterval[productId] = setInterval(() => {
@@ -433,6 +452,7 @@ h1 {
   border: none;
   border-radius: 4px;
   cursor: pointer;
+  margin: 10px;
 }
 
 .create-product-btn:hover {

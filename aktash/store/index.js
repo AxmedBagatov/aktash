@@ -56,6 +56,9 @@ export const mutations = {
   SET_IMAGES(state, images) {
     state.images = images;
   },
+  REMOVE_PRODUCT(state, productId) {
+    state.products = state.products.filter((product) => product.product_id !== productId);
+  }
 };
 
 export const actions = {
@@ -112,12 +115,15 @@ export const actions = {
         method: "DELETE",
         credentials: "include", // Включаем cookies
       });
-
+  
       if (response.ok) {
         const filteredCategories = state.categories.filter(
           (category) => category.category_id !== id
         );
         commit("setCategories", filteredCategories); // Удаляем категорию из списка
+      } else if (response.status === 400) {
+        const errorMessage = await response.text(); // Получить текст ошибки с сервера
+        commit("setErrorMessage", errorMessage);
       } else {
         commit("setErrorMessage", "Ошибка при удалении категории");
         console.error("Ошибка при удалении категории");
@@ -128,7 +134,7 @@ export const actions = {
     } finally {
       commit("setLoading", false);
     }
-  },
+  },  
   async fetchCategories({ commit }) {
     try {
       commit("setLoading", true);
@@ -422,6 +428,28 @@ export const actions = {
       }
     } catch (error) {
       console.error("Ошибка при загрузке изображений:", error);
+      throw error;
+    }
+  },
+  
+  async deleteProduct({ commit }, { productId, imagesToDelete }) {
+    try {
+      const response = await this.$axios.post("/products/delete", {
+        productId: productId,
+        images: imagesToDelete, // Массив объектов { url, product_id }
+      });
+  
+      if (response.status === 200) {
+        console.log("Продукт и его изображения успешно удалены");
+        
+        // Обновляем состояние Vuex, удалив продукт из store
+        commit("REMOVE_PRODUCT", productId); // Мутация для удаления продукта из состояния
+      } else {
+        console.error("Ошибка при удалении товара и изображений:", response);
+        throw new Error("Не удалось удалить товар и изображения");
+      }
+    } catch (error) {
+      console.error("Ошибка при удалении товара и изображений:", error);
       throw error;
     }
   },

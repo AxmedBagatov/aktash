@@ -9,7 +9,7 @@ const bcrypt = require("bcrypt");
 const path = require("path");
 const fs = require("fs");
 const JWT_SECRET = "cristianomessi"; // Лучше хранить это в .env файле
-
+const mkdirp = require("mkdirp");
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 
@@ -36,36 +36,127 @@ app.use(
   })
 );
 
-const multer = require("multer");
+// const multer = require("multer");
 const router = express.Router();
+// const storage = multer.diskStorage({
+//   destination: (req, file, cb) => {
+//     cb(null, "images/");
+//   },
+//   filename: (req, file, cb) => {
+//     const uniqueName = Date.now() + path.extname(file.originalname);
+//     const finalFileName =
+//       uniqueName.replace(path.extname(file.originalname), "") +
+//       "_" +
+//       file.originalname;
+//     cb(null, finalFileName);
+//   },
+// });
+// const upload = multer({ storage: storage });
+
+const multer = require("multer");
+
+// Настроим storage для Multer с сохранением расширений
 const storage = multer.diskStorage({
   destination: (req, file, cb) => {
-    cb(null, "images/"); 
+    const targetPath = req.body.path || "uploads/"; // Путь для сохранения файлов
+    cb(null, targetPath); // Указываем директорию для сохранения
   },
   filename: (req, file, cb) => {
-    const uniqueName = Date.now() + path.extname(file.originalname); 
-    const finalFileName =
-      uniqueName.replace(path.extname(file.originalname), "") +
-      "_" +
-      file.originalname; 
-    cb(null, finalFileName);
+    // Используем оригинальное имя файла с расширением
+    cb(null, file.originalname);
   },
 });
+
 const upload = multer({ storage: storage });
 
+// Маршрут для обработки файлов
+app.post("/api/upload-images", upload.array("images[]"), async (req, res) => {
+  const uploadedFiles = req.files;
+  const indexes = req.body.indexes; // Извлекаем индексы из FormData
+  const targetPath = req.body.path; // Извлекаем путь из FormData
 
+  console.log("Путь:", targetPath); // Логируем путь для отладки
 
+  if (!targetPath) {
+    return res.status(400).json({ success: false, message: "Путь не передан" });
+  }
 
+  try {
+    // Убедитесь, что директория существует, или создайте её
+    await mkdirp(targetPath);
 
+    // Массив для хранения путей файлов
+    const imageUrls = [];
 
+    // Перебираем загруженные файлы
+    for (const [index, file] of uploadedFiles.entries()) {
+      console.log(`Имя файла: ${file.originalname}`); // Должно быть с расширением
+      console.log(`Путь: ${file.path}`);
+      console.log(`Индекс: ${indexes[index]}`);
 
+      // Новый путь, куда будет сохранен файл
+      const newFilePath = path.join(targetPath, file.originalname); // Сохраняем с оригинальным именем
 
+      // Перемещаем файл в целевую директорию
+      await fs.promises.rename(file.path, newFilePath);
 
+      console.log(`Файл успешно перемещен в ${newFilePath}`);
 
+      // Добавляем путь к файлу и индекс в массив
+      imageUrls.push({
+        index: indexes[index],
+        url: newFilePath,
+      });
+    }
 
+    // Отправляем успешный ответ с URL
+    res.status(200).json({ success: true, images: imageUrls });
+  } catch (err) {
+    console.error("Ошибка при обработке файлов:", err);
+    res
+      .status(500)
+      .json({ success: false, message: "Ошибка при загрузке изображений" });
+  }
+});
 
+router.post("/api/files/uploadFile", upload.single("file"), (req, res) => {
+  try {
+    const file = req.file;
 
+    if (!file) {
+      console.error("Файл не был загружен");
+      return res.status(400).json({ message: "Файл не был загружен" });
+    }
 
+    const uniqueName = Date.now() + path.extname(file.originalname); // Уникальное имя для файла
+    const destinationDir = path.join("static", "category");
+    const destinationFilePath = path.join(destinationDir, uniqueName); // Путь для окончательного сохранения файла
+
+    // Создаем директорию, если её нет
+    if (!fs.existsSync(destinationDir)) {
+      fs.mkdirSync(destinationDir, { recursive: true });
+    }
+
+    // Перемещаем файл из временной директории в нужную папку
+    fs.rename(file.path, destinationFilePath, (err) => {
+      if (err) {
+        console.error("Ошибка при перемещении файла:", err);
+        return res
+          .status(500)
+          .json({ message: "Ошибка сервера при перемещении файла" });
+      }
+
+      res.json({
+        message: "Файл успешно загружен",
+        fileName: uniqueName,
+        filePath: destinationFilePath,
+      });
+    });
+  } catch (error) {
+    console.error("Ошибка при обработке запроса:", error);
+    res.status(500).json({ message: "Ошибка сервера" });
+  }
+});
 
 // ======== Регистрация ========
 app.post("/register", async (req, res) => {
@@ -155,47 +246,6 @@ app.post("/logout", (req, res) => {
 });
 // login end
 
-
-// Настройка маршрута для загрузки файла
-router.post("/api/files/uploadFile", upload.single("file"), (req, res) => {
-  try {
-    const file = req.file;
-
-    if (!file) {
-      return res.status(400).json({ message: "Файл не был загружен" });
-    }
-
-    const uniqueName = Date.now() + path.extname(file.originalname); // Уникальное имя для файла
-    const destinationDir = path.join("images", "uploads");
-    const destinationFilePath = path.join(destinationDir, uniqueName); // Путь для окончательного сохранения файла
-
-    // Создаем директорию, если её нет
-    if (!fs.existsSync(destinationDir)) {
-      fs.mkdirSync(destinationDir, { recursive: true });
-    }
-
-    const tempFilePath = path.join("images", file.filename); // Временный путь файла
-
-    // Перемещаем файл из временной директории в нужную папку
-    fs.rename(tempFilePath, destinationFilePath, (err) => {
-      if (err) {
-        console.error("Ошибка при перемещении файла:", err);
-        return res
-          .status(500)
-          .json({ message: "Ошибка сервера при перемещении файла" });
-      }
-
-      res.json({
-        message: "Файл успешно загружен",
-        fileName: file.filename,
-        filePath: destinationFilePath,
-      });
-    });
-  } catch (error) {
-    console.error("Ошибка при обработке запроса:", error);
-    res.status(500).json({ message: "Ошибка сервера" });
-  }
-});
 router.post("/api/categories/create", async (req, res) => {
   try {
     const { categoryName, description, filePath } = req.body;
@@ -236,12 +286,12 @@ router.post("/api/categories/create", async (req, res) => {
 
     // Добавление изображения для категории в таблицу images
     const insertImageQuery = `
-      INSERT INTO images (entity_id, entity_type, image_url, image_type, image_order)
-      VALUES ($1, 'category', $2, 'image/jpeg', 1);
+      INSERT INTO images (entity_id, entity_type, image_url, image_order)
+      VALUES ($1, 'category', $2, 1);
     `;
     await queryDB(insertImageQuery, [
       categoryId, // ID категории
-      filePath.replace("images/", ""), // Путь к файлу без 'images/' в начале
+      filePath.replace("static/", ""), // Путь к файлу без 'images/' в начале
     ]);
 
     res.json({
@@ -321,18 +371,18 @@ router.post("/api/categories/update", async (req, res) => {
           WHERE entity_id = $2 AND entity_type = 'category';
         `;
         await queryDB(updateImageQuery, [
-          filePath.replace("images/", ""),
+          filePath.replace("static/", ""),
           categoryId,
         ]);
       } else {
         // Если записи нет, добавляем её
         const insertImageQuery = `
-          INSERT INTO images (entity_id, entity_type, image_url, image_type, image_order)
-          VALUES ($1, 'category', $2, 'image/jpeg', 1);
+          INSERT INTO images (entity_id, entity_type, image_url, image_order)
+          VALUES ($1, 'category', $2, 1);
         `;
         await queryDB(insertImageQuery, [
           categoryId,
-          filePath.replace("images/", ""),
+          filePath.replace("static/", ""),
         ]);
       }
     }
@@ -349,79 +399,182 @@ router.post("/api/categories/update", async (req, res) => {
 });
 
 // const imageData = await saveImageToCategory(file, categoryName);
+async function deleteImageFromDB(entityType, entityId, imageUrl) {
+  const query = `
+    DELETE FROM images
+    WHERE entity_type = $1
+      AND entity_id = $2
+      AND image_url = $3
+    RETURNING *;
+  `;
+  const values = [entityType, entityId, imageUrl]; // Параметры для запроса
+
+  try {
+    const result = await queryDB(query, values); // Выполняем запрос
+
+    if (result.length === 0) {
+      console.log(
+        `Запись не найдена в базе данных для ${entityType} с ID ${entityId} и image_url ${imageUrl}`
+      );
+      return false; // Если запись не найдена, возвращаем false
+    }
+
+    console.log(
+      `Запись с ${entityType} ID ${entityId} и image_url ${imageUrl} успешно удалена из базы данных`
+    );
+    return true; // Успешное удаление
+  } catch (err) {
+    console.error("Ошибка при удалении записи из базы данных:", err);
+    return false; // В случае ошибки в базе данных, возвращаем false
+  }
+}
+async function deleteFileFromDisk(filePath) {
+  const fullPath = path.join(filePath); // Полный путь к файлу на сервере
+
+  try {
+    await fs.promises.access(fullPath); // Проверяем наличие файла
+    await fs.promises.unlink(fullPath); // Удаляем файл, если он существует
+    console.log(`Файл ${fullPath} успешно удален с диска`);
+    return true; // Успешное удаление
+  } catch (err) {
+    if (err.code === "ENOENT") {
+      // Если файл не найден
+      console.warn(`Файл ${fullPath} не найден, пропускаем удаление.`);
+      return true; // Возвращаем true, так как отсутствие файла не критично
+    }
+    console.error(`Ошибка при удалении файла ${fullPath}:`, err);
+    return false; // Возвращаем false для других ошибок
+  }
+}
+async function deleteProductFromDB(productId) {
+  const query = `DELETE FROM products WHERE product_id = $1 RETURNING *`;
+  const values = [productId];
+
+  try {
+    const result = await queryDB(query, values);
+
+    if (result.length === 0) {
+      console.log(`Продукт с ID ${productId} не найден в базе данных`);
+      return false; // Если продукт не найден
+    }
+
+    console.log(`Продукт с ID ${productId} успешно удален из базы данных`);
+    return true; // Продукт успешно удален
+  } catch (err) {
+    console.error("Ошибка при удалении продукта из базы данных:", err);
+    return false; // В случае ошибки при удалении
+  }
+}app.post("/api/products/delete", async (req, res) => {
+  const { productId, images } = req.body;
+
+  try {
+    if (Array.isArray(images) && images.length > 0) {
+      // Обрабатываем удаление изображений
+      const deleteResults = await Promise.all(
+        images.map(async (image) => {
+          const { url, product_id } = image;
+
+          // Проверяем, есть ли валидный URL
+          if (!url) {
+            console.warn(`Пропущено изображение с некорректным URL: ${url}`);
+            return true; // Считаем этот случай успешным, чтобы не прерывать выполнение
+          }
+
+          // Удаляем изображение из базы данных
+          const dbResult = await deleteImageFromDB("product", product_id, url);
+          if (!dbResult) {
+            console.warn(`Не удалось найти или удалить изображение с URL: ${url}`);
+          }
+
+          // Удаляем файл изображения с диска
+          const filePath = path.join("static/shop/", url);
+          const fileDeleted = await deleteFileFromDisk(filePath);
+          if (!fileDeleted) {
+            console.warn(`Файл ${filePath} не найден или не был удален.`);
+          }
+
+          return true; // Успешное завершение обработки изображения
+        })
+      );
+
+      // Если хотя бы одно удаление завершилось с ошибкой, логируем предупреждение
+      const allProcessed = deleteResults.every((result) => result === true);
+      if (!allProcessed) {
+        console.warn("Некоторые изображения не удалось обработать.");
+      }
+    } else {
+      console.log("Изображения отсутствуют, продолжаем удаление только продукта.");
+    }
+
+    // Удаляем продукт из базы данных
+    const deleteProductResult = await deleteProductFromDB(productId);
+    if (!deleteProductResult) {
+      throw new Error("Не удалось удалить продукт.");
+    }
+
+    res.status(200).json({ message: "Продукт успешно удален." });
+  } catch (error) {
+    console.error("Ошибка при удалении товара и его изображений:", error);
+    res.status(500).json({ message: error.message || "Ошибка сервера" });
+  }
+});
+
+
+
+
+
+
 app.delete("/api/files/delete", async (req, res) => {
   const { filePath, categoryId } = req.body; // Извлекаем путь к файлу и ID категории
   console.log("Запрос на удаление файла:", filePath);
   console.log("ID категории:", categoryId);
-  // Преобразуем путь файла (удаляем "images/")
-  const imageUrl = filePath.replace("images/", "");
+
+  // Преобразуем путь файла (удаляем "static/")
+  const imageUrl = filePath.replace("static/", "");
 
   try {
-    // Выполняем запрос на удаление из базы данных
-    const query = `
-      DELETE FROM images
-      WHERE entity_type = 'category'
-        AND entity_id = $1
-        AND image_url = $2
-      RETURNING *;
-    `;
-    const values = [categoryId, imageUrl]; // Подставляем параметры
+    // Сначала удаляем запись из базы данных
+    const type = "category";
+    console.log(type);
+    const dbDeleteSuccess = await deleteImageFromDB(type, categoryId, imageUrl);
 
-    const result = await queryDB(query, values); // Выполняем запрос
-
-    if (result.length === 0) {
-      // Если не найдено соответствующих строк
-      console.log("Запись не найдена в базе данных.");
+    if (!dbDeleteSuccess) {
       return res
         .status(404)
         .json({ message: "Изображение не найдено в базе данных" });
     }
 
-    // Логируем успешное удаление записи из базы данных
-    console.log(
-      `Запись с ID категории ${categoryId} и image_url ${imageUrl} успешно удалена из базы данных`
-    );
+    // Если запись успешно удалена, удаляем файл с диска
+    const fileDeleteSuccess = await deleteFileFromDisk(filePath);
 
-    // Если запись была удалена из базы данных, пытаемся удалить файл с диска
-    const fileToDelete = path.join(__dirname, filePath); // Полный путь к файлу на сервере
+    if (!fileDeleteSuccess) {
+      return res
+        .status(500)
+        .json({ message: "Ошибка при удалении файла с диска" });
+    }
 
-    // Проверяем, существует ли файл
-    fs.unlink(fileToDelete, (err) => {
-      if (err) {
-        console.error("Ошибка при удалении файла:", err);
-        return res
-          .status(500)
-          .json({ message: "Ошибка при удалении файла с диска" });
-      }
-
-      console.log("Файл успешно удален с диска");
-      res
-        .status(200)
-        .json({
-          message: "Изображение и файл успешно удалены",
-          path: filePath,
-        });
+    res.status(200).json({
+      message: "Изображение и файл успешно удалены",
+      path: filePath,
     });
   } catch (error) {
-    // Обработка ошибок
     console.error("Ошибка при удалении изображения:", error);
     res
       .status(500)
       .json({ message: "Ошибка сервера при удалении изображения" });
   }
 });
+// router.put("/api/files/rename", (req, res) => {
+//   const { oldPath, newPath } = req.body;
+//   console.log("Запрос на переименование файла:");
+//   console.log("Старый путь:", oldPath);
+//   console.log("Новый путь:", newPath);
 
-router.put("/api/files/rename", (req, res) => {
-  const { oldPath, newPath } = req.body;
-  console.log("Запрос на переименование файла:");
-  console.log("Старый путь:", oldPath);
-  console.log("Новый путь:", newPath);
-
-  // Только логируем, файл пока не переименовываем
-  res
-    .status(200)
-    .json({ message: "Переименование файла получено", oldPath, newPath });
-});
+//   // Только логируем, файл пока не переименовываем
+//   res
+//     .status(200)
+//     .json({ message: "Переименование файла получено", oldPath, newPath });
+// });
 
 app.use("/", router);
 // file end
@@ -579,6 +732,19 @@ app.delete("/api/categories/:id", authenticateToken, async (req, res) => {
   const { id } = req.params;
 
   try {
+    // Проверяем, есть ли продукты, связанные с категорией
+    const products = await queryDB(
+      "SELECT * FROM products WHERE category_id = $1",
+      [id]
+    );
+
+    if (products.length > 0) {
+      return res
+        .status(400)
+        .send("Category cannot be deleted because it has associated products");
+    }
+
+    // Удаление категории
     const result = await queryDB(
       "DELETE FROM categories WHERE category_id = $1 RETURNING category_id",
       [id]
@@ -646,7 +812,6 @@ app.get("/api/gallery-images", async (req, res) => {
     res.status(500).json({ error: "Internal server error" });
   }
 });
-
 app.post("/api/create-products", async (req, res) => {
   const productData = req.body;
 
@@ -685,10 +850,6 @@ app.post("/api/create-products", async (req, res) => {
       ? result[0].product_id
       : result.rows[0].product_id;
     console.log("Новый продукт добавлен с test ID:", newProductId);
-    // // Проверяем, что результат содержит строки
-    // if (!result || !result.rows || result.rows.length === 0) {
-    //   return res.status(400).json({ error: "Не удалось создать продукт." });
-    // }
 
     // 2. Добавляем изображения для нового продукта в таблицу `images`
     for (let i = 0; i < productData.images.length; i++) {
@@ -701,11 +862,14 @@ app.post("/api/create-products", async (req, res) => {
           .json({ error: "Некорректный индекс изображения." });
       }
 
+      // Удаляем префикс "static/" из пути изображения
+      const imageUrlWithoutStatic = image.url.replace(/^static\/shop\//, "");
+
       const imageInsertQuery = `
         INSERT INTO images (entity_type, entity_id, image_url, image_order)
         VALUES ('product', $1, $2, $3);
       `;
-      const imageValues = [newProductId, image.url, imageOrder];
+      const imageValues = [newProductId, imageUrlWithoutStatic, imageOrder];
 
       console.log(
         "Выполняем запрос:",
@@ -717,7 +881,7 @@ app.post("/api/create-products", async (req, res) => {
       try {
         await queryDB(imageInsertQuery, imageValues);
         console.log(
-          `Изображение добавлено: ${image.url} с порядковым номером ${imageOrder}`
+          `Изображение добавлено: ${imageUrlWithoutStatic} с порядковым номером ${imageOrder}`
         );
       } catch (error) {
         console.error(
@@ -740,28 +904,6 @@ app.post("/api/create-products", async (req, res) => {
     console.error("Ошибка при создании продукта:", error);
     res.status(500).json({ error: "Произошла ошибка при создании продукта." });
   }
-});
-
-app.post("/api/upload-images", upload.array("images[]"), (req, res) => {
-  const uploadedFiles = req.files;
-  const indexes = req.body.indexes; // Извлекаем индексы из FormData
-
-  // Логируем имена файлов и индексы
-  // console.log("Файлы успешно загружены:");
-  uploadedFiles.forEach((file, index) => {
-    // console.log(`Имя файла: ${file.filename}`);
-    // console.log(`Путь: ${file.path}`);
-    // console.log(`Индекс: ${indexes[index]}`); // Индекс изображения
-  });
-
-  // Формируем массив URL для изображений с индексами
-  const imageUrls = uploadedFiles.map((file, index) => ({
-    index: indexes[index], // Возвращаем индекс
-    url: `/shop/Article/${file.filename}`, // Путь к изображению
-  }));
-
-  // Отправляем успешный ответ с URL
-  res.status(200).json({ success: true, images: imageUrls });
 });
 
 app.listen(port, () => {

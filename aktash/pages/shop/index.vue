@@ -7,10 +7,12 @@
     <nuxt-link class="breadcrumb" :to="`/`">Главная</nuxt-link>
     <h1>Категории</h1>
 
+    <!-- Updated loading and error display -->
     <div v-if="loading" class="loading">Загрузка...</div>
     <div v-else-if="errorMessage" class="error">{{ errorMessage }}</div>
+
     <div v-else>
-      <ul class="catalog-list">
+      <ul v-if="catalogs.length > 0" class="catalog-list">
         <li
           v-for="catalog in catalogs"
           :key="catalog.category_id"
@@ -37,6 +39,9 @@
           </div>
         </li>
       </ul>
+
+      <!-- Message if there are no catalogs -->
+      <p v-else>Категорий пока нет</p>
     </div>
 
     <!-- Модальное окно для добавления категории -->
@@ -86,7 +91,7 @@
             required
           ></textarea>
 
-          <!-- Если есть изображение -->
+          <!-- If there is an image -->
           <div v-if="editCategoryData.image_url">
             <p>Current Image:</p>
             <img
@@ -97,7 +102,7 @@
             <button type="button" @click="removeImage">Remove Image</button>
           </div>
 
-          <!-- Поле для загрузки файла отображается только если image_url пустой -->
+          <!-- If there is no image, show the file input -->
           <input
             v-if="!editCategoryData.image_url"
             type="file"
@@ -111,9 +116,13 @@
           </div>
         </form>
       </div>
+      <div v-if="errorMessage" class="error-message">
+        {{ errorMessage }}
+      </div>
     </div>
   </div>
 </template>
+
 
 <script>
 export default {
@@ -161,6 +170,7 @@ export default {
     async fetchData() {
       try {
         await this.$store.dispatch("fetchCategories"); // Загрузить все категории
+        console.log(this.catalogs);
       } catch (error) {
         console.error("Ошибка загрузки данных:", error);
       }
@@ -268,45 +278,46 @@ export default {
 
     // Метод для обновления категории
     async updateCategory() {
-  try {
-    const categoryId = this.editCategoryData.category_id;
-    const categoryName = this.editCategoryData.name;
-    const description = this.editCategoryData.description;
+      try {
+        const categoryId = this.editCategoryData.category_id;
+        const categoryName = this.editCategoryData.name;
+        const description = this.editCategoryData.description;
 
-    // Если выбрали новый файл
-    let filePath = this.editCategoryData.filePath; // Путь файла, если не обновляется, оставляем старый
+        // Если выбрали новый файл
+        let filePath = this.editCategoryData.filePath; // Путь файла, если не обновляется, оставляем старый
 
-    if (this.selectedFile) {
-      console.log(this.selectedFile);
-      const formData = new FormData();
-      formData.append("file", this.selectedFile); // Добавляем новый файл
-      const fileData = await this.$store.dispatch("uploadFile", formData);
-      filePath = fileData.filePath; // Обновляем путь к файлу
-      console.log("Файл успешно загружен:", fileData);
-    }
+        if (this.selectedFile) {
+          console.log(this.selectedFile);
+          const formData = new FormData();
+          formData.append("file", this.selectedFile); // Добавляем новый файл
+          const fileData = await this.$store.dispatch("uploadFile", formData);
+          filePath = fileData.filePath; // Обновляем путь к файлу
+          console.log("Файл успешно загружен:", fileData);
+        }
 
-    // Создание данных для обновления категории
-    const categoryData = {
-      categoryId,
-      categoryName,
-      description,
-      filePath, // Путь к файлу
-    };
+        // Создание данных для обновления категории
+        const categoryData = {
+          categoryId,
+          categoryName,
+          description,
+          filePath, // Путь к файлу
+        };
 
-    // Обновляем категорию
-    const updateResult = await this.$store.dispatch("updateCategory", categoryData);
-    console.log("Категория успешно обновлена:", updateResult);
+        // Обновляем категорию
+        const updateResult = await this.$store.dispatch(
+          "updateCategory",
+          categoryData
+        );
+        console.log("Категория успешно обновлена:", updateResult);
 
-    // Сбрасываем форму
-    this.showEditForm = false;
-    this.editCategoryData = { name: "", description: "", image_url: "" }; // Сброс формы
-    this.fetchData(); // Обновление данных
-  } catch (error) {
-    console.error("Ошибка при обновлении категории:", error);
-  }
-},
-
-
+        // Сбрасываем форму
+        this.showEditForm = false;
+        this.editCategoryData = { name: "", description: "", image_url: "" }; // Сброс формы
+        this.fetchData(); // Обновление данных
+      } catch (error) {
+        console.error("Ошибка при обновлении категории:", error);
+      }
+    },
 
     // Удалить категорию
     async deleteCategory(categoryId) {
@@ -314,12 +325,21 @@ export default {
         await this.$store.dispatch("deleteCategory", categoryId);
         await this.fetchData(); // Обновить список категорий
       } catch (error) {
-        console.error("Ошибка при удалении категории:", error);
+        if (error.response && error.response.status === 400) {
+          // Если ошибка 400, отображаем сообщение
+          this.$store.commit(
+            "setErrorMessage",
+            error.response.data || "Невозможно удалить категорию"
+          );
+        } else {
+          console.error("Ошибка при удалении категории:", error);
+          this.$store.commit("setErrorMessage", "Ошибка сети или сервера");
+        }
       }
     },
     async removeImage() {
       const categoryId = this.editCategoryData.category_id;
-      const imagesPath = `images/${this.editCategoryData.image_url}`;
+      const imagesPath = `static/${this.editCategoryData.image_url}`;
       console.log(imagesPath);
 
       if (!this.editCategoryData.image_url) return;
@@ -389,6 +409,11 @@ h1 {
   gap: 20px;
   list-style: none;
   padding: 0;
+}
+
+.error-message {
+  color: red;
+  margin-top: 10px;
 }
 
 .catalog-item {
