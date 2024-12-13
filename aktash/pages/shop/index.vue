@@ -123,7 +123,6 @@
   </div>
 </template>
 
-
 <script>
 export default {
   name: "ProductAndCategoryList",
@@ -167,6 +166,9 @@ export default {
     this.fetchData();
   },
   methods: {
+    showNotification(message) {
+    alert(message); // Замените на кастомный компонент уведомления, если нужно
+  },
     async fetchData() {
       try {
         await this.$store.dispatch("fetchCategories"); // Загрузить все категории
@@ -322,18 +324,27 @@ export default {
     // Удалить категорию
     async deleteCategory(categoryId) {
       try {
+        // Отправляем запрос на удаление категории
         await this.$store.dispatch("deleteCategory", categoryId);
-        await this.fetchData(); // Обновить список категорий
+
+        // Если удаление прошло успешно, обновляем список категорий
+        await this.fetchData();
       } catch (error) {
+        // Если ошибка с кодом 400
         if (error.response && error.response.status === 400) {
-          // Если ошибка 400, отображаем сообщение
+          // Уведомляем пользователя о причине невозможности удаления
           this.$store.commit(
             "setErrorMessage",
-            error.response.data || "Невозможно удалить категорию"
+            error.response.data.message || "Невозможно удалить категорию"
           );
+
+          // Вызываем метод для показа уведомления
+          this.showNotification("Ошибка: " + error.response.data.message);
         } else {
+          // Обрабатываем общие ошибки
           console.error("Ошибка при удалении категории:", error);
           this.$store.commit("setErrorMessage", "Ошибка сети или сервера");
+          this.showNotification("Ошибка: невозможно связаться с сервером.");
         }
       }
     },

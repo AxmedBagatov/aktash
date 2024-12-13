@@ -111,24 +111,30 @@ export const actions = {
   async deleteCategory({ commit, state }, id) {
     try {
       commit("setLoading", true);
+  
+      // Запрос на удаление категории
       const response = await fetch(`${BASE_URL}/api/categories/${id}`, {
         method: "DELETE",
         credentials: "include", // Включаем cookies
       });
   
       if (response.ok) {
+        // Если удаление прошло успешно, фильтруем удаленную категорию из списка
         const filteredCategories = state.categories.filter(
           (category) => category.category_id !== id
         );
-        commit("setCategories", filteredCategories); // Удаляем категорию из списка
+        commit("setCategories", filteredCategories); // Обновляем список категорий
       } else if (response.status === 400) {
-        const errorMessage = await response.text(); // Получить текст ошибки с сервера
+        // Если ошибка 400, передаем ошибку в состояние
+        const errorMessage = await response.text();
         commit("setErrorMessage", errorMessage);
       } else {
+        // В случае других ошибок
         commit("setErrorMessage", "Ошибка при удалении категории");
         console.error("Ошибка при удалении категории");
       }
     } catch (error) {
+      // Если ошибка сети, отправляем соответствующее сообщение
       commit("setErrorMessage", "Ошибка сети: " + error.message);
       console.error("Ошибка сети:", error);
     } finally {
