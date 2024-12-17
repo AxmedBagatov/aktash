@@ -11,7 +11,11 @@
         {{ categoryName }}</nuxt-link
       >
     </div>
-
+    
+      
+      
+      
+    
     <div v-if="loading" class="loading">Загрузка...</div>
     <div v-else-if="errorMessage" class="error">{{ errorMessage }}</div>
     <div v-else>
@@ -29,7 +33,10 @@
         </div> -->
 
         <!-- saiudasdiouyasoidusyadiyasoiduasydoiausydoiausydoaisuydoaisudyoasuidyaosiduyasoiduyasoidu -->
-        <div v-if="product.images && product.images.length" class="product-slider">
+        <div
+          v-if="product.images && product.images.length"
+          class="product-slider"
+        >
           <!-- Основной карусель -->
           <div class="carousel">
             <div class="carousel-inner">
@@ -46,27 +53,30 @@
             </div>
 
             <!-- Контролы для переключения слайдов -->
-            <button class="prev" @click="prevSlide">Prev</button>
-            <button class="next" @click="nextSlide">Next</button>
+            <button class="prev" @click="prevSlide">
+              <font-awesome-icon :icon="['fas', 'arrow-left']" style="font-size: 30px" />
+    
+            </button>
+            <button class="next" @click="nextSlide">
+              <font-awesome-icon :icon="['fas', 'arrow-right']" style="font-size: 30px" />
+    
+            </button>
           </div>
 
           <!-- Карусель с миниатюрами -->
           <div class="thumbcarousel">
             <div class="carousel-inner">
               <div
-                class="item"
+                class="thumb"
                 v-for="(image, index) in product.images"
                 :key="index"
+                @click="setActiveSlide(index)"
+                :class="{ active: index === activeIndex }"
               >
-                <div
-                  class="thumb"
-                  @click="setActiveSlide(index)"
-                >
-                  <img
-                    :src="`/shop/${image.url}`"
-                    :alt="`Thumbnail for ${product.name} - ${index + 1}`"
-                  />
-                </div>
+                <img
+                  :src="`/shop/${image.url}`"
+                  :alt="`Thumbnail for ${product.name} - ${index + 1}`"
+                />
               </div>
             </div>
           </div>
@@ -165,15 +175,10 @@ export default {
 };
 </script>
 
-
-
-
 <style src="~/assets/css/pages/Product/Product.css"></style>
 <style src="~/assets/css/components/breadcrumb.css"></style>
 
 <style scoped>
-
-
 .product-slider {
   min-width: 800px;
   width: auto;
@@ -209,17 +214,27 @@ export default {
   height: 60px;
   object-fit: cover;
 }
-
 .product-slider button {
   position: absolute;
   top: 50%;
   transform: translateY(-50%);
-  background-color: rgba(0, 0, 0, 0.5);
+  background-color: rgba(0, 0, 0, 0.6);
   color: white;
   border: none;
   padding: 10px;
   cursor: pointer;
-  font-size: 20px;
+  font-size: 24px;
+  border-radius: 50%;
+  width: 40px;
+  height: 40px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  transition: background-color 0.3s;
+}
+
+.product-slider button:hover {
+  background-color: rgba(0, 0, 0, 0.8);
 }
 
 .product-slider .prev {
@@ -245,15 +260,30 @@ export default {
 }
 
 .carousel .item {
-  flex: 1 0 100%;  /* Каждое изображение занимает 100% ширины контейнера */
+  flex: 1 0 100%; /* Каждое изображение занимает 100% ширины контейнера */
   display: flex;
   justify-content: center;
   align-items: center;
 }
 
 .carousel img {
-  width: 100%;  /* Заставляем картинку заполнять всю ширину */
-  height: 100%;  /* Заставляем картинку заполнять всю высоту */
-  object-fit: cover;  /* Картинка будет масштабироваться с сохранением пропорций, заполняя контейнер */
+  width: 100%; /* Заставляем картинку заполнять всю ширину */
+  height: 100%; /* Заставляем картинку заполнять всю высоту */
+  object-fit: cover; /* Картинка будет масштабироваться с сохранением пропорций, заполняя контейнер */
+}
+
+.product-slider .thumbcarousel .thumb {
+  border: 1px solid transparent;
+  opacity: 0.7;
+  transition: border 0.3s, opacity 0.3s;
+}
+
+.product-slider .thumbcarousel .thumb.active {
+  transform: scale(1.2);
+  opacity: 1.3;
+}
+
+.product-slider .thumbcarousel .thumb:hover {
+  opacity: 1;
 }
 </style>

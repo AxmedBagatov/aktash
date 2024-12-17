@@ -10,28 +10,18 @@
       <h1 class="CategoryName_main_text">{{ categoryName }}</h1>
     </div>
     <div class="sorting-container">
-      <div
-        class="sorting-option"
-        @click="setSortCriteria('price_asc')"
-        :class="{ active: sortCriteria === 'price_asc' }"
-      >
+      <div class="sorting-option" @click="setSortCriteria('price_asc')"
+        :class="{ active: sortCriteria === 'price_asc' }">
         Цена (по возрастанию)
       </div>
-      <div
-        class="sorting-option"
-        @click="setSortCriteria('price_desc')"
-        :class="{ active: sortCriteria === 'price_desc' }"
-      >
+      <div class="sorting-option" @click="setSortCriteria('price_desc')"
+        :class="{ active: sortCriteria === 'price_desc' }">
         Цена (по убыванию)
       </div>
     </div>
 
     <div v-if="isLoggedIn">
-      <button
-        v-if="isLoggedIn"
-        @click="openCreateProductModal"
-        class="create-product-btn"
-      >
+      <button v-if="isLoggedIn" @click="openCreateProductModal" class="create-product-btn">
         Создать товар
       </button>
     </div>
@@ -47,72 +37,37 @@
               </div>
               <div>
                 <label for="productName">Название</label>
-                <input
-                  type="text"
-                  v-model="newProduct.name"
-                  id="productName"
-                  required
-                />
+                <input type="text" v-model="newProduct.name" id="productName" required />
               </div>
               <div>
                 <label for="productPrice">Цена</label>
-                <input
-                  type="number"
-                  v-model="newProduct.price"
-                  id="productPrice"
-                  required
-                />
+                <input type="number" v-model="newProduct.price" id="productPrice" required />
               </div>
               <div>
                 <label for="productDescription">Описание</label>
-                <textarea
-                  v-model="newProduct.description"
-                  id="productDescription"
-                  required
-                ></textarea>
+                <textarea v-model="newProduct.description" id="productDescription" required></textarea>
               </div>
 
               <!-- Поле для загрузки изображений -->
               <div>
                 <label for="productImages">Фотографии</label>
-                <input
-                  type="file"
-                  id="productImages"
-                  @change="handleFileUpload"
-                  multiple
-                  accept="image/*"
-                />
+                <input type="file" id="productImages" @change="handleFileUpload" multiple accept="image/*" />
               </div>
             </div>
 
             <div v-if="newProduct.images.length" class="rightside">
               <h4>Загруженные изображения:</h4>
-              <vuedraggable
-                v-model="newProduct.images"
-                :options="{ handle: '.drag-handle' }"
-                @end="updateImageIndexes"
-              >
-                <div
-                  v-for="(image, index) in newProduct.images"
-                  :key="index"
-                  class="image-item"
-                >
+              <vuedraggable v-model="newProduct.images" :options="{ handle: '.drag-handle' }" @end="updateImageIndexes">
+                <div v-for="(image, index) in newProduct.images" :key="index" class="image-item">
                   <!-- Здесь изображение становится перетаскиваемым -->
-                  <div
-                    class="drag-handle"
-                    :style="{ backgroundImage: `url(${getImageUrl(image)})` }"
-                  >
+                  <div class="drag-handle" :style="{ backgroundImage: `url(${getImageUrl(image)})` }">
                     <span class="image-number">{{ index + 1 }}</span>
                     <span class="drag-handle-icon">☰</span>
 
                     <!-- Иконка для перетаскивания -->
                   </div>
 
-                  <img
-                    :src="getImageUrl(image)"
-                    :alt="image.name"
-                    class="preview-image"
-                  />
+                  <img :src="getImageUrl(image)" :alt="image.name" class="preview-image" />
                   <!-- Отображаем номер изображения в массиве -->
                 </div>
               </vuedraggable>
@@ -130,44 +85,31 @@
     <div v-else-if="errorMessage" class="error">{{ errorMessage }}</div>
     <div v-else>
       <ul class="product-list">
-        <li
-          v-for="product in sortedProducts"
-          :key="product.product_id"
-          class="product-item"
-        >
-          <nuxt-link
-            :to="`/shop/${catalogId}/${product.product_id}`"
-            class="product-link"
-          >
-            <div
-              class="catalog-carousel"
-              @mouseenter="startCarousel(product.product_id)"
-              @mouseleave="stopCarousel(product.product_id)"
-            >
+        <li v-for="product in sortedProducts" :key="product.product_id" class="product-item">
+          <nuxt-link :to="`/shop/${catalogId}/${product.product_id}`" class="product-link">
+            <!-- catalog-carousel -->
+            <!-- @mouseenter="startCarousel(product.product_id)"
+          @mouseleave="stopCarousel(product.product_id)" -->
+            <div class="catalog-carousel">
               <!-- Блок с каруселью -->
-              <div class="catalog-carousel-wrapper">
-                <div
-                  class="catalog-carousel-images" :style="{ transform: `translateX(-${product.index * 100}%)`}">
-                  <img
-                    v-for="(image, index) in product.images"
-                    :key="index"
-                    :src="image.url"
-                    alt="Product image"
-                    class="carousel-image"
-                  />
+              <div class="catalog-carousel-wrapper" 
+              @mousemove="handleMouseMove(product.product_id, $event, product)"
+              @mouseleave="resetSlide(product.product_id)"
+              >
+                <div class="catalog-carousel-images"
+                  :style="{ transform: `translateX(-${currentSlide[product.product_id] * 100}%)` }">
+                  <img v-for="(image, index) in product.images" :key="index" :src="image.url" alt="Product image"
+                    class="carousel-image" />
+                    <div class="catalog-carousel-indicators">
+                <div v-for="(image, index) in product.images" :key="index" class="catalog-carousel-indicator"
+                  :class="{ active: currentSlide[product.product_id] === index }"
+                 ></div>
+              </div>
                 </div>
               </div>
-              <div class="carousel-indicators">
-                <div
-                  v-for="(image, index) in product.images"
-                  :key="index"
-                  class="carousel-indicator"
-                  :class="{ active: product.index === index }"
-                  @mouseover="handleIndicatorHover(index, image)"
-                ></div>
-              </div>
+            
             </div>
-            <div class="product-info">
+            <div class="catalog-product-info">
               <h2>{{ product.name }}</h2>
               <p>{{ product.description }}</p>
               <p class="product-price">{{ product.price }} ₽</p>
@@ -175,10 +117,7 @@
           </nuxt-link>
           <!-- Delete Button for Logged-In Users -->
           <div v-if="isLoggedIn">
-            <button
-              @click="deleteProduct(product.product_id)"
-              class="delete-btn"
-            >
+            <button @click="deleteProduct(product.product_id)" class="delete-btn">
               Удалить
             </button>
           </div>
@@ -255,7 +194,7 @@ export default {
       return category ? category.name : "Неизвестная категория";
     },
     sortedProducts() {
-      
+
       let sorted = [...this.products];
       if (this.sortCriteria === "price_asc") {
         sorted.sort((a, b) => parseFloat(a.price) - parseFloat(b.price));
@@ -265,7 +204,7 @@ export default {
         sorted.sort((a, b) => a.name.localeCompare(b.name));
       } else if (this.sortCriteria === "name_desc") {
         sorted.sort((a, b) => b.name.localeCompare(a.name));
-      }      
+      }
       sorted.forEach(item => {
         item.index = 1
       })
@@ -288,8 +227,8 @@ export default {
       });
     },
     setSortCriteria(criteria) {
-    this.sortCriteria = criteria;
-  },
+      this.sortCriteria = criteria;
+    },
     handleFileUpload(event) {
       const files = event.target.files;
       this.newProduct.images = Array.from(files).map((file, index) => ({
@@ -303,12 +242,33 @@ export default {
     closeCreateProductModal() {
       this.showCreateModal = false;
     },
-    handleIndicatorHover(index, image) {
-      // Устанавливаем текущий слайд при наведении на индикатор
-      console.log(index, image)
-      this.currentSlide[this.productId] = index;
+    handleIndicatorHover(productId, index) {
+      if (!this.currentSlide[productId]) {
+        this.$set(this.currentSlide, productId, index); // Обеспечивает реактивность
+      } else {
+        this.currentSlide[productId] = index; // Обновляем индекс
+      }
+    },
+    resetSlide(productId) {
+      this.currentSlide[productId] = 0;
     },
 
+    handleMouseMove(productId, event, product) {
+      const carouselWrapper = event.currentTarget;
+      const rect = carouselWrapper.getBoundingClientRect(); // Получаем размеры элемента
+      const mouseX = event.clientX - rect.left; // Позиция мыши относительно элемента
+      const width = rect.width; // Ширина элемента
+      // console.log(product)
+      const totalImages = product.images.length; // Количество изображений
+
+      // Вычисляем индекс на основе позиции мыши
+      const newIndex = Math.floor((mouseX / width) * totalImages);
+
+      // Если индекс изменился, обновляем его
+      if (newIndex >= 0 && newIndex < totalImages && this.currentSlide[productId] !== newIndex) {
+        this.$set(this.currentSlide, productId, newIndex); // Устанавливаем текущий индекс слайда
+      }
+    },
     async createProduct() {
       try {
         // Добавляем category_id в newProduct, используя catalogId
@@ -405,35 +365,6 @@ export default {
           });
       }
     },
-    carouselHandle(product) {
-
-    },
-    startCarousel(productId) {
-      console.log('STARTED!!!!!!!!!!!!!!!!!')
-      if (this.carouselInterval[productId]) return;
-      this.carouselInterval[productId] = setInterval(() => {
-        this.nextSlide(productId);
-        console.log("next")
-      }, 3000);
-    },
-    stopCarousel(productId) {
-      clearInterval(this.carouselInterval[productId]);
-      this.carouselInterval[productId] = null;
-    },
-    nextSlide(productId) {
-      console.log("NEXTSLIDE?!!!!!!!")
-      if (!this.currentSlide[productId]) this.currentSlide[productId] = 0;
-      const product = this.products.find((p) => p.product_id === productId);
-      if (product && product.images) {
-        const totalSlides = product.images.length;
-        this.currentSlide[productId] = (this.currentSlide[productId] + 1) % totalSlides;
-        console.log("DADAAD->" + (this.currentSlide[productId] + 1) % totalSlides)
-      } else {
-        console.error(
-          `Продукт с ID ${productId} не найден или не имеет изображений.`
-        );
-      }
-    },
   },
 };
 </script>
@@ -443,10 +374,6 @@ export default {
 <style src="~/assets/css/pages/CatalogView/CatalogView_admin.css"></style>
 <style src="~/assets/css/components/breadcrumb.css"></style>
 <style scoped>
-
-
-
-
 .create-product-btn {
   background: #007bff;
   color: white;
@@ -461,7 +388,9 @@ export default {
   background: #0056b3;
 }
 
-.carousel-indicators {
+.catalog-carousel-indicators {
+  position: absolute;
+  top: 40px;
   display: flex;
   justify-content: center;
   margin-top: 10px;
@@ -471,17 +400,17 @@ export default {
   /* height: 400px; */
 }
 
-.carousel-indicator {
-  width: 10px;
-  height: 10px;
+.catalog-carousel-indicator {
+  width: 30px;
+  height: 5px;
   margin: 0 5px;
   background-color: gray;
-  border-radius: 50%;
+  /* border-radius: 50%; */
   cursor: pointer;
   transition: background-color 0.3s ease;
 }
 
-.carousel-indicator.active {
+.catalog-carousel-indicator.active {
   background-color: black;
 }
 
@@ -541,19 +470,19 @@ export default {
 
 }
 
-.product-info {
+.catalog-product-info {
   text-align: left;
   /* align-self: left; */
   padding: 15px;
 }
 
-.product-info h2 {
+.catalog-product-info h2 {
   margin: 0 0 10px;
   font-size: 18px;
   color: #333;
 }
 
-.product-info p {
+.catalog-product-info p {
   margin: 0;
   font-size: 14px;
   color: #666;
@@ -638,16 +567,20 @@ export default {
   position: relative;
   display: inline-block;
   margin: 10px;
-  width: 150px; /* Ширина изображения */
-  height: 150px; /* Высота изображения */
-  overflow: hidden; /* Чтобы изображение не выходило за пределы контейнера */
+  width: 150px;
+  /* Ширина изображения */
+  height: 150px;
+  /* Высота изображения */
+  overflow: hidden;
+  /* Чтобы изображение не выходило за пределы контейнера */
 }
 
 /* Контейнер для перетаскиваемого изображения */
 .drag-handle {
   width: 100%;
   height: 100%;
-  background-size: contain; /* Ожидаем, что изображение будет уменьшаться, сохраняя соотношение сторон */
+  background-size: contain;
+  /* Ожидаем, что изображение будет уменьшаться, сохраняя соотношение сторон */
   background-repeat: no-repeat;
   background-position: center;
   cursor: move;
@@ -658,20 +591,31 @@ export default {
 
 /* Превью изображения */
 .preview-image {
-  width: 100%; /* Устанавливаем ширину изображения в 100% от родительского контейнера */
-  height: 100%; /* Устанавливаем высоту изображения в 100% от родительского контейнера */
-  object-fit: contain; /* Сохраняем соотношение сторон и масштабируем изображение */
-  border-radius: 5px; /* Скругление углов (по желанию) */
+  width: 100%;
+  /* Устанавливаем ширину изображения в 100% от родительского контейнера */
+  height: 100%;
+  /* Устанавливаем высоту изображения в 100% от родительского контейнера */
+  object-fit: contain;
+  /* Сохраняем соотношение сторон и масштабируем изображение */
+  border-radius: 5px;
+  /* Скругление углов (по желанию) */
   object-fit: cover;
 }
+
 .image-number {
   position: absolute;
-  top: 10px; /* Расположение сверху */
-  left: 10px; /* Расположение слева */
-  background-color: rgba(0, 0, 0, 0.5); /* Полупрозрачный фон */
-  color: white; /* Белый цвет текста */
-  padding: 5px; /* Немного отступов */
-  border-radius: 50%; /* Круглая форма */
+  top: 10px;
+  /* Расположение сверху */
+  left: 10px;
+  /* Расположение слева */
+  background-color: rgba(0, 0, 0, 0.5);
+  /* Полупрозрачный фон */
+  color: white;
+  /* Белый цвет текста */
+  padding: 5px;
+  /* Немного отступов */
+  border-radius: 50%;
+  /* Круглая форма */
   font-weight: bold;
 }
 </style>

@@ -5,7 +5,6 @@ export default {
   rootAttrs: {
    class: "h-full",
   },
-  
   server: {
     port: 80,
     host: '10.30.74.112',
@@ -44,11 +43,12 @@ export default {
     // https://go.nuxtjs.dev/vuetify
     '@nuxtjs/vuetify',
     '@nuxtjs/axios',  // Модуль для работы с HTTP запросами
-    '@nuxtjs/auth-next', // Модуль для авторизации
+    '@nuxtjs/auth-next', 
+    '@nuxtjs/fontawesome',
   ],
 
   // Modules: https://go.nuxtjs.dev/config-modules
-  modules: ['@nuxtjs/axios', '@nuxtjs/auth-next'],
+  modules: ['@nuxtjs/axios', '@nuxtjs/auth-next',],
 
   // Vuetify module configuration: https://go.nuxtjs.dev/config-vuetify
   vuetify: {
@@ -66,6 +66,12 @@ export default {
           success: colors.green.accent3
         }
       }
+    }
+  },
+  fontawesome: {
+    icons: {
+      solid: true,
+      brands: true,
     }
   },
   axios: {
