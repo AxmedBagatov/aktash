@@ -92,22 +92,19 @@
           @mouseleave="stopCarousel(product.product_id)" -->
             <div class="catalog-carousel">
               <!-- Блок с каруселью -->
-              <div class="catalog-carousel-wrapper" 
-              @mousemove="handleMouseMove(product.product_id, $event, product)"
-              @mouseleave="resetSlide(product.product_id)"
-              >
+              <div class="catalog-carousel-wrapper" @mousemove="handleMouseMove(product.product_id, $event, product)"
+                @mouseleave="resetSlide(product.product_id)">
                 <div class="catalog-carousel-images"
                   :style="{ transform: `translateX(-${currentSlide[product.product_id] * 100}%)` }">
                   <img v-for="(image, index) in product.images" :key="index" :src="image.url" alt="Product image"
                     class="carousel-image" />
-                    <div class="catalog-carousel-indicators">
-                <div v-for="(image, index) in product.images" :key="index" class="catalog-carousel-indicator"
-                  :class="{ active: currentSlide[product.product_id] === index }"
-                 ></div>
-              </div>
+                </div>
+                <div class="catalog-carousel-indicators">
+                  <div v-for="(image, index) in product.images" :key="index" class="catalog-carousel-indicator"
+                    :class="{ active: currentSlide[product.product_id] === index }"></div>
                 </div>
               </div>
-            
+
             </div>
             <div class="catalog-product-info">
               <h2>{{ product.name }}</h2>
@@ -390,10 +387,18 @@ export default {
 
 .catalog-carousel-indicators {
   position: absolute;
-  top: 40px;
+  /* Position the indicators over the image */
+  bottom: 10px;
+  /* Adjust to your preference */
+  left: 50%;
+  /* Center horizontally */
+  transform: translateX(-50%);
+  /* Center alignment */
   display: flex;
   justify-content: center;
-  margin-top: 10px;
+  gap: 10px;
+  /* Space between indicators */
+  z-index: 5;
 }
 
 .catalog-carousel {
@@ -408,6 +413,7 @@ export default {
   /* border-radius: 50%; */
   cursor: pointer;
   transition: background-color 0.3s ease;
+  z-index: 10;
 }
 
 .catalog-carousel-indicator.active {
@@ -422,6 +428,7 @@ export default {
 }
 
 .product-list {
+  margin-inline: 10%;
   display: flex;
   flex-wrap: wrap;
   gap: 20px;
