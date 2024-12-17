@@ -5,7 +5,9 @@
     </div>
 
     <nuxt-link class="breadcrumb" :to="`/`">Главная</nuxt-link>
-    <h1>Категории</h1>
+    <div class="catalogs_category_text_div">
+      <h1 class="catalogs_category_text">Категории</h1>
+    </div>
 
     <!-- Updated loading and error display -->
     <div v-if="loading" class="loading">Загрузка...</div>
@@ -20,13 +22,13 @@
         >
           <nuxt-link :to="`/shop/${catalog.category_id}`" class="catalog-link">
             <div class="image-container">
-            <img
-              v-if="catalog.image_url"
-              :src="`/${catalog.image_url}`"
-              :alt="catalog.name"
-              class="catalog-image"
-            />
-          </div>
+              <img
+                v-if="catalog.image_url"
+                :src="`/${catalog.image_url}`"
+                :alt="catalog.name"
+                class="catalog-image"
+              />
+            </div>
             <div class="catalog-info">
               <h2>{{ catalog.name }}</h2>
               <p>{{ catalog.description }}</p>
@@ -169,8 +171,8 @@ export default {
   },
   methods: {
     showNotification(message) {
-    alert(message); // Замените на кастомный компонент уведомления, если нужно
-  },
+      alert(message); // Замените на кастомный компонент уведомления, если нужно
+    },
     async fetchData() {
       try {
         await this.$store.dispatch("fetchCategories"); // Загрузить все категории
@@ -381,176 +383,7 @@ export default {
 };
 </script>
 
-<style scoped>
-.catalogs {
-  padding: 20px;
-  font-family: Arial, sans-serif;
-}
-
-.preview-image {
-  width: 100%;
-  height: auto;
-  max-height: 300px;
-}
-
-.breadcrumb {
-  font-size: 14px;
-  color: #007bff;
-  text-decoration: none;
-  margin-bottom: 10px;
-  display: inline-block;
-}
-
-.breadcrumb:hover {
-  text-decoration: underline;
-}
-
-h1 {
-  margin-bottom: 20px;
-  font-size: 24px;
-}
-
-.loading,
-.error {
-  font-size: 18px;
-  color: #ff0000;
-}
-
-.catalog-list {
-  width: 80%;
-  margin: 0 auto;
-  display: flex;
-  flex-wrap: wrap;
-  gap: 40px;
-  list-style: none;
-  padding: 0;
-}
-
-.error-message {
-  color: red;
-  margin-top: 10px;
-}
-
-.catalog-item {
-  /* background: #f9f9f9; */
-  /* border: 1px solid #ddd; */
-  /* border-radius: 8px; */
-  width: calc(33.333% - 40px);
-  text-align: left;
-  overflow: hidden;
-  /* box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1); */
-  transition: transform 0.3s ease, box-shadow 0.3s ease;
-}
-
-.catalog-image:hover {
-  transform: scale(1.1);
-}
-
-.catalog-link {
-  color: inherit;
-  text-decoration: none;
-}
-
-.image-container {
-  width: 100%;
-  max-height: 300px;
-  /* object-fit: cover; */
-  overflow: hidden;
-}
-
-.catalog-image {
-  object-fit: cover;
-  width: 100%;
-  max-height: 300px;
-  transition: transform .3s; 
-}
-
-.catalog-info {
-  
-  padding: 15px;
-}
-
-.catalog-info h2 {
-  margin: 0 0 10px;
-  font-size: 18px;
-  color: #333;
-}
-
-.catalog-info p {
-  margin: 0;
-  font-size: 14px;
-  color: #666;
-}
-
-.admin-controls {
-  margin-top: 20px;
-}
-
-.admin-actions {
-  margin-top: 10px;
-}
-
-.admin-actions button {
-  background: #007bff;
-  color: white;
-  border: none;
-  padding: 5px 10px;
-  margin: 5px;
-  cursor: pointer;
-}
-
-.admin-actions button:hover {
-  background: #0056b3;
-}
-
-.modal-overlay {
-  position: fixed;
-  top: 0;
-  left: 0;
-  right: 0;
-  bottom: 0;
-  background: rgba(0, 0, 0, 0.5);
-  display: flex;
-  justify-content: center;
-  align-items: center;
-}
-
-.modal-content {
-  background: white;
-  padding: 20px;
-  border-radius: 8px;
-  width: 400px;
-  max-width: 90%;
-  box-shadow: 0 5px 15px rgba(0, 0, 0, 0.3);
-}
-
-.modal-content h3 {
-  margin-bottom: 20px;
-}
-
-.modal-content form input,
-.modal-content form textarea {
-  width: 100%;
-  padding: 10px;
-  margin-bottom: 10px;
-  border: 1px solid #ddd;
-  border-radius: 4px;
-}
-
-.modal-content .modal-actions {
-  display: flex;
-  justify-content: space-between;
-}
-
-.modal-content .modal-actions button {
-  padding: 10px 20px;
-  cursor: pointer;
-  border: none;
-  border-radius: 4px;
-}
-
-.modal-content .modal-actions button:hover {
-  background: #007bff;
-  color: white;
-}
-</style>
+<style src="~/assets/css/pages/Catalogs/Catalogs.css"></style>
+<style src="~/assets/css/pages/Catalogs/Catalogs_admin.css"></style>
+<style src="~/assets/css/components/breadcrumb.css"></style>
+<style scoped></style>

@@ -5,13 +5,13 @@
       <p v-else>Please log in to access this page.</p>
     </div>
     <div class="routes_catalog">
-      <nuxt-link :to="`/`" class="breadcrumb">Главная</nuxt-link>
-      <nuxt-link :to="`/shop/`" class="breadcrumb">/ Каталог</nuxt-link>
-      <nuxt-link :to="`/shop/${catalogId}`" class="breadcrumb"
-        >/ {{ categoryName }}</nuxt-link
+      <nuxt-link :to="`/`" class="breadcrumb">Главная / </nuxt-link>
+      <nuxt-link :to="`/shop/`" class="breadcrumb">Каталог / </nuxt-link>
+      <nuxt-link :to="`/shop/${catalogId}`" class="breadcrumb_last">
+        {{ categoryName }}</nuxt-link
       >
     </div>
-    <h1>Продукт: {{ product.name }}</h1>
+
     <div v-if="loading" class="loading">Загрузка...</div>
     <div v-else-if="errorMessage" class="error">{{ errorMessage }}</div>
     <div v-else>
@@ -28,6 +28,9 @@
         </div>
 
         <div class="product-description">
+          <div class="product_main_text_div">
+            <h1 class="product_main_text">{{ categoryName }}: {{ product.name }}</h1>
+          </div>
           <p><strong>Описание:</strong> {{ product.description }}</p>
           <p><strong>Цена:</strong> {{ product.price }} ₽</p>
         </div>
@@ -101,76 +104,6 @@ export default {
 };
 </script>
 
-<style scoped>
-.product-details {
-  padding: 20px;
-  font-family: Arial, sans-serif;
-}
-
-.breadcrumb {
-  font-size: 14px;
-  color: #007bff;
-  text-decoration: none;
-  margin-bottom: 10px;
-  display: inline-block;
-}
-
-.routes_catalog {
-  font-size: 14px;
-  color: #007bff;
-  margin-bottom: 20px;
-}
-
-.routes_catalog nuxt-link {
-  margin-right: 5px;
-}
-
-.routes_catalog nuxt-link:hover {
-  text-decoration: underline;
-}
-
-h1 {
-  margin-bottom: 20px;
-  font-size: 28px;
-  color: #333;
-}
-
-.loading,
-.error {
-  font-size: 18px;
-  color: #ff0000;
-}
-
-.product-info {
-  display: flex;
-  gap: 20px;
-  flex-wrap: wrap;
-}
-
-.product-image {
-  max-width: 100%;
-  width: 400px;
-  height: auto;
-  object-fit: cover;
-}
-
-.product-description {
-  max-width: 600px;
-}
-
-.product-description p {
-  font-size: 16px;
-  color: #333;
-  margin: 10px 0;
-}
-
-.product-description strong {
-  font-weight: bold;
-}
-
-.product-price {
-  font-size: 20px;
-  color: #000;
-  font-weight: bold;
-}
-</style>
+<style src="~/assets/css/pages/Product/Product.css"></style>
+<style src="~/assets/css/components/breadcrumb.css"></style>
+<style scoped></style>

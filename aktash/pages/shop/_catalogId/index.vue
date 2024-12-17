@@ -1,13 +1,13 @@
 <template>
   <div class="catalog-details">
     <div>
-      <nuxt-link :to="`/`" class="breadcrumb">Главная</nuxt-link>
-      <nuxt-link :to="`/shop/`" class="breadcrumb">/ Каталог</nuxt-link>
+      <nuxt-link :to="`/`" class="breadcrumb">Главная / </nuxt-link>
+      <nuxt-link :to="`/shop/`" class="breadcrumb_last">Каталог</nuxt-link>
     </div>
 
     <!-- Поле сортировки -->
     <div class="CategoryName_main_div">
-      <h1>{{ categoryName }}</h1>
+      <h1 class="CategoryName_main_text">{{ categoryName }}</h1>
     </div>
     <div class="sorting-container">
       <div
@@ -36,7 +36,6 @@
       </button>
     </div>
 
-    <!-- Modal for Creating Product -->
     <div v-if="showCreateModal" class="modal-overlay">
       <div class="modal-content">
         <h2>Создать товар</h2>
@@ -421,30 +420,14 @@ export default {
 };
 </script>
 
-<style src="~/assets/css/components/pages/CatalogView/sort.css"></style>
+<style src="~/assets/css/pages/CatalogView/CatalogView_sort.css"></style>
+<style src="~/assets/css/pages/CatalogView/CatalogView.css"></style>
+<style src="~/assets/css/pages/CatalogView/CatalogView_admin.css"></style>
+<style src="~/assets/css/components/breadcrumb.css"></style>
 <style scoped>
-.catalog-details {
-  padding: 20px;
-  font-family: Arial, sans-serif;
-}
-
-.breadcrumb {
-  font-size: 14px;
-  color: #007bff;
-  text-decoration: none;
-  margin-bottom: 10px;
-  display: inline-block;
-}
-
-.breadcrumb:hover {
-  text-decoration: underline;
-}
 
 
-h1 {
-  margin-bottom: 20px;
-  font-size: 24px;
-}
+
 
 .create-product-btn {
   background: #007bff;
@@ -475,20 +458,20 @@ h1 {
 }
 
 .product-item {
-  background: #f9f9f9;
-  border: 1px solid #ddd;
-  border-radius: 8px;
+  /* background: #f9f9f9; */
+  /* border: 1px solid #ddd; */
+  /* border-radius: 8px; */
   width: calc(33.333% - 20px);
   text-align: center;
   overflow: hidden;
-  box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+  /* box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1); */
   transition: transform 0.3s ease, box-shadow 0.3s ease;
   z-index: 1;
 }
 
 .product-item:hover {
-  transform: translateY(-5px);
-  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.2);
+  /* transform: translateY(-5px);
+  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.2); */
 }
 
 .product-link {
@@ -509,11 +492,13 @@ h1 {
 
 .carousel-image {
   width: 100%;
-  height: 200px;
+  height: 100%;
   object-fit: cover;
 }
 
 .product-info {
+  text-align: left;
+  /* align-self: left; */
   padding: 15px;
 }
 
@@ -590,9 +575,6 @@ h1 {
   border-radius: 4px;
 }
 
-.CategoryName_main_div {
-  text-align: center;
-}
 
 .modal-content button:hover {
   background: #007bff;
