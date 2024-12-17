@@ -26,7 +26,6 @@
       </div>
     </div>
 
-    <!-- Create Product Button for Logged-In Users -->
     <div v-if="isLoggedIn">
       <button
         v-if="isLoggedIn"
@@ -422,7 +421,7 @@ export default {
 };
 </script>
 
-<style src="~/assets/css/components/sort.css"></style>
+<style src="~/assets/css/components/pages/CatalogView/sort.css"></style>
 <style scoped>
 .catalog-details {
   padding: 20px;
