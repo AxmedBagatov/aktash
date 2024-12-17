@@ -1,0 +1,66 @@
+
+.product-details {
+    padding: 20px;
+    font-family: Arial, sans-serif;
+    margin-inline: 10%;
+  }
+  
+  .routes_catalog {
+    font-size: 14px;
+    color: #007bff;
+    margin-bottom: 20px;
+  }
+  
+  .routes_catalog nuxt-link {
+    margin-right: 5px;
+  }
+  
+  .routes_catalog nuxt-link:hover {
+    text-decoration: underline;
+  }
+  
+  .product_main_text {
+    margin-bottom: 20px;
+    font-size: 28px;
+    color: #333;
+  }
+  
+  .loading,
+  .error {
+    font-size: 18px;
+    color: #ff0000;
+  }
+  
+  .product-info {
+    display: flex;
+    gap: 20px;
+    flex-wrap: wrap;
+    
+  }
+  
+  .product-image {
+    max-width: 100%;
+    width: 400px;
+    height: auto;
+    object-fit: cover;
+  }
+  
+  .product-description {
+    max-width: 600px;
+  }
+  
+  .product-description p {
+    font-size: 16px;
+    color: #333;
+    margin: 10px 0;
+  }
+  
+  .product-description strong {
+    font-weight: bold;
+  }
+  
+  .product-price {
+    font-size: 20px;
+    color: #000;
+    font-weight: bold;
+  }

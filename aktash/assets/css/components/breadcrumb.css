@@ -1,0 +1,19 @@
+.breadcrumb {
+  font-size: 16px;
+  color: #000000cf;
+  text-decoration: none;
+  margin-bottom: 10px;
+  display: inline-block;
+}
+
+.breadcrumb_last {
+  font-size: 16px;
+  color: #59595986;
+  text-decoration: none;
+  margin-bottom: 10px;
+  display: inline-block;
+}
+
+.breadcrumb:hover {
+  text-decoration: underline;
+}
