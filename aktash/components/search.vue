@@ -4,7 +4,7 @@
       type="text"
       v-model="searchQuery"
       @input="onSearch"
-      placeholder="Искать товары..."
+      placeholder="Поиск товаров..."
       class="search-input"
     />
     <div class="search-results" v-if="products.length && searchQuery">
@@ -61,51 +61,7 @@ export default {
   },
 };
 </script>
-
+<style src="~/assets/css/components/search.css"></style>
 <style scoped>
-.search {
-  position: relative;
-  max-width: 400px;
-  margin: 0 auto;
-}
 
-.search-input {
-  max-height: 30px;
-  width: 100%;
-  padding: 10px;
-  border: 1px solid #ddd;
-  border-radius: 4px;
-  color: white; /* Устанавливаем белый текст */
-  background-color: transparent; /* Если фон должен быть прозрачным */
-}
-
-.search-input::placeholder {
-  color: rgba(255, 255, 255, 0.966); /* Белый с небольшой прозрачностью */
-}
-
-.search-results {
-  position: absolute;
-  background: #fff;
-  border: 1px solid #ddd;
-  width: 100%;
-  max-height: 200px;
-  overflow-y: auto;
-  z-index: 1000;
-}
-
-.search-results ul {
-  list-style: none;
-  padding: 0;
-  margin: 0;
-}
-
-.search-results li {
-  padding: 10px;
-  border-bottom: 1px solid #f1f1f1;
-}
-
-.search-results li:hover {
-  background-color: #f9f9f9;
-  cursor: pointer;
-}
 </style>

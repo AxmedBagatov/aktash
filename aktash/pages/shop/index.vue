@@ -4,10 +4,12 @@
       <button @click="showAddCategoryForm">Add Category</button>
     </div>
 
-    <nuxt-link class="breadcrumb" :to="`/`">Главная</nuxt-link>
     <div class="catalogs_category_text_div">
       <h1 class="catalogs_category_text">Категории</h1>
     </div>
+    <!-- <div style="margin-left: 10%">
+      <nuxt-link class="breadcrumb" :to="`/`">Главная</nuxt-link>
+    </div> -->
 
     <!-- Updated loading and error display -->
     <div v-if="loading" class="loading">Загрузка...</div>

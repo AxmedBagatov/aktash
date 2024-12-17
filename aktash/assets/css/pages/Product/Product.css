@@ -1,23 +1,10 @@
 
 .product-details {
-    padding: 20px;
+ 
     font-family: Arial, sans-serif;
     margin-inline: 10%;
   }
   
-  .routes_catalog {
-    font-size: 14px;
-    color: #007bff;
-    margin-bottom: 20px;
-  }
-  
-  .routes_catalog nuxt-link {
-    margin-right: 5px;
-  }
-  
-  .routes_catalog nuxt-link:hover {
-    text-decoration: underline;
-  }
   
   .product_main_text {
     margin-bottom: 20px;
@@ -32,10 +19,7 @@
   }
   
   .product-info {
-    display: flex;
     gap: 20px;
-    flex-wrap: wrap;
-    
   }
   
   .product-image {

@@ -1,6 +1,6 @@
 <template>
   <div class="catalog-details">
-    <div>
+    <div style="margin-left: 10%">
       <nuxt-link :to="`/`" class="breadcrumb">Главная / </nuxt-link>
       <nuxt-link :to="`/shop/`" class="breadcrumb_last">Каталог</nuxt-link>
     </div>
@@ -147,7 +147,7 @@
               <!-- Блок с каруселью -->
               <div class="carousel-wrapper">
                 <div
-                  class="carousel-images"
+                  class="catalog-carousel-images"
                   :style="{
                     transform: `translateX(-${
                       currentSlide[product.product_id] * 100
@@ -162,6 +162,15 @@
                     class="carousel-image"
                   />
                 </div>
+              </div>
+              <div class="carousel-indicators">
+                <div
+                  v-for="(image, index) in product.images"
+                  :key="index"
+                  class="carousel-indicator"
+                  :class="{ active: currentSlide[product.product_id] === index }"
+                  @mouseover="handleIndicatorHover(index, image)"
+                ></div>
               </div>
             </div>
             <div class="product-info">
@@ -296,6 +305,11 @@ export default {
     closeCreateProductModal() {
       this.showCreateModal = false;
     },
+    handleIndicatorHover(index, image) {
+      // Устанавливаем текущий слайд при наведении на индикатор
+      console.log(index, image)
+      this.currentSlide[this.productId] = index;
+    },
 
     async createProduct() {
       try {
@@ -394,9 +408,11 @@ export default {
       }
     },
     startCarousel(productId) {
+      console.log(productId )
       if (this.carouselInterval[productId]) return;
       this.carouselInterval[productId] = setInterval(() => {
         this.nextSlide(productId);
+        console.log("next")
       }, 3000);
     },
     stopCarousel(productId) {
@@ -443,6 +459,27 @@ export default {
   background: #0056b3;
 }
 
+.carousel-indicators {
+  display: flex;
+  justify-content: center;
+  margin-top: 10px;
+}
+
+.carousel-indicator {
+  width: 10px;
+  height: 10px;
+  margin: 0 5px;
+  background-color: gray;
+  border-radius: 50%;
+  cursor: pointer;
+  transition: background-color 0.3s ease;
+}
+
+.carousel-indicator.active {
+  background-color: black;
+}
+
+
 .loading,
 .error {
   font-size: 18px;
@@ -485,15 +522,18 @@ export default {
   overflow: hidden;
 }
 
-.carousel-images {
+.catalog-carousel-images {
   display: flex;
   transition: transform 0.3s ease;
+  /* object-fit: cover; */
+
 }
 
 .carousel-image {
-  width: 100%;
-  height: 100%;
-  object-fit: cover;
+  min-width: 100%;
+  /* height: 100%; */
+  object-fit: fill;
+
 }
 
 .product-info {

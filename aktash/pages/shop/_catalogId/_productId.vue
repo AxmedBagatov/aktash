@@ -4,7 +4,7 @@
       <p v-if="isLoggedIn">Welcome, {{ user.username }}!</p>
       <p v-else>Please log in to access this page.</p>
     </div>
-    <div class="routes_catalog">
+    <div>
       <nuxt-link :to="`/`" class="breadcrumb">Главная / </nuxt-link>
       <nuxt-link :to="`/shop/`" class="breadcrumb">Каталог / </nuxt-link>
       <nuxt-link :to="`/shop/${catalogId}`" class="breadcrumb_last">
@@ -16,8 +16,8 @@
     <div v-else-if="errorMessage" class="error">{{ errorMessage }}</div>
     <div v-else>
       <div class="product-info">
-        <!-- Loop through product images -->
-        <div v-if="product.images && product.images.length">
+        
+        <div v-if="product.images && product.images.length" class="product-carousel">
           <img
             v-for="(image, index) in product.images"
             :key="index"

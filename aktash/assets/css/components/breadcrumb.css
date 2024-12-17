@@ -4,6 +4,7 @@
   text-decoration: none;
   margin-bottom: 10px;
   display: inline-block;
+  /* margin-inline-start: 10%; */
 }
 
 .breadcrumb_last {
