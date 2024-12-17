@@ -140,20 +140,14 @@
             class="product-link"
           >
             <div
-              class="carousel"
+              class="catalog-carousel"
               @mouseenter="startCarousel(product.product_id)"
               @mouseleave="stopCarousel(product.product_id)"
             >
               <!-- Блок с каруселью -->
-              <div class="carousel-wrapper">
+              <div class="catalog-carousel-wrapper">
                 <div
-                  class="catalog-carousel-images"
-                  :style="{
-                    transform: `translateX(-${
-                      currentSlide[product.product_id] * 100
-                    }%)`,
-                  }"
-                >
+                  class="catalog-carousel-images" :style="{ transform: `translateX(-${product.index * 100}%)`}">
                   <img
                     v-for="(image, index) in product.images"
                     :key="index"
@@ -168,7 +162,7 @@
                   v-for="(image, index) in product.images"
                   :key="index"
                   class="carousel-indicator"
-                  :class="{ active: currentSlide[product.product_id] === index }"
+                  :class="{ active: product.index === index }"
                   @mouseover="handleIndicatorHover(index, image)"
                 ></div>
               </div>
@@ -261,8 +255,8 @@ export default {
       return category ? category.name : "Неизвестная категория";
     },
     sortedProducts() {
+      
       let sorted = [...this.products];
-
       if (this.sortCriteria === "price_asc") {
         sorted.sort((a, b) => parseFloat(a.price) - parseFloat(b.price));
       } else if (this.sortCriteria === "price_desc") {
@@ -271,8 +265,12 @@ export default {
         sorted.sort((a, b) => a.name.localeCompare(b.name));
       } else if (this.sortCriteria === "name_desc") {
         sorted.sort((a, b) => b.name.localeCompare(a.name));
-      }
-
+      }      
+      sorted.forEach(item => {
+        item.index = 1
+      })
+      console.log("sorted here...")
+      console.log(sorted)
       return sorted;
     },
   },
@@ -407,8 +405,11 @@ export default {
           });
       }
     },
+    carouselHandle(product) {
+
+    },
     startCarousel(productId) {
-      console.log(productId )
+      console.log('STARTED!!!!!!!!!!!!!!!!!')
       if (this.carouselInterval[productId]) return;
       this.carouselInterval[productId] = setInterval(() => {
         this.nextSlide(productId);
@@ -420,12 +421,13 @@ export default {
       this.carouselInterval[productId] = null;
     },
     nextSlide(productId) {
+      console.log("NEXTSLIDE?!!!!!!!")
       if (!this.currentSlide[productId]) this.currentSlide[productId] = 0;
       const product = this.products.find((p) => p.product_id === productId);
       if (product && product.images) {
         const totalSlides = product.images.length;
-        this.currentSlide[productId] =
-          (this.currentSlide[productId] + 1) % totalSlides;
+        this.currentSlide[productId] = (this.currentSlide[productId] + 1) % totalSlides;
+        console.log("DADAAD->" + (this.currentSlide[productId] + 1) % totalSlides)
       } else {
         console.error(
           `Продукт с ID ${productId} не найден или не имеет изображений.`
@@ -463,6 +465,10 @@ export default {
   display: flex;
   justify-content: center;
   margin-top: 10px;
+}
+
+.catalog-carousel {
+  /* height: 400px; */
 }
 
 .carousel-indicator {
@@ -507,8 +513,7 @@ export default {
 }
 
 .product-item:hover {
-  /* transform: translateY(-5px);
-  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.2); */
+  /* box-shadow: 0 4px 10px rgba(0, 0, 0, 0.2); */
 }
 
 .product-link {
@@ -516,9 +521,9 @@ export default {
   text-decoration: none;
 }
 
-.carousel-wrapper {
+.catalog-carousel-wrapper {
   position: relative;
-  height: 200px;
+  height: 500px;
   overflow: hidden;
 }
 

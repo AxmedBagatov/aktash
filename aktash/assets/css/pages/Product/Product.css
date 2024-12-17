@@ -1,50 +1,56 @@
-
 .product-details {
- 
+
     font-family: Arial, sans-serif;
     margin-inline: 10%;
-  }
-  
-  
-  .product_main_text {
+}
+
+
+.product_main_text {
     margin-bottom: 20px;
     font-size: 28px;
     color: #333;
-  }
-  
-  .loading,
-  .error {
+}
+
+.loading,
+.error {
     font-size: 18px;
     color: #ff0000;
-  }
-  
-  .product-info {
+}
+
+.product-info {
     gap: 20px;
-  }
-  
-  .product-image {
+    display: flex;
+}
+
+.product-image {
     max-width: 100%;
     width: 400px;
     height: auto;
     object-fit: cover;
-  }
-  
-  .product-description {
+}
+
+.product-description {
     max-width: 600px;
-  }
-  
-  .product-description p {
+}
+
+.product-description p {
     font-size: 16px;
     color: #333;
     margin: 10px 0;
-  }
-  
-  .product-description strong {
+}
+
+.product-description strong {
     font-weight: bold;
-  }
-  
-  .product-price {
+}
+
+.product-price {
     font-size: 20px;
     color: #000;
     font-weight: bold;
-  }
+}
+
+
+
+
+/* gtghtg */
+
