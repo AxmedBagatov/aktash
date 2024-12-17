@@ -6,14 +6,24 @@
     </div>
 
     <!-- Поле сортировки -->
-    <div class="sorting-container">
+    <div class="CategoryName_main_div">
       <h1>{{ categoryName }}</h1>
-      <select v-model="sortCriteria" class="sort-select">
-        <option value="price_asc">Цена (по возрастанию)</option>
-        <option value="price_desc">Цена (по убыванию)</option>
-        <option value="name_asc">По имени (A-Z)</option>
-        <option value="name_desc">По имени (Z-A)</option>
-      </select>
+    </div>
+    <div class="sorting-container">
+      <div
+        class="sorting-option"
+        @click="setSortCriteria('price_asc')"
+        :class="{ active: sortCriteria === 'price_asc' }"
+      >
+        Цена (по возрастанию)
+      </div>
+      <div
+        class="sorting-option"
+        @click="setSortCriteria('price_desc')"
+        :class="{ active: sortCriteria === 'price_desc' }"
+      >
+        Цена (по убыванию)
+      </div>
     </div>
 
     <!-- Create Product Button for Logged-In Users -->
@@ -272,7 +282,9 @@ export default {
         image.index = index + 1; // Обновляем индекс каждого изображения
       });
     },
-
+    setSortCriteria(criteria) {
+    this.sortCriteria = criteria;
+  },
     handleFileUpload(event) {
       const files = event.target.files;
       this.newProduct.images = Array.from(files).map((file, index) => ({
@@ -360,27 +372,29 @@ export default {
     },
 
     deleteProduct(productId) {
-  if (window.confirm("Вы точно хотите удалить этот товар?")) {
-    // Находим товар по ID и собираем изображения для удаления
-    const product = this.sortedProducts.find((product) => product.product_id === productId);
-    
-    // Собираем изображения для удаления
-    const imagesToDelete = product.images.map((image) => ({
-      url: image.url, // Путь к изображению
-      product_id: productId,
-    }));
+      if (window.confirm("Вы точно хотите удалить этот товар?")) {
+        // Находим товар по ID и собираем изображения для удаления
+        const product = this.sortedProducts.find(
+          (product) => product.product_id === productId
+        );
 
-    // Отправляем запрос через Vuex для удаления изображений и товара
-    this.$store
-      .dispatch("deleteProduct", { productId, imagesToDelete })
-      .then(() => {
-        console.log("Товар и изображения успешно удалены");
-      })
-      .catch((error) => {
-        console.error("Ошибка при удалении товара:", error);
-      });
-  }
-},
+        // Собираем изображения для удаления
+        const imagesToDelete = product.images.map((image) => ({
+          url: image.url, // Путь к изображению
+          product_id: productId,
+        }));
+
+        // Отправляем запрос через Vuex для удаления изображений и товара
+        this.$store
+          .dispatch("deleteProduct", { productId, imagesToDelete })
+          .then(() => {
+            console.log("Товар и изображения успешно удалены");
+          })
+          .catch((error) => {
+            console.error("Ошибка при удалении товара:", error);
+          });
+      }
+    },
     startCarousel(productId) {
       if (this.carouselInterval[productId]) return;
       this.carouselInterval[productId] = setInterval(() => {
@@ -408,6 +422,7 @@ export default {
 };
 </script>
 
+<style src="~/assets/css/components/sort.css"></style>
 <style scoped>
 .catalog-details {
   padding: 20px;
@@ -426,19 +441,6 @@ export default {
   text-decoration: underline;
 }
 
-.sorting-container {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  margin: 20px 0;
-}
-
-.sort-select {
-  padding: 5px;
-  font-size: 14px;
-  border-radius: 4px;
-  border: 1px solid #ddd;
-}
 
 h1 {
   margin-bottom: 20px;
@@ -587,6 +589,10 @@ h1 {
   cursor: pointer;
   border: none;
   border-radius: 4px;
+}
+
+.CategoryName_main_div {
+  text-align: center;
 }
 
 .modal-content button:hover {

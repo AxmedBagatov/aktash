@@ -19,12 +19,14 @@
           class="catalog-item"
         >
           <nuxt-link :to="`/shop/${catalog.category_id}`" class="catalog-link">
+            <div class="image-container">
             <img
               v-if="catalog.image_url"
               :src="`/${catalog.image_url}`"
               :alt="catalog.name"
               class="catalog-image"
             />
+          </div>
             <div class="catalog-info">
               <h2>{{ catalog.name }}</h2>
               <p>{{ catalog.description }}</p>
@@ -415,9 +417,11 @@ h1 {
 }
 
 .catalog-list {
+  width: 80%;
+  margin: 0 auto;
   display: flex;
   flex-wrap: wrap;
-  gap: 20px;
+  gap: 40px;
   list-style: none;
   padding: 0;
 }
@@ -428,19 +432,18 @@ h1 {
 }
 
 .catalog-item {
-  background: #f9f9f9;
-  border: 1px solid #ddd;
-  border-radius: 8px;
-  width: calc(33.333% - 20px);
-  text-align: center;
+  /* background: #f9f9f9; */
+  /* border: 1px solid #ddd; */
+  /* border-radius: 8px; */
+  width: calc(33.333% - 40px);
+  text-align: left;
   overflow: hidden;
-  box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+  /* box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1); */
   transition: transform 0.3s ease, box-shadow 0.3s ease;
 }
 
-.catalog-item:hover {
-  transform: translateY(-5px);
-  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.2);
+.catalog-image:hover {
+  transform: scale(1.1);
 }
 
 .catalog-link {
@@ -448,13 +451,22 @@ h1 {
   text-decoration: none;
 }
 
-.catalog-image {
+.image-container {
   width: 100%;
-  height: 200px;
+  max-height: 300px;
+  /* object-fit: cover; */
+  overflow: hidden;
+}
+
+.catalog-image {
   object-fit: cover;
+  width: 100%;
+  max-height: 300px;
+  transition: transform .3s; 
 }
 
 .catalog-info {
+  
   padding: 15px;
 }
 
