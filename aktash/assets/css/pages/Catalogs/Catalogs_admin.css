@@ -2,6 +2,27 @@
   margin-top: 20px;
 }
 
+
+.product-list {
+  margin: 0 auto;
+  width: 80%;
+  overflow: hidden;
+  margin-top: 20px;
+  margin-bottom: 20px;
+  display: grid;
+  /* place-items: center; */
+  /* justify-items: center; */
+  /* place-self: center; */
+  justify-content: space-around;
+  justify-items: center;
+  align-content: space-around;
+  align-items: center;
+  gap: 30px;
+  grid-template-columns: repeat(auto-fit, minmax(600px, 30px));
+  grid-template-rows: auto;
+  /* gap: 20px; */
+}
+
 .admin-actions {
   margin-top: 10px;
 }

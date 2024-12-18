@@ -1,20 +1,23 @@
 .breadcrumb {
-  font-size: 16px;
+  font-size: 20px;
+  font-family: Geologica;
   color: #000000cf;
   text-decoration: none;
-  margin-bottom: 10px;
+  /* margin-bottom: 10px; */
   display: inline-block;
+  margin: 30px 0 30px 0;
   /* margin-inline-start: 10%; */
 }
 
 .breadcrumb_last {
-  font-size: 16px;
-  color: #59595986;
+  font-family: Geologica;
+  font-size: 20px;
+  color: #c32222;
   text-decoration: none;
   margin-bottom: 10px;
   display: inline-block;
 }
 
 .breadcrumb:hover {
-  text-decoration: underline;
+  text-decoration: none;
 }

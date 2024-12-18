@@ -4,9 +4,7 @@
       <button @click="showAddCategoryForm">Add Category</button>
     </div>
 
-    <div class="catalogs_category_text_div">
-      <h1 class="catalogs_category_text">Категории</h1>
-    </div>
+      <div class="catalogs_category_text">Категории</div>
     <!-- <div style="margin-left: 10%">
       <nuxt-link class="breadcrumb" :to="`/`">Главная</nuxt-link>
     </div> -->
@@ -16,8 +14,8 @@
     <div v-else-if="errorMessage" class="error">{{ errorMessage }}</div>
 
     <div v-else>
-      <ul v-if="catalogs.length > 0" class="catalog-list">
-        <li
+      <div v-if="catalogs.length > 0" class="product-list">
+        <div
           v-for="catalog in catalogs"
           :key="catalog.category_id"
           class="catalog-item"
@@ -43,8 +41,8 @@
             </button>
             <button @click="confirmDelete(catalog.category_id)">Delete</button>
           </div>
-        </li>
-      </ul>
+        </div>
+      </div>
 
       <!-- Message if there are no catalogs -->
       <p v-else>Категорий пока нет</p>

@@ -41,9 +41,14 @@
         </li>
       </ul>
     </nav>
+  
     <div class="search-container">
       <Search />
     </div>
+    <button v-if="isLoggedIn" @click="handleLogout" style="margin-left: 50px;">
+      <font-awesome-icon :icon="['fas', 'user-xmark']" />
+    </button>
+    
     <hr class="header_undeline">
   </header>
 
@@ -59,9 +64,21 @@ export default {
       menuVisible: false, // Состояние видимости бокового меню
     };
   },
+  computed: {
+    isLoggedIn() {
+      return this.$store.state.auth.loggedIn;
+    },
+  },
   methods: {
     toggleMenu() {
       this.menuVisible = !this.menuVisible; // Переключение состояния меню
+    },
+    async handleLogout() {
+      try {
+        await this.$store.dispatch("logout");
+      } catch (error) {
+        console.error("Ошибка при выходе:", error);
+      }
     },
     closeMenu() {
       console.log("закрыто");

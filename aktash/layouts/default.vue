@@ -28,11 +28,22 @@ export default {
   --footer-padding: 20px;
 }
 
+@font-face {
+  font-family: Geologica;
+  /* src: url(../static/fonts/PT-Mono_Regular.ttf) format('truetype'); */
+  src: url(../static/fonts/LTSuperior-Regular.otf);
+}
+
 body html {
   margin: 0;
   /* font-family: Arial, sans-serif; */
   /* font-family: 'Franklin Gothic Medium', 'Arial Narrow', Arial, sans-serif; */
-  font-family: 'Courier New', Courier, monospace;
+
+  /* font-family: 'Courier New', Courier, monospace; */
+}
+
+body {
+  font-family: Geologica;
 }
 
 main {
