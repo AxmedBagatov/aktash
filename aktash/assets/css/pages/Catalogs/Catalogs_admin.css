@@ -2,6 +2,11 @@
   margin-top: 20px;
 }
 
+.product-list-wrapper {
+  display: flex;
+  justify-items: center;
+}
+
 
 .product-list {
   margin: 0 auto;
@@ -13,7 +18,7 @@
   /* place-items: center; */
   /* justify-items: center; */
   /* place-self: center; */
-  justify-content: space-around;
+  justify-content: start;
   justify-items: center;
   align-content: space-around;
   align-items: center;

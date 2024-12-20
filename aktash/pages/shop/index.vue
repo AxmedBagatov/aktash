@@ -1,10 +1,10 @@
 <template>
-  <div class="catalogs">
+  <div>
     <div v-if="isLoggedIn" class="admin-controls">
       <button @click="showAddCategoryForm">Add Category</button>
     </div>
 
-      <div class="catalogs_category_text">Категории</div>
+    <div class="catalogs-category-text">Категории</div>
     <!-- <div style="margin-left: 10%">
       <nuxt-link class="breadcrumb" :to="`/`">Главная</nuxt-link>
     </div> -->
@@ -14,38 +14,31 @@
     <div v-else-if="errorMessage" class="error">{{ errorMessage }}</div>
 
     <div v-else>
-      <div v-if="catalogs.length > 0" class="product-list">
-        <div
-          v-for="catalog in catalogs"
-          :key="catalog.category_id"
-          class="catalog-item"
-        >
-          <nuxt-link :to="`/shop/${catalog.category_id}`" class="catalog-link">
-            <div class="image-container">
-              <img
-                v-if="catalog.image_url"
-                :src="`/${catalog.image_url}`"
-                :alt="catalog.name"
-                class="catalog-image"
-              />
-            </div>
-            <div class="catalog-info">
-              <h2>{{ catalog.name }}</h2>
-              <p>{{ catalog.description }}</p>
-            </div>
-          </nuxt-link>
+      <div class="product-list-wrapper">
+        <div v-if="catalogs.length > 0" class="product-list">
+          <div v-for="catalog in catalogs" :key="catalog.category_id" class="catalog-item">
+            <nuxt-link :to="`/shop/${catalog.category_id}`" class="catalog-link">
+              <div class="image-container">
+                <img v-if="catalog.image_url" :src="`/${catalog.image_url}`" :alt="catalog.name"
+                  class="catalog-image" />
+              </div>
+              <div class="catalog-info">
+                <h2>{{ catalog.name }}</h2>
+                <p>{{ catalog.description }}</p>
+              </div>
+            </nuxt-link>
 
-          <div v-if="isLoggedIn" class="admin-actions">
-            <button @click="showEditCategoryForm(catalog.category_id)">
-              Edit
-            </button>
-            <button @click="confirmDelete(catalog.category_id)">Delete</button>
+            <div v-if="isLoggedIn" class="admin-actions">
+              <button @click="showEditCategoryForm(catalog.category_id)">
+                Edit
+              </button>
+              <button @click="confirmDelete(catalog.category_id)">Delete</button>
+            </div>
           </div>
         </div>
+        <!-- Message if there are no catalogs -->
+        <p v-else>Категорий пока нет</p>
       </div>
-
-      <!-- Message if there are no catalogs -->
-      <p v-else>Категорий пока нет</p>
     </div>
 
     <!-- Модальное окно для добавления категории -->
@@ -53,16 +46,8 @@
       <div class="modal-content">
         <h3>Add New Category</h3>
         <form @submit.prevent="addCategory">
-          <input
-            v-model="newCategory.name"
-            placeholder="Category Name"
-            required
-          />
-          <textarea
-            v-model="newCategory.description"
-            placeholder="Category Description"
-            required
-          ></textarea>
+          <input v-model="newCategory.name" placeholder="Category Name" required />
+          <textarea v-model="newCategory.description" placeholder="Category Description" required></textarea>
           <input type="file" accept="image/*" @change="onFileChange" />
           <div class="modal-actions">
             <button type="submit">Add Category</button>
@@ -78,41 +63,19 @@
         <h3>Edit Category</h3>
         <form @submit.prevent="updateCategory">
           <label for="category_id">Category ID:</label>
-          <input
-            type="text"
-            id="category_id"
-            v-model="editCategoryData.category_id"
-            readonly
-          />
-          <input
-            v-model="editCategoryData.name"
-            placeholder="Category Name"
-            required
-          />
-          <textarea
-            v-model="editCategoryData.description"
-            placeholder="Category Description"
-            required
-          ></textarea>
+          <input type="text" id="category_id" v-model="editCategoryData.category_id" readonly />
+          <input v-model="editCategoryData.name" placeholder="Category Name" required />
+          <textarea v-model="editCategoryData.description" placeholder="Category Description" required></textarea>
 
           <!-- If there is an image -->
           <div v-if="editCategoryData.image_url">
             <p>Current Image:</p>
-            <img
-              :src="`/${editCategoryData.image_url}`"
-              alt="Preview"
-              class="preview-image"
-            />
+            <img :src="`/${editCategoryData.image_url}`" alt="Preview" class="preview-image" />
             <button type="button" @click="removeImage">Remove Image</button>
           </div>
 
           <!-- If there is no image, show the file input -->
-          <input
-            v-if="!editCategoryData.image_url"
-            type="file"
-            accept="image/*"
-            @change="onFileChange"
-          />
+          <input v-if="!editCategoryData.image_url" type="file" accept="image/*" @change="onFileChange" />
 
           <div class="modal-actions">
             <button type="submit">Update Category</button>

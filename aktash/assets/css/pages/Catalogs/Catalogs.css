@@ -9,12 +9,13 @@
   padding: 0;
 }
 
-.catalogs_category_text {
+.catalogs-category-text {
   font-family: Geologica;
   width: 80%;
   margin: 0 auto;
   text-align: left;
-  margin-bottom: 20px;
+  margin-bottom: 30px;
+  margin-top: 30px;
   font-size: 24px;
 }
 

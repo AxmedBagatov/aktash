@@ -412,7 +412,7 @@ export default {
 
 .catalog-carousel-indicator {
   width: 30px;
-  height: 5px;
+  height: 2px;
   margin: 0 5px;
   background-color: gray;
   /* border-radius: 50%; */
@@ -422,7 +422,7 @@ export default {
 }
 
 .catalog-carousel-indicator.active {
-  background-color: black;
+  background-color: #c32222;
 }
 
 
@@ -438,23 +438,23 @@ export default {
 }
 
 .product-list {
-    margin: 0 auto;
-    width: 80%;
-    overflow: hidden;
-    margin-top: 20px;
-    margin-bottom: 20px;
-    display: grid;
-    /* place-items: center; */
-    /* justify-items: center; */
-    /* place-self: center; */
-    justify-content: space-around;
-    justify-items: center;
-    align-content: space-around;
-    align-items: center;
-    gap: 30px;
-    grid-template-columns: repeat(auto-fit, minmax(600px, 30px));
-    grid-template-rows: auto;
-    /* gap: 20px; */
+  margin: 0 auto;
+  width: 80%;
+  overflow: hidden;
+  margin-top: 20px;
+  margin-bottom: 20px;
+  display: grid;
+  /* place-items: center; */
+  /* justify-items: center; */
+  /* place-self: center; */
+  justify-content: start;
+  justify-items: center;
+  align-content: space-around;
+  align-items: center;
+  gap: 30px;
+  grid-template-columns: repeat(auto-fit, minmax(600px, 30px));
+  grid-template-rows: auto;
+  /* gap: 20px; */
 }
 
 
@@ -492,7 +492,7 @@ export default {
 
 .catalog-carousel-wrapper {
   position: relative;
-  height: 400px;
+  height: 320px;
   overflow: hidden;
 }
 

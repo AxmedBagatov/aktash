@@ -17,19 +17,6 @@
     <div v-else-if="errorMessage" class="error">{{ errorMessage }}</div>
     <div v-else>
       <div class="product-info">
-        <!--     
-    
-        <div v-if="product.images && product.images.length" class="product-carousel">
-          <img
-            v-for="(image, index) in product.images"
-            :key="index"
-            :src="`/shop/${image.url}`"
-            :alt="`Image of ${product.name} - ${index + 1}`"
-            class="product-image"
-          />
-        </div> -->
-
-        <!-- saiudasdiouyasoidusyadiyasoiduasydoiausydoiausydoaisuydoaisudyoasuidyaosiduyasoiduyasoidu -->
         <div
           v-if="product.images && product.images.length"
           class="product-slider"
@@ -150,43 +137,36 @@
               <div class="product-edit-form__right">
                 <!-- Текущие изображения -->
                 <div
-                  v-if="editProductData.images.length > 0"
-                  class="product-edit-form__images"
+                  v-if="allImages.length > 0"
+                  class="product-edit-form__image-gallery"
                 >
-                  <p class="product-edit-form__images-title">
-                    Текущие изображения:
-                  </p>
                   <div
-                    class="product-edit-form__image-gallery"
+                    v-for="(image, index) in allImages"
+                    :key="`image-${index}`"
+                    class="product-edit-form__image-item"
+                    draggable="true"
+                    @dragstart="handleDragStart(index)"
                     @dragover.prevent
-                    @drop.prevent
+                    @drop="handleDrop(index)"
                   >
-                    <div
-                      v-for="(image, index) in editProductData.images"
-                      :key="index"
-                      class="product-edit-form__image-item"
-                      draggable="true"
-                      @dragstart="handleDragStart(index)"
-                      @dragover.prevent
-                      @drop="handleDrop(index)"
+                    <!-- Превью изображения -->
+                    <img
+                      :src="
+                        image.preview ? image.preview : `/shop/${image.url}`
+                      "
+                      alt="Preview"
+                      class="product-edit-form__preview-image"
+                    />
+                    <!-- Индекс -->
+                    <p class="image-index">Индекс: {{ index + 1 }}</p>
+                    <!-- Кнопка удаления -->
+                    <button
+                      type="button"
+                      @click="removeImage(index)"
+                      class="product-edit-form__remove-image"
                     >
-                      <!-- Превью изображения -->
-                      <img
-                        :src="`/shop/${image.url}`"
-                        alt="Preview"
-                        class="product-edit-form__preview-image"
-                      />
-                      <!-- Индекс -->
-                      <p class="image-index">Индекс: {{ index + 1 }}</p>
-                      <!-- Кнопка удаления -->
-                      <button
-                        type="button"
-                        @click="removeImage(index)"
-                        class="product-edit-form__remove-image"
-                      >
-                        Удалить
-                      </button>
-                    </div>
+                      Удалить
+                    </button>
                   </div>
                 </div>
 
@@ -240,6 +220,7 @@ export default {
         description: "",
         price: 0,
         images: [],
+        newImages: [], // Обязательно добавьте это
       },
       dragStartIndex: null,
     };
@@ -279,36 +260,35 @@ export default {
     setActiveSlide(index) {
       this.activeIndex = index;
     },
-    handleDragStart(index) {
-      this.dragStartIndex = index;
-    },
-    handleDrop(index) {
-      if (this.dragStartIndex === null || this.dragStartIndex === index) return;
+    handleDragStart(index, fromNewImages = false) {
+    this.dragStartIndex = index;
+    this.isFromNewImages = fromNewImages;
+  },
+ handleDrop(index) {
+  if (this.dragStartIndex === null || this.dragStartIndex === index) return;
 
-      // Создаем копию массива
-      const updatedImages = [...this.editProductData.images];
+  let updatedImages;
+  if (index < this.editProductData.images.length) {
+    updatedImages = [...this.editProductData.images];
+    const [draggedImage] = updatedImages.splice(this.dragStartIndex, 1);
+    updatedImages.splice(index, 0, draggedImage);
+    this.editProductData.images = updatedImages;
+  } else {
+    updatedImages = [...this.editProductData.newImages];
+    const [draggedImage] = updatedImages.splice(
+      this.dragStartIndex - this.editProductData.images.length,
+      1
+    );
+    updatedImages.splice(
+      index - this.editProductData.images.length,
+      0,
+      draggedImage
+    );
+    this.editProductData.newImages = updatedImages;
+  }
 
-      // Перемещаем изображение
-      const [draggedImage] = updatedImages.splice(this.dragStartIndex, 1);
-      updatedImages.splice(index, 0, draggedImage);
-
-      // Обновляем массив изображений
-      this.editProductData.images = updatedImages.map((image, idx) => ({
-        ...image,
-        order: idx + 1, // Обновляем порядок
-      }));
-
-      // Сброс индекса начального элемента
-      this.dragStartIndex = null;
-
-      // Вывод нового порядка и id изображений в консоль
-      console.log("Новый порядок изображений:");
-      this.editProductData.images.forEach((image, idx) => {
-        console.log(
-          `Index: ${idx + 1}, ID: ${image.id}, Order: ${image.order}`
-        );
-      });
-    },
+  this.dragStartIndex = null;
+},
     showEditProductModal() {
       console.log(this.product);
 
@@ -347,36 +327,45 @@ export default {
       }
     },
     removeImage(index) {
-      this.editProductData.images.splice(index, 1); // Удаление изображения по индексу
+      if (index < this.editProductData.images.length) {
+        // Удаление старого изображения
+        this.editProductData.images.splice(index, 1);
+      } else {
+        // Удаление нового изображения
+        this.editProductData.newImages.splice(
+          index - this.editProductData.images.length,
+          1
+        );
+      }
     },
     addImage(event) {
-  const files = Array.from(event.target.files); // Преобразуем FileList в массив
-  const newImages = [];
+      const files = Array.from(event.target.files); // Преобразуем FileList в массив
+      const newImages = [];
 
-  files.forEach((file) => {
-    const reader = new FileReader();
+      files.forEach((file) => {
+        const reader = new FileReader();
 
-    reader.onload = (e) => {
-      newImages.push({
-        preview: e.target.result, // Локальный URL для превью
-        file, // Сам файл для дальнейшего использования
+        reader.onload = (e) => {
+          const image = {
+            preview: e.target.result, // Локальный URL для превью
+            file, // Сам файл для дальнейшего использования
+          };
+          newImages.push(image);
+
+          // Обновляем массив новых изображений только после завершения чтения всех файлов
+          if (newImages.length === files.length) {
+            console.log("Новые изображения:", newImages); // Логирование для отладки
+            this.$set(this.editProductData, "newImages", [
+              ...(this.editProductData.newImages || []),
+              ...newImages,
+            ]);
+            console.log("Все изображения:", this.allImages); // Логирование для проверки
+          }
+        };
+
+        reader.readAsDataURL(file); // Начинаем чтение файла
       });
-
-      // Обновляем массив новых изображений только после завершения чтения всех файлов
-      if (newImages.length === files.length) {
-        this.editProductData.newImages = [
-          ...(this.editProductData.newImages || []),
-          ...newImages,
-        ];
-      }
-    };
-
-    reader.readAsDataURL(file); // Начинаем чтение файла
-  });
-},
-removeNewImage(index) {
-  this.editProductData.newImages.splice(index, 1); // Удаление нового изображения по индексу
-},
+    },
     // Метод для перехода на следующий слайд
     nextSlide() {
       if (this.activeIndex < this.product.images.length - 1) {
@@ -396,8 +385,17 @@ removeNewImage(index) {
   },
   computed: {
     allImages() {
-    // Объединяем старые и новые изображения в один массив
-    return [...this.editProductData.images, ...this.editProductData.newImages];
+    // Проверяем, что все изображения имеют свойство 'preview'
+    return [
+      ...(this.editProductData.images || []).map(image => ({
+        ...image,
+        preview: image.preview || `/shop/${image.url}`
+      })),
+      ...(this.editProductData.newImages || []).map(image => ({
+        ...image,
+        preview: image.preview || image.file ? URL.createObjectURL(image.file) : ''
+      })),
+    ];
   },
     isLoggedIn() {
       return this.$store.getters.isLoggedIn;

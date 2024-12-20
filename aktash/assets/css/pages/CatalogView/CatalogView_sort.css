@@ -8,16 +8,17 @@
 
 .sorting-option {
   cursor: pointer;
-  padding: 5px 10px;
+  transition: 0.3s;
+  /* padding: 5px 10px; */
   /* border: 1px solid #ccc; */
   /* border-radius: 5px; */
   /* transition: background-color 0.3s, color 0.3s; */
 }
 
 .sorting-option:hover {
-  background-color: red;
+  color: darkgray;
 }
 
 .sorting-option.active {
-  background-color: green;
+  color: #c32222;
 }
