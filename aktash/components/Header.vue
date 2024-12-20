@@ -3,24 +3,37 @@
     <nav class="nav-routes">
       <!-- Кнопка гамбургера для мобильных устройств -->
       <button class="menu-toggle" @click="toggleMenu" aria-label="Toggle menu">
-        <span class="menu-icon" :class="{ 'open': menuVisible }"></span>
+        <span class="menu-icon" :class="{ open: menuVisible }"></span>
       </button>
 
       <!-- Боковое меню -->
-      <div :class="{ 'side-menu': true, 'show': menuVisible }">
-        <button class="close-menu" @click="toggleMenu" aria-label="Close menu">X</button>
+      <div :class="{ 'side-menu': true, show: menuVisible }">
+        <button class="close-menu" @click="toggleMenu" aria-label="Close menu">
+          X
+        </button>
         <ul class="nav-list">
           <li>
-            <NuxtLink to="/" @click.native="closeMenu" class="link_header">Главная</NuxtLink>
+            <NuxtLink to="/" @click.native="closeMenu" class="link_header"
+              >Главная</NuxtLink
+            >
           </li>
           <li>
-            <NuxtLink to="/shop" @click.native="closeMenu" class="link_header">Каталог</NuxtLink>
+            <NuxtLink to="/shop" @click.native="closeMenu" class="link_header"
+              >Каталог</NuxtLink
+            >
           </li>
           <li>
-            <NuxtLink to="/galery" @click.native="closeMenu" class="link_header">Галерея</NuxtLink>
+            <NuxtLink to="/galery" @click.native="closeMenu" class="link_header"
+              >Галерея</NuxtLink
+            >
           </li>
           <li>
-            <NuxtLink to="/contact" @click.native="closeMenu" class="link_header">Контакты</NuxtLink>
+            <NuxtLink
+              to="/contact"
+              @click.native="closeMenu"
+              class="link_header"
+              >Контакты</NuxtLink
+            >
           </li>
         </ul>
       </div>
@@ -41,23 +54,25 @@
         </li>
       </ul>
     </nav>
-  
+
     <div class="search-container">
       <Search />
     </div>
-    <button v-if="isLoggedIn" @click="handleLogout" style="margin-left: 50px;">
+    <button v-if="isLoggedIn" @click="handleLogout" style="margin-left: 50px">
       <font-awesome-icon :icon="['fas', 'user-xmark']" />
     </button>
-    
-    <hr class="header_undeline">
+    <!-- <button style="margin-left: 50px"><font-awesome-icon :icon="['fas', 'user']" /></button> -->
+    <NuxtLink to="/login" @click.native="closeMenu"   style="margin-left: 20px; text-decoration: none; color:  #c32222;">
+      <font-awesome-icon :icon="['fas', 'user']" />
+  </NuxtLink>
+    <hr class="header_undeline" />
   </header>
-
 </template>
 
 <script>
-import Search from './search.vue';
+import Search from "./search.vue";
 export default {
-  name: 'Header',
+  name: "Header",
   components: { Search },
   data() {
     return {
@@ -89,6 +104,4 @@ export default {
 };
 </script>
 <style src="~/assets/css/components/header.css"></style>
-<style scoped>
-
-</style>
+<style scoped></style>

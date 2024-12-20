@@ -464,7 +464,8 @@ async function deleteProductFromDB(productId) {
     console.error("Ошибка при удалении продукта из базы данных:", err);
     return false; // В случае ошибки при удалении
   }
-}app.post("/api/products/delete", async (req, res) => {
+}
+app.post("/api/products/delete", async (req, res) => {
   const { productId, images } = req.body;
 
   try {
@@ -483,7 +484,9 @@ async function deleteProductFromDB(productId) {
           // Удаляем изображение из базы данных
           const dbResult = await deleteImageFromDB("product", product_id, url);
           if (!dbResult) {
-            console.warn(`Не удалось найти или удалить изображение с URL: ${url}`);
+            console.warn(
+              `Не удалось найти или удалить изображение с URL: ${url}`
+            );
           }
 
           // Удаляем файл изображения с диска
@@ -503,7 +506,9 @@ async function deleteProductFromDB(productId) {
         console.warn("Некоторые изображения не удалось обработать.");
       }
     } else {
-      console.log("Изображения отсутствуют, продолжаем удаление только продукта.");
+      console.log(
+        "Изображения отсутствуют, продолжаем удаление только продукта."
+      );
     }
 
     // Удаляем продукт из базы данных
@@ -518,11 +523,6 @@ async function deleteProductFromDB(productId) {
     res.status(500).json({ message: error.message || "Ошибка сервера" });
   }
 });
-
-
-
-
-
 
 app.delete("/api/files/delete", async (req, res) => {
   const { filePath, categoryId } = req.body; // Извлекаем путь к файлу и ID категории
@@ -595,7 +595,8 @@ app.get("/api/products", async (req, res) => {
         p.name,
         p.description,
         p.price,
-        JSON_AGG(JSON_BUILD_OBJECT('url', i.image_url, 'order', i.image_order) ORDER BY i.image_order) AS images
+        JSON_AGG(JSON_BUILD_OBJECT('id', i.image_id, 'url', i.image_url, 'order', i.image_order) ORDER BY i.image_order) AS images
+
       FROM 
         products p
       LEFT JOIN 

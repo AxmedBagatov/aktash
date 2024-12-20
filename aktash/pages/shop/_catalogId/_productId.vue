@@ -8,9 +8,9 @@
       <nuxt-link :to="`/`" class="breadcrumb">Главная / </nuxt-link>
       <nuxt-link :to="`/shop/`" class="breadcrumb">Каталог / </nuxt-link>
       <nuxt-link :to="`/shop/${catalogId}`" class="breadcrumb">
-        {{ categoryName }} / </nuxt-link
-      >
-      <p class="breadcrumb_last"> {{ product.name  }}</p>
+        {{ categoryName }} /
+      </nuxt-link>
+      <p class="breadcrumb_last">{{ product.name }}</p>
     </div>
 
     <div v-if="loading" class="loading">Загрузка...</div>
@@ -105,96 +105,110 @@
 
           <form @submit.prevent="updateProduct" class="product-edit-form">
             <div class="product-edit-form_flex">
-            <div class="product-edit-form__left">
-              <!-- Название продукта -->
-              <label for="product_name" class="product-edit-form__label"
-                >Название продукта:</label
-              >
-              <input
-                type="text"
-                id="product_name"
-                v-model="editProductData.name"
-                placeholder="Введите название продукта"
-                required
-                class="product-edit-form__input"
-              />
-
-              <!-- Описание продукта -->
-              <label for="product_description" class="product-edit-form__label"
-                >Описание продукта:</label
-              >
-              <textarea
-                id="product_description"
-                v-model="editProductData.description"
-                placeholder="Введите описание продукта"
-                required
-                class="product-edit-form__textarea"
-              ></textarea>
-
-              <!-- Цена продукта -->
-              <label for="product_price" class="product-edit-form__label"
-                >Цена продукта:</label
-              >
-              <input
-                type="number"
-                id="product_price"
-                v-model="editProductData.price"
-                placeholder="Введите цену"
-                required
-                class="product-edit-form__input"
-              />
-            </div>
-
-            <div class="product-edit-form__right">
-              <!-- Текущие изображения -->
-              <div
-                v-if="editProductData.images.length > 0"
-                class="product-edit-form__images"
-              >
-                <p class="product-edit-form__images-title">
-                  Текущие изображения:
-                </p>
-                <div class="product-edit-form__image-gallery">
-                  <div
-                    v-for="(image, index) in editProductData.images"
-                    :key="index"
-                    class="product-edit-form__image-item"
-                  >
-                    <img
-                      :src="`/shop/${image.url}`"
-                      alt="Preview"
-                      class="product-edit-form__preview-image"
-                    />
-                    <button
-                      type="button"
-                      @click="removeImage(index)"
-                      class="product-edit-form__remove-image"
-                    >
-                      Удалить изображение
-                    </button>
-                  </div>
-                </div>
-              </div>
-
-              <!-- Загрузка нового изображения -->
-              <div
-                v-if="editProductData.images.length < 5"
-                class="product-edit-form__file-upload"
-              >
-                <label for="product_image" class="product-edit-form__label"
-                  >Новое изображение:</label
+              <div class="product-edit-form__left">
+                <!-- Название продукта -->
+                <label for="product_name" class="product-edit-form__label"
+                  >Название продукта:</label
                 >
                 <input
-                  id="product_image"
-                  type="file"
-                  accept="image/*"
-                  @change="onFileChange"
-                  multiple
-                  class="product-edit-form__file-input"
+                  type="text"
+                  id="product_name"
+                  v-model="editProductData.name"
+                  placeholder="Введите название продукта"
+                  required
+                  class="product-edit-form__input"
+                />
+
+                <!-- Описание продукта -->
+                <label
+                  for="product_description"
+                  class="product-edit-form__label"
+                  >Описание продукта:</label
+                >
+                <textarea
+                  id="product_description"
+                  v-model="editProductData.description"
+                  placeholder="Введите описание продукта"
+                  required
+                  class="product-edit-form__textarea"
+                ></textarea>
+
+                <!-- Цена продукта -->
+                <label for="product_price" class="product-edit-form__label"
+                  >Цена продукта:</label
+                >
+                <input
+                  type="number"
+                  id="product_price"
+                  v-model="editProductData.price"
+                  placeholder="Введите цену"
+                  required
+                  class="product-edit-form__input"
                 />
               </div>
+
+              <div class="product-edit-form__right">
+                <!-- Текущие изображения -->
+                <div
+                  v-if="editProductData.images.length > 0"
+                  class="product-edit-form__images"
+                >
+                  <p class="product-edit-form__images-title">
+                    Текущие изображения:
+                  </p>
+                  <div
+                    class="product-edit-form__image-gallery"
+                    @dragover.prevent
+                    @drop.prevent
+                  >
+                    <div
+                      v-for="(image, index) in editProductData.images"
+                      :key="index"
+                      class="product-edit-form__image-item"
+                      draggable="true"
+                      @dragstart="handleDragStart(index)"
+                      @dragover.prevent
+                      @drop="handleDrop(index)"
+                    >
+                      <!-- Превью изображения -->
+                      <img
+                        :src="`/shop/${image.url}`"
+                        alt="Preview"
+                        class="product-edit-form__preview-image"
+                      />
+                      <!-- Индекс -->
+                      <p class="image-index">Индекс: {{ index + 1 }}</p>
+                      <!-- Кнопка удаления -->
+                      <button
+                        type="button"
+                        @click="removeImage(index)"
+                        class="product-edit-form__remove-image"
+                      >
+                        Удалить
+                      </button>
+                    </div>
+                  </div>
+                </div>
+
+                <!-- Загрузка нового изображения -->
+                <div
+                  v-if="editProductData.images.length < 15"
+                  class="product-edit-form__file-upload"
+                >
+                  <label for="product_image" class="product-edit-form__label"
+                    >Новое изображение:</label
+                  >
+                  <input
+                    id="product_image"
+                    type="file"
+                    accept="image/*"
+                    @change="addImage"
+                    multiple
+                    class="product-edit-form__file-input"
+                  />
+                </div>
+              </div>
             </div>
-          </div>
 
             <div class="product-edit-form__modal-actions">
               <button type="submit" class="product-edit-form__submit-btn">
@@ -227,6 +241,7 @@ export default {
         price: 0,
         images: [],
       },
+      dragStartIndex: null,
     };
   },
   async asyncData({ params, store }) {
@@ -264,7 +279,39 @@ export default {
     setActiveSlide(index) {
       this.activeIndex = index;
     },
+    handleDragStart(index) {
+      this.dragStartIndex = index;
+    },
+    handleDrop(index) {
+      if (this.dragStartIndex === null || this.dragStartIndex === index) return;
+
+      // Создаем копию массива
+      const updatedImages = [...this.editProductData.images];
+
+      // Перемещаем изображение
+      const [draggedImage] = updatedImages.splice(this.dragStartIndex, 1);
+      updatedImages.splice(index, 0, draggedImage);
+
+      // Обновляем массив изображений
+      this.editProductData.images = updatedImages.map((image, idx) => ({
+        ...image,
+        order: idx + 1, // Обновляем порядок
+      }));
+
+      // Сброс индекса начального элемента
+      this.dragStartIndex = null;
+
+      // Вывод нового порядка и id изображений в консоль
+      console.log("Новый порядок изображений:");
+      this.editProductData.images.forEach((image, idx) => {
+        console.log(
+          `Index: ${idx + 1}, ID: ${image.id}, Order: ${image.order}`
+        );
+      });
+    },
     showEditProductModal() {
+      console.log(this.product);
+
       this.editProductData = {
         name: this.product.name,
         description: this.product.description,
@@ -302,18 +349,34 @@ export default {
     removeImage(index) {
       this.editProductData.images.splice(index, 1); // Удаление изображения по индексу
     },
-    onFileChange(event) {
-      const files = event.target.files;
-      if (files.length > 0) {
-        // Обрабатываем каждый файл и добавляем в массив изображений
-        for (let file of files) {
-          this.editProductData.images.push({
-            url: URL.createObjectURL(file),
-            file: file, // Храним сам файл для отправки на сервер
-          });
-        }
+    addImage(event) {
+  const files = Array.from(event.target.files); // Преобразуем FileList в массив
+  const newImages = [];
+
+  files.forEach((file) => {
+    const reader = new FileReader();
+
+    reader.onload = (e) => {
+      newImages.push({
+        preview: e.target.result, // Локальный URL для превью
+        file, // Сам файл для дальнейшего использования
+      });
+
+      // Обновляем массив новых изображений только после завершения чтения всех файлов
+      if (newImages.length === files.length) {
+        this.editProductData.newImages = [
+          ...(this.editProductData.newImages || []),
+          ...newImages,
+        ];
       }
-    },
+    };
+
+    reader.readAsDataURL(file); // Начинаем чтение файла
+  });
+},
+removeNewImage(index) {
+  this.editProductData.newImages.splice(index, 1); // Удаление нового изображения по индексу
+},
     // Метод для перехода на следующий слайд
     nextSlide() {
       if (this.activeIndex < this.product.images.length - 1) {
@@ -332,6 +395,10 @@ export default {
     },
   },
   computed: {
+    allImages() {
+    // Объединяем старые и новые изображения в один массив
+    return [...this.editProductData.images, ...this.editProductData.newImages];
+  },
     isLoggedIn() {
       return this.$store.getters.isLoggedIn;
     },
@@ -360,10 +427,8 @@ export default {
 <style src="~/assets/css/components/breadcrumb.css"></style>
 
 <style scoped>
-
 /* Основной стиль формы */
 .product-edit-form {
-  
   flex-wrap: wrap;
   justify-content: space-between;
   gap: 20px;
@@ -371,7 +436,7 @@ export default {
   max-width: 1200px;
 }
 
-.product-edit-form_flex{
+.product-edit-form_flex {
   display: flex;
   flex-wrap: wrap;
   justify-content: space-between;
@@ -380,7 +445,8 @@ export default {
 /* Левая часть с полями ввода */
 .product-edit-form__left {
   flex: 1;
-  min-width: 300px;
+  min-width: 100px;
+  max-width: 30%;
 }
 
 .product-edit-form__label {
@@ -399,9 +465,9 @@ export default {
   font-size: 14px;
 }
 
-.product-edit-form__input[type="number"] {
-  -moz-appearance: textfield; /* Для Firefox, чтобы не было стрелок */
-}
+/* .product-edit-form__input[type="number"] {
+  -moz-appearance: textfield;
+} */
 
 .product-edit-form__textarea {
   min-height: 150px;
@@ -409,7 +475,7 @@ export default {
 
 /* Правая часть с изображениями */
 .product-edit-form__right {
-  flex: 0 0 320px;
+  width: 70%;
   min-width: 300px;
   background: #f9f9f9;
   padding: 20px;
@@ -424,7 +490,6 @@ export default {
 
 .product-edit-form__image-gallery {
   display: flex;
-  flex-direction: column;
   gap: 10px;
 }
 
@@ -470,7 +535,7 @@ export default {
 .product-edit-form__cancel-btn {
   padding: 10px 20px;
   border: none;
-  background-color: #4CAF50;
+  background-color: #4caf50;
   color: white;
   border-radius: 5px;
   cursor: pointer;
@@ -486,5 +551,18 @@ export default {
 
 .product-edit-form__cancel-btn:hover {
   background-color: #d32f2f;
+}
+
+.product-edit-form__image-item {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  margin: 10px;
+}
+
+.image-index {
+  margin-top: 5px;
+  font-size: 14px;
+  color: #666;
 }
 </style>
