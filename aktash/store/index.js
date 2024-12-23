@@ -309,42 +309,45 @@ export const actions = {
   // Переименование файла
   async updateProduct({ commit }, productData) {
     try {
-      // Формируем данные для отправки на сервер
       const formData = new FormData();
-      formData.append("productId", productData.productId)
+      formData.append("productId", productData.productId);
       formData.append("name", productData.name);
       formData.append("description", productData.description);
       formData.append("price", productData.price);
       formData.append("categoryId", productData.categoryId);
-      formData.append("images",productData.images)
-      
-      productData.images.forEach((image, index) => {
+  
+      // Добавляем новые изображения в formData
+      productData.images.forEach((image) => {
         if (image.isNew && !image.isDelete) {
-          formData.append(`newImages[${index}]`, image.file); 
+          formData.append('newImages', image.file);
+          formData.append('newImagesIndexes', image.index);
         }
         if (!image.isNew && image.isDelete) {
-          formData.append(`deletedImages[${index}]`, image.id); 
+          formData.append('deletedImages', image.id); // Добавляем ID удаляемого изображения
+        }
+        if (!image.isNew && !image.isDelete){
+          formData.append('currentImagesIds', image.id);
+          formData.append('currentImagesIndexes', image.index);
+          formData.append('currentImagesUrls', image.url);
+        };
+      });
+  
+      // Отправляем запрос с использованием axios
+      const response = await this.$axios.$patch(`/products/${productData.productId}`, formData, {
+        headers: {
+          'Content-Type': 'multipart/form-data',
         }
       });
-
-     
-      const response = await fetch(`${BASE_URL}/api/products/${productData.id}`, {
-        method: "PATCH", // или PUT в зависимости от логики
-        body: formData,
-      });
-
-      if (response.ok) {
-        const updatedProduct = await response.json();
-
-        // Обновляем продукт в состоянии
-        commit("setSelectedProduct", updatedProduct);
-
+  
+      // Теперь сразу работаем с response, это уже разобранный объект
+      if (response.message) {
+        commit("setSelectedProduct", response);
         console.log("Продукт успешно обновлен");
-        return updatedProduct;
+        return response; // Возвращаем обновленные данные продукта
       } else {
-        const error = await response.json();
-        commit("setErrorMessage", error.message || "Ошибка при обновлении продукта");
-        throw new Error(error.message || "Ошибка при обновлении продукта");
+        const errorMessage = response.message || "Ошибка при обновлении продукта";
+        commit("setErrorMessage", errorMessage);
+        throw new Error(errorMessage);
       }
     } catch (error) {
       console.error("Ошибка при обновлении продукта:", error);

@@ -549,7 +549,8 @@ export default {
 
 .product-list {
   margin: 0 auto;
-  width: 80%;
+  /* width: 80%; */
+  width: 100%;
   overflow: hidden;
   margin-top: 20px;
   margin-bottom: 20px;
@@ -562,14 +563,14 @@ export default {
   align-content: space-around;
   align-items: center;
   /* gap: calc( (80% - 600px * 3 ) / 3); */
-  grid-template-columns: repeat(auto-fit, minmax(600px, 30px));
+  grid-template-columns: repeat(auto-fit, minmax(550px, 30px));
   grid-template-rows: auto;
   gap: 30px;
 }
 
 .product-list-less-than-two {
   margin: 0 auto;
-  width: 80%;
+  width: 100%;
   overflow: hidden;
   margin-top: 20px;
   margin-bottom: 20px;
@@ -584,7 +585,7 @@ export default {
   /* gap: calc( (80% - 600px * 3 ) / 3); */
   grid-template-columns: repeat(auto-fit, minmax(600px, 30px));
   grid-template-rows: auto;
-  gap: 30px;
+  gap: 60px;
 }
 
 /* .product-list {

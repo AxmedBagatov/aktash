@@ -36,26 +36,12 @@ app.use(
   })
 );
 
-// const multer = require("multer");
+// ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+
 const router = express.Router();
-// const storage = multer.diskStorage({
-//   destination: (req, file, cb) => {
-//     cb(null, "images/");
-//   },
-//   filename: (req, file, cb) => {
-//     const uniqueName = Date.now() + path.extname(file.originalname);
-//     const finalFileName =
-//       uniqueName.replace(path.extname(file.originalname), "") +
-//       "_" +
-//       file.originalname;
-//     cb(null, finalFileName);
-//   },
-// });
-// const upload = multer({ storage: storage });
-
 const multer = require("multer");
+const { log } = require("console");
 
-// Настроим storage для Multer с сохранением расширений
 const storage = multer.diskStorage({
   destination: (req, file, cb) => {
     const targetPath = req.body.path || "uploads/"; // Путь для сохранения файлов
@@ -69,12 +55,217 @@ const storage = multer.diskStorage({
 
 const upload = multer({ storage: storage });
 
-// Маршрут для обработки файлов
+
+
+app.patch("/api/products/:id", upload.array("newImages"), async (req, res) => {
+  try {
+    const { name, description, price, categoryId } = req.body;
+    const productId = req.params.id;
+    let images = req.files; 
+    const newImagesIndexes =  req.body.newImagesIndexes;
+    const deletedImages = req.body.deletedImages || []; // Массив удаляемых изображений
+    let currentImagesIds = req.body.currentImagesIds || [];
+    const currentImagesIndexes = req.body.currentImagesIndexes || [];
+    const currentImagesUrls = req.body.currentImagesUrls || [];
+
+
+    if (!Array.isArray(images)) {
+      images = [images];
+      console.log("Одиночное изображение преобразовано в массив:", images);
+    }
+    
+    // Объединение файлов и их индексов в массив
+    const parsedNewImages = images.map((file, index) => ({
+      file: images,
+      index: newImagesIndexes[index] || index, // Используем индекс из newImagesIndexes или позицию по умолчанию
+    }));
+    console.log(newImagesIndexes);
+    
+    console.log("Новые изображения с индексами:", parsedNewImages);
+    
+
+    console.log("Текущие ID изображений:", currentImagesIds);
+
+    if (!Array.isArray(currentImagesIds)) {
+      try {
+        // Если это строка, попробуем распарсить как JSON
+        currentImagesIds = JSON.parse(currentImagesIds);
+        console.log("Текущие ID изображений после парсинга:", currentImagesIds);
+    
+        // Если после парсинга это не массив, оборачиваем в массив
+        if (!Array.isArray(currentImagesIds)) {
+          currentImagesIds = [currentImagesIds];
+          console.log("Текущие ID изображений преобразованы в массив:", currentImagesIds);
+        }
+      } catch (error) {
+        console.error("Ошибка при парсинге currentImagesIds:", error);
+    
+        // Если значение одиночное и не поддаётся парсингу, оборачиваем его в массив
+        currentImagesIds = [currentImagesIds];
+        console.log("Текущие ID изображений преобразованы в массив без парсинга:", currentImagesIds);
+      }
+    }
+
+    // Теперь безопасно используем map
+    const parsedImages = currentImagesIds.map((id, index) => ({
+      id,
+      index: currentImagesIndexes[index],
+      url: currentImagesUrls[index],
+    }));
+
+
+    console.log("ID продукта:", productId);
+    console.log("Название:", name);
+    console.log("Описание:", description);
+    console.log("Цена:", price);
+    console.log("ID категории:", categoryId);
+    console.log("Текущие изображения", parsedImages);
+  
+
+    console.log("Полученные изображения:", images);
+    console.log("Изображения для удаления:", deletedImages);
+
+    // const targetPath = '/static/shop/Article/';
+    // await mkdirp(targetPath);
+    // const imageUrls = [];
+
+    // // 1. Перемещение новых изображений в целевую папку и добавление в БД
+    // if (images.length > 0) {
+    //   try {
+    //     for (const file of images) {
+    //       const newFilePath = path.join(targetPath, file.originalname);
+    //       await fs.promises.rename(file.path, newFilePath);
+    //       console.log(`Файл успешно перемещен в ${newFilePath}`);
+
+    //       // Добавление пути нового изображения
+    //       imageUrls.push({ url: newFilePath });
+
+    //       // Добавление записи в таблицу изображений
+    //       const imageUrlWithoutStatic = newFilePath.replace(/^static\/shop\//, "");
+    //       const imageOrder = imageUrls.length; // Порядковый номер изображения
+
+    //       const imageInsertQuery = `
+    //         INSERT INTO images (entity_type, entity_id, image_url, image_order)
+    //         VALUES ('product', $1, $2, $3);
+    //       `;
+    //       const imageValues = [productId, imageUrlWithoutStatic, imageOrder];
+
+    //       await queryDB(imageInsertQuery, imageValues);
+    //       console.log(`Изображение добавлено: ${imageUrlWithoutStatic} с порядковым номером ${imageOrder}`);
+    //     }
+    //   } catch (error) {
+    //     console.error("Ошибка при обработке новых изображений:", error);
+    //     return res.status(500).json({ message: "Ошибка при добавлении новых изображений." });
+    //   }
+    // }
+
+    // // 2. Удаление старых изображений
+    // if (Array.isArray(deletedImages) && deletedImages.length > 0) {
+    //   try {
+    //     const deleteResults = await Promise.all(
+    //       deletedImages.map(async (image) => {
+    //         const { url, product_id } = image;
+
+    //         if (!url) {
+    //           console.warn(`Пропущено изображение с некорректным URL: ${url}`);
+    //           return true; // Пропускаем ошибочные URL
+    //         }
+
+    //         // Удаление изображения из базы данных
+    //         const dbResult = await deleteImageFromDB("product", product_id, url);
+    //         if (!dbResult) {
+    //           console.warn(`Не удалось найти или удалить изображение с URL: ${url}`);
+    //           return false;
+    //         }
+
+    //         // Удаление файла с диска
+    //         const filePath = path.join("static/shop/", url);
+    //         const fileDeleted = await deleteFileFromDisk(filePath);
+    //         if (!fileDeleted) {
+    //           console.warn(`Файл ${filePath} не был удален.`);
+    //           return false;
+    //         }
+
+    //         return true; // Успешное удаление
+    //       })
+    //     );
+
+    //     if (deleteResults.some(result => result === false)) {
+    //       console.warn("Некоторые изображения не удалось удалить.");
+    //       return res.status(500).json({ message: "Некоторые изображения не удалось удалить." });
+    //     }
+    //   } catch (error) {
+    //     console.error("Ошибка при удалении изображений:", error);
+    //     return res.status(500).json({ message: "Ошибка при удалении изображений." });
+    //   }
+    // }
+
+    // // 3. Обновление информации о продукте в базе данных
+    // if (parsedImages.length > 0) {
+    //   try {
+    //     for (const image of parsedImages) {
+    //       const { id, index, url } = image;
+    
+    //       // Получение текущего порядка и URL из базы данных
+    //       const getOrderQuery = `
+    //         SELECT image_order, image_url
+    //         FROM images
+    //         WHERE image_id = $1;
+    //       `;
+    //       const currentOrderResult = await queryDB(getOrderQuery, [id]);
+    
+    //       if (currentOrderResult.length > 0) {
+    //         const { image_order: currentOrder, image_url: currentUrl } = currentOrderResult[0];
+    
+    //         if (currentUrl === url) { // Проверка, что URL совпадают
+    //           if (currentOrder !== index) { // Проверка, что порядок отличается
+    //             console.log(`Несоответствие порядка для изображения ${id}. Текущий: ${currentOrder}, Новый: ${index}`);
+    
+    //             // Обновление порядка
+    //             const updateOrderQuery = `
+    //               UPDATE images
+    //               SET image_order = $1
+    //               WHERE image_id = $2;
+    //             `;
+    //             await queryDB(updateOrderQuery, [index, id]);
+    //             console.log(`Порядок изображения ${id} обновлен на ${index}`);
+    //           }
+    //         } else {
+    //           console.warn(`URL изображения с ID ${id} не совпадает. Ожидалось: ${url}, Получено: ${currentUrl}`);
+    //         }
+    //       } else {
+    //         console.warn(`Изображение с ID ${id} не найдено в базе данных.`);
+    //       }
+    //     }
+    //   } catch (error) {
+    //     console.error("Ошибка при проверке и обновлении порядка изображений:", error);
+    //     return res.status(500).json({ message: "Ошибка при обновлении порядка изображений." });
+    //   }
+    // }
+
+    // 4. Возвращаем успешный ответ
+    res.status(200).json({
+      message: "Продукт обновлен",
+      // productId,
+      // name,
+      // description,
+      // price,
+      // categoryId,
+      // images: imageUrls,
+      // deletedImages
+    });
+  } catch (error) {
+    console.error("Ошибка при обновлении продукта:", error);
+    res.status(500).json({ message: "Ошибка при обновлении продукта" });
+  }
+});
+
+// ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+
 app.post("/api/upload-images", upload.array("images[]"), async (req, res) => {
   const uploadedFiles = req.files;
   const indexes = req.body.indexes; // Извлекаем индексы из FormData
   const targetPath = req.body.path; // Извлекаем путь из FormData
-
   console.log("Путь:", targetPath); // Логируем путь для отладки
 
   if (!targetPath) {
@@ -157,6 +348,8 @@ router.post("/api/files/uploadFile", upload.single("file"), (req, res) => {
     res.status(500).json({ message: "Ошибка сервера" });
   }
 });
+
+// ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 
 // ======== Регистрация ========
 app.post("/register", async (req, res) => {
@@ -813,6 +1006,7 @@ app.get("/api/gallery-images", async (req, res) => {
     res.status(500).json({ error: "Internal server error" });
   }
 });
+
 app.post("/api/create-products", async (req, res) => {
   const productData = req.body;
 
@@ -906,36 +1100,6 @@ app.post("/api/create-products", async (req, res) => {
     res.status(500).json({ error: "Произошла ошибка при создании продукта." });
   }
 });
-
-
-const storage_test = multer.memoryStorage(); // Файлы сохраняются в памяти (можно изменить на диск, если нужно)
-const upload_test = multer({ storage: storage_test });
-
-
-app.patch('/api/products/:id', upload_test.array('newImages'), (req, res) => {
-  try {
-    const { name, description, price, categoryId } = req.body;
-    const productId = req.params.id;
-    const images = req.files; // Это массив загруженных файлов
-    const deletedImages = req.body.deletedImages || []; // Изображения для удаления (если есть)
-
-    // Выводим полученные данные в консоль
-    console.log('ID продукта:', productId);
-    console.log('Название:', name);
-    console.log('Описание:', description);
-    console.log('Цена:', price);
-    console.log('ID категории:', categoryId);
-    console.log('Полученные изображения:', images);
-    console.log('Изображения для удаления:', deletedImages);
-
-    // Можно вернуть ответ, что данные успешно получены
-    res.status(200).json({ message: 'Продукт обновлен', productId, name, description, price, categoryId, images, deletedImages });
-  } catch (error) {
-    console.error('Ошибка при обновлении продукта:', error);
-    res.status(500).json({ message: 'Ошибка при обновлении продукта' });
-  }
-});
-
 
 app.listen(port, () => {
   console.log(`Server running on http://localhost:${port}`);

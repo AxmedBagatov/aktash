@@ -1,5 +1,6 @@
 <template>
     <footer class="main-footer">
+      <div class="footer-underline"></div>
       <div class="footer-container">
         <div class="footer-section">
           <h4>О нас</h4>
@@ -36,10 +37,14 @@
   padding: 20px;                /* Внутренние отступы для контента */
 }
 
+.footer-underline {
+  background-color: lightgray;
+  height: 1px;
+}
+
 /* Футер */
 footer.main-footer {
-  background-color: brown;     /* Цвет фона */
-  color: white;                /* Цвет текста */
+  color: black;                /* Цвет текста */
   padding-top: var(--footer-padding);              /* Внутренние отступы сверху и снизу */
   padding-bottom: var(--footer-padding);              /* Внутренние отступы сверху и снизу */
   width: 100%;                  /* Полная ширина */
@@ -76,14 +81,13 @@ footer.main-footer {
 }
 
 .footer-section ul li a {
-  color: white;                 /* Цвет ссылок */
+  color: black;
   text-decoration: none;        /* Убираем подчеркивание */
-  transition: color 0.3s ease;  /* Анимация наводки */
+  transition: 0.1s;  /* Анимация наводки */
 }
 
 .footer-section ul li a:hover {
-  color: lightgray;             /* Изменение цвета при наведении */
-  text-decoration: underline;   /* Подчеркивание при наведении */
+  color: #c32222;             /* Изменение цвета при наведении */
 }
 
 @media (max-width: 768px) {

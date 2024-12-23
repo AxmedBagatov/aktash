@@ -1,5 +1,5 @@
 <template>
-  <div>
+  <div class="catalog-details">
     <div v-if="isLoggedIn" class="admin-controls">
       <button @click="showAddCategoryForm">Add Category</button>
     </div>

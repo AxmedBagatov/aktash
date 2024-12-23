@@ -1,23 +1,91 @@
 .product-details {
-
-    font-family: Arial, sans-serif;
-    margin-inline: 10%;
+    margin-inline: 15%;
 }
 
 
-.product_main_text {
+.product-main-text {
+    font-weight: 400;
     margin-bottom: 20px;
-    font-size: 28px;
+    font-size: 45px;
     color: #333;
+}
+
+.product-price {
+    font-weight: 100;
+    font-size: 35px;
+}
+
+.product-button-to-cart-wrapper {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin-top: 10px;
+    margin-bottom: 10px;
+}
+
+.product-button-to-cart {
+    width: 100%;
+    background-color: black;
+    color: white;
+    padding: 10px;
+    transition: 0.3s;
+    vertical-align: text-top;
+}
+
+.product-button-to-cart:hover {
+    background-color: #c32222;
+    /* color: gold; */
+}
+
+.one-click-button-wrapper {
+    margin-top: 10px;
+    margin-bottom: 10px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+.one-click-button-underline {
+    transition: 0.2s;
+    width: 100%;
+    height: 1px;
+    background-color: #c32222;
+}
+
+.product-article-number-wrapper {
+    font-size: 18px;
+    display: flex;
+    flex-direction: row;
+    align-items: baseline;
+    justify-content: space-between;
+}
+
+.product-article-number {
+    /* background-color: black;
+    color: gold; */
+}
+
+.product-article-number-info {
+    font-size: 15px;
+    color: gray;
+}
+
+.one-click-button {
+    transition: 0.5s;
+}
+
+.one-click-button:hover .one-click-button-underline {
+    opacity: 0;
 }
 
 .loading,
 .error {
     font-size: 18px;
-    color: #ff0000;
+    color: #c32222;
 }
 
 .product-info {
+    margin-top: 40px;
     gap: 20px;
     display: flex;
 }
@@ -30,7 +98,15 @@
 }
 
 .product-description {
-    max-width: 600px;
+    flex: 1;
+}
+
+.product-description-underline {
+    margin-top: 20px;
+    margin-bottom: 20px;
+    width: 100%;
+    height: 1px;
+    background-color: black;
 }
 
 .product-description p {
@@ -43,16 +119,13 @@
     font-weight: bold;
 }
 
-.product-price {
-    font-size: 20px;
-    color: #000;
-    font-weight: bold;
-}
 
 
-.product-slider {
-    min-width: 800px;
-    width: auto;
+.product-slider .carousel{
+    /* min-width: 1000px; */
+    aspect-ratio: 16 / 9;
+    width: 1000px;
+    height: auto;
     padding-left: 0;
     position: relative;
 }

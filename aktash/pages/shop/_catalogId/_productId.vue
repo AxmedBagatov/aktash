@@ -1,86 +1,83 @@
 <template>
   <div class="product-details">
     <div>
-      <button @click="showEditProductModal">Редактировать продукт</button>
+      <button v-if="isLoggedIn" @click="showEditProductModal">Редактировать продукт</button>
     </div>
-
     <div>
-      <nuxt-link :to="`/`" class="breadcrumb">Главная / </nuxt-link>
-      <nuxt-link :to="`/shop/`" class="breadcrumb">Каталог / </nuxt-link>
-      <nuxt-link :to="`/shop/${catalogId}`" class="breadcrumb">
-        {{ categoryName }} /
-      </nuxt-link>
-      <p class="breadcrumb_last">{{ product.name }}</p>
+      <div class="breadcrumbs">
+        <nuxt-link :to="`/`" class="breadcrumb">Главная</nuxt-link>
+        <div>/</div>
+        <nuxt-link :to="`/shop/`" class="breadcrumb">Каталог</nuxt-link>
+        <div>/</div>
+        <nuxt-link :to="`/shop/${catalogId}`" class="breadcrumb">{{ categoryName }}</nuxt-link>
+        <div>/</div>
+        <p class="breadcrumb_last">{{ product.name }}</p>
+      </div>
     </div>
 
     <div v-if="loading" class="loading">Загрузка...</div>
     <div v-else-if="errorMessage" class="error">{{ errorMessage }}</div>
     <div v-else>
       <div class="product-info">
-        <div
-          v-if="product.images && product.images.length"
-          class="product-slider"
-        >
+        <div v-if="product.images && product.images.length" class="product-slider">
           <!-- Основной карусель -->
           <div class="carousel">
             <div class="carousel-inner">
-              <div
-                v-for="(image, index) in product.images"
-                :key="index"
-                :class="['item', index === activeIndex ? 'active' : '']"
-              >
-                <img
-                  :src="`/shop/${image.url}`"
-                  :alt="`Image of ${product.name} - ${index + 1}`"
-                />
+              <div v-for="(image, index) in product.images" :key="index"
+                :class="['item', index === activeIndex ? 'active' : '']">
+                <img :src="`/shop/${image.url}`" :alt="`Image of ${product.name} - ${index + 1}`" />
               </div>
             </div>
 
             <!-- Контролы для переключения слайдов -->
             <button class="prev" @click="prevSlide">
-              <font-awesome-icon
-                :icon="['fas', 'arrow-left']"
-                style="font-size: 30px"
-              />
+              <font-awesome-icon :icon="['fas', 'arrow-left']" style="font-size: 30px" />
             </button>
             <button class="next" @click="nextSlide">
-              <font-awesome-icon
-                :icon="['fas', 'arrow-right']"
-                style="font-size: 30px"
-              />
+              <font-awesome-icon :icon="['fas', 'arrow-right']" style="font-size: 30px" />
             </button>
           </div>
 
           <!-- Карусель с миниатюрами -->
           <div class="thumbcarousel">
             <div class="carousel-inner">
-              <div
-                class="thumb"
-                v-for="(image, index) in product.images"
-                :key="index"
-                @click="setActiveSlide(index)"
-                :class="{ active: index === activeIndex }"
-              >
-                <img
-                  :src="`/shop/${image.url}`"
-                  :alt="`Thumbnail for ${product.name} - ${index + 1}`"
-                />
+              <div class="thumb" v-for="(image, index) in product.images" :key="index" @click="setActiveSlide(index)"
+                :class="{ active: index === activeIndex }">
+                <img :src="`/shop/${image.url}`" :alt="`Thumbnail for ${product.name} - ${index + 1}`" />
               </div>
             </div>
           </div>
         </div>
 
         <div class="product-description">
-          <div class="product_main_text_div">
+          <div class="product-main-text-div">
             <!-- <h1 class="product_main_text">
               {{ categoryName }}
             </h1> -->
-            <h1 class="product_main_text">
+            <h1 class="product-main-text">
               {{ product.name }}
             </h1>
+
           </div>
-          <p><strong>Описание:</strong> {{ product.description }}</p>
-          <p><strong>Цена:</strong> {{ product.price }} ₽</p>
+          <div class="product-price">
+            {{ fancyPrice(product.price) }} ₽
+          </div>
+          <div class="product-description-underline"></div>
+          <div class="product-article-number-wrapper">
+            <div class="product-article-number-info">Артикул товара:</div>
+            <div class="product-article-number"> {{ productId }} </div>
+          </div>
+          <div class="product-button-to-cart-wrapper">
+            <button class="product-button-to-cart">В корзину</button>
+          </div>
+          <div class="one-click-button-wrapper">
+            <button class="one-click-button">Купить товар в 1 клик
+              <div class="one-click-button-underline"></div>
+            </button>
+
+          </div>
+
+          <p> {{ product.description }}</p>
         </div>
       </div>
     </div>
@@ -94,72 +91,33 @@
             <div class="product-edit-form_flex">
               <div class="product-edit-form__left">
                 <!-- Название продукта -->
-                <label for="product_name" class="product-edit-form__label"
-                  >Название продукта:</label
-                >
-                <input
-                  type="text"
-                  id="product_name"
-                  v-model="editProductData.name"
-                  placeholder="Введите название продукта"
-                  required
-                  class="product-edit-form__input"
-                />
+                <label for="product_name" class="product-edit-form__label">Название продукта:</label>
+                <input type="text" id="product_name" v-model="editProductData.name"
+                  placeholder="Введите название продукта" required class="product-edit-form__input" />
 
                 <!-- Описание продукта -->
-                <label
-                  for="product_description"
-                  class="product-edit-form__label"
-                  >Описание продукта:</label
-                >
-                <textarea
-                  id="product_description"
-                  v-model="editProductData.description"
-                  placeholder="Введите описание продукта"
-                  required
-                  class="product-edit-form__textarea"
-                ></textarea>
+                <label for="product_description" class="product-edit-form__label">Описание продукта:</label>
+                <textarea id="product_description" v-model="editProductData.description"
+                  placeholder="Введите описание продукта" required class="product-edit-form__textarea"></textarea>
 
                 <!-- Цена продукта -->
-                <label for="product_price" class="product-edit-form__label"
-                  >Цена продукта:</label
-                >
-                <input
-                  type="number"
-                  id="product_price"
-                  v-model="editProductData.price"
-                  placeholder="Введите цену"
-                  required
-                  class="product-edit-form__input"
-                />
+                <label for="product_price" class="product-edit-form__label">Цена продукта:</label>
+                <input type="number" id="product_price" v-model="editProductData.price" placeholder="Введите цену"
+                  required class="product-edit-form__input" />
               </div>
 
               <div class="product-edit-form__right">
                 <!-- Текущие изображения -->
                 <div v-if="images.length > 0" class="product-edit-form__images">
                   <p class="product-edit-form__images-title">Изображения:</p>
-                  <vuedraggable
-                    v-model="images"
-                    group="images"
-                    class="product-edit-form__image-gallery"
-                    @end="handleDrop"
-                  >
-                    <div
-                      v-for="(image, index) in visibleImages"
-                      :key="`image-${index}`"
-                      class="product-edit-form__image-item"
-                    >
-                      <img
-                        :src="image.preview || `/shop/${image.url}`"
-                        alt="Preview"
-                        class="product-edit-form__preview-image"
-                      />
+                  <vuedraggable v-model="images" group="images" class="product-edit-form__image-gallery"
+                    @end="handleDrop">
+                    <div v-for="(image, index) in visibleImages" :key="`image-${index}`"
+                      class="product-edit-form__image-item">
+                      <img :src="image.preview || `/shop/${image.url}`" alt="Preview"
+                        class="product-edit-form__preview-image" />
                       <p class="image-index">Индекс: {{ index + 1 }}</p>
-                      <button
-                        type="button"
-                        @click="removeImage(index)"
-                        class="product-edit-form__remove-image"
-                      >
+                      <button type="button" @click="removeImage(index)" class="product-edit-form__remove-image">
                         Удалить
                       </button>
                     </div>
@@ -167,21 +125,10 @@
                 </div>
 
                 <!-- Загрузка нового изображения -->
-                <div
-                  v-if="editProductData.images.length < 15"
-                  class="product-edit-form__file-upload"
-                >
-                  <label for="product_image" class="product-edit-form__label"
-                    >Новое изображение:</label
-                  >
-                  <input
-                    id="product_image"
-                    type="file"
-                    accept="image/*"
-                    @change="addImage"
-                    multiple
-                    class="product-edit-form__file-input"
-                  />
+                <div v-if="editProductData.images.length < 15" class="product-edit-form__file-upload">
+                  <label for="product_image" class="product-edit-form__label">Новое изображение:</label>
+                  <input id="product_image" type="file" accept="image/*" @change="addImage" multiple
+                    class="product-edit-form__file-input" />
                 </div>
               </div>
             </div>
@@ -190,11 +137,7 @@
               <button type="submit" class="product-edit-form__submit-btn">
                 Сохранить изменения
               </button>
-              <button
-                type="button"
-                @click="cancelEditProduct"
-                class="product-edit-form__cancel-btn"
-              >
+              <button type="button" @click="cancelEditProduct" class="product-edit-form__cancel-btn">
                 Отмена
               </button>
             </div>
@@ -217,12 +160,15 @@ export default {
     return {
       images: [],
       editProductData: {
+        catalogId: "",
+        productId: "",
         name: "",
         description: "",
         price: 0,
         images: [],
       },
       dragStartIndex: null,
+      productId: "",
     };
   },
   async asyncData({ params, store }) {
@@ -243,6 +189,7 @@ export default {
       return {
         activeIndex: 0,
         catalogId,
+        productId,
         product,
         editProduct: false,
       };
@@ -250,6 +197,7 @@ export default {
       console.error("Ошибка при загрузке данных:", error);
       return {
         catalogId,
+        productId,
         product: null,
         errorMessage: "Не удалось загрузить данные. Попробуйте позже.",
       };
@@ -294,7 +242,7 @@ export default {
         price: this.product.price,
         images: this.images,
       };
-
+      this.updateImageIndexes()
       this.editProduct = true;
     },
     cancelEditProduct() {
@@ -302,6 +250,10 @@ export default {
     },
     closeEditProductModal() {
       this.editProduct = false;
+    },
+    fancyPrice(price) {
+      return Math.round(price).toString().replace(/\B(?=(\d{3})+(?!\d))/g, " ");
+      // return Math.round(price);
     },
     addImage(event) {
       const files = Array.from(event.target.files);
@@ -356,11 +308,13 @@ export default {
     },
     async updateProduct() {
       this.editProductData.images.forEach(image => {
-      if (image.isNew) {
-        image.preview = null; 
-      }
-    });
-      console.log("Отправляемые данные",this.editProductData)
+        if (image.isNew) {
+          image.preview = null;
+        }
+      });
+      this.editProductData.productId = this.productId;
+      this.editProductData.catalogId = this.catalogId;
+      console.log("Отправляемые данные", this.editProductData)
 
       try {
         const updatedProduct = await this.$store.dispatch("updateProduct", this.editProductData);

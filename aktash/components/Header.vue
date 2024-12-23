@@ -56,8 +56,8 @@
     </NuxtLink>
     <hr class="header_undeline" />
     <div class="header-catalog-items">
-      <div v-for="catalog in catalogs" :key="catalog.category_id" class="catalog-item">
-        <nuxt-link :to="`/shop/${catalog.category_id}`" class="catalog-link"></nuxt-link>
+      <div v-for="catalog in catalogs" :key="catalog.category_id" class="header-catalog-item">
+        <nuxt-link :to="`/shop/${catalog.category_id}`" class="header-catalog-link"> {{ catalog.name }} </nuxt-link>
       </div>
     </div>
   </header>
@@ -79,7 +79,7 @@ export default {
     },
     catalogs() {
       return this.$store.getters.getCategories;
-    }
+    },
   },
   methods: {
     toggleMenu() {
@@ -94,7 +94,6 @@ export default {
     },
     closeMenu() {
       console.log("закрыто");
-
       this.menuVisible = false;
     },
   },
