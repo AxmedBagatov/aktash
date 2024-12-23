@@ -256,29 +256,34 @@ export default {
       // return Math.round(price);
     },
     addImage(event) {
-      const files = Array.from(event.target.files);
-      const newImages = [];
+  const files = Array.from(event.target.files);
+  const newImages = [];
 
-      files.forEach((file) => {
-        const reader = new FileReader();
-        reader.onload = (e) => {
-          newImages.push({
-            id: null,
-            preview: e.target.result,
-            url: "",
-            file,
-            isNew: true,
-            isDelete: false,
-          });
+  files.forEach((file, index) => {
+    const reader = new FileReader();
+    reader.onload = (e) => {
+      const newImage = {
+        id: null,
+        preview: e.target.result,
+        url: "",
+        file,
+        isNew: true,
+        isDelete: false,
+        index: this.images.length + index + 1, // Присваиваем индекс новому изображению
+      };
 
-          if (newImages.length === files.length) {
-            this.images = [...this.images, ...newImages];
-            this.editProductData.images = [...this.images];
-          }
-        };
-        reader.readAsDataURL(file);
-      });
-    },
+      newImages.push(newImage);
+
+      if (newImages.length === files.length) {
+        // Обновляем массив изображений, включая новые с индексами
+        this.images = [...this.images, ...newImages];
+        this.editProductData.images = [...this.images];
+        this.updateImageIndexes();  // Обновление индексов в editProductData
+      }
+    };
+    reader.readAsDataURL(file);
+  });
+},
     removeImage(index) {
       const visibleImage = this.visibleImages[index];
       const realIndex = this.images.findIndex(

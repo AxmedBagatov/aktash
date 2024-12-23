@@ -55,34 +55,33 @@ const storage = multer.diskStorage({
 
 const upload = multer({ storage: storage });
 
-
-
 app.patch("/api/products/:id", upload.array("newImages"), async (req, res) => {
   try {
-    const { name, description, price, categoryId } = req.body;
+    const { name, description, price } = req.body;
+    const categoryId = req.body.categoryId;
     const productId = req.params.id;
-    let images = req.files; 
-    const newImagesIndexes =  req.body.newImagesIndexes;
-    const deletedImages = req.body.deletedImages || []; // Массив удаляемых изображений
+    let images = req.files;
+    const newImagesIndexes = req.body.newImagesIndexes;
+    let deletedImages = req.body.deletedImages || [];
+    let deletedcurrentImagesUrls = req.body.deletedcurrentImagesUrls;
     let currentImagesIds = req.body.currentImagesIds || [];
     const currentImagesIndexes = req.body.currentImagesIndexes || [];
     const currentImagesUrls = req.body.currentImagesUrls || [];
-
 
     if (!Array.isArray(images)) {
       images = [images];
       console.log("Одиночное изображение преобразовано в массив:", images);
     }
-    
+
     // Объединение файлов и их индексов в массив
     const parsedNewImages = images.map((file, index) => ({
-      file: images,
+      file: file,
+      filename: file.originalname, // Имя файла
       index: newImagesIndexes[index] || index, // Используем индекс из newImagesIndexes или позицию по умолчанию
     }));
     console.log(newImagesIndexes);
-    
+
     console.log("Новые изображения с индексами:", parsedNewImages);
-    
 
     console.log("Текущие ID изображений:", currentImagesIds);
 
@@ -91,18 +90,24 @@ app.patch("/api/products/:id", upload.array("newImages"), async (req, res) => {
         // Если это строка, попробуем распарсить как JSON
         currentImagesIds = JSON.parse(currentImagesIds);
         console.log("Текущие ID изображений после парсинга:", currentImagesIds);
-    
+
         // Если после парсинга это не массив, оборачиваем в массив
         if (!Array.isArray(currentImagesIds)) {
           currentImagesIds = [currentImagesIds];
-          console.log("Текущие ID изображений преобразованы в массив:", currentImagesIds);
+          console.log(
+            "Текущие ID изображений преобразованы в массив:",
+            currentImagesIds
+          );
         }
       } catch (error) {
         console.error("Ошибка при парсинге currentImagesIds:", error);
-    
+
         // Если значение одиночное и не поддаётся парсингу, оборачиваем его в массив
         currentImagesIds = [currentImagesIds];
-        console.log("Текущие ID изображений преобразованы в массив без парсинга:", currentImagesIds);
+        console.log(
+          "Текущие ID изображений преобразованы в массив без парсинга:",
+          currentImagesIds
+        );
       }
     }
 
@@ -113,6 +118,38 @@ app.patch("/api/products/:id", upload.array("newImages"), async (req, res) => {
       url: currentImagesUrls[index],
     }));
 
+    if (!Array.isArray(deletedImages)) {
+      deletedImages = [deletedImages];
+      console.log(
+        "Удаляемое изображение преобразовано в массив:",
+        deletedImages
+      );
+    }
+
+    // Преобразуем deletedcurrentImagesUrls в массив, если это не массив
+    if (!Array.isArray(deletedcurrentImagesUrls)) {
+      deletedcurrentImagesUrls = [deletedcurrentImagesUrls];
+      console.log(
+        "Удаляемые текущие URL изображений преобразованы в массив:",
+        deletedcurrentImagesUrls
+      );
+    }
+
+    // Создание нового массива для удаляемых изображений с ID и URL
+    const parsedDeletedImages = deletedImages.map((image, index) => {
+      const imageId = image;
+      const url = deletedcurrentImagesUrls[index] || "";
+      return {
+        product_id: productId, // Присваиваем правильный ID продукта
+        image_id: imageId, // ID изображения
+        url: url, // URL изображения
+      };
+    });
+
+    console.log(
+      "Массив удаляемых изображений с ID и URL:",
+      parsedDeletedImages
+    );
 
     console.log("ID продукта:", productId);
     console.log("Название:", name);
@@ -120,128 +157,200 @@ app.patch("/api/products/:id", upload.array("newImages"), async (req, res) => {
     console.log("Цена:", price);
     console.log("ID категории:", categoryId);
     console.log("Текущие изображения", parsedImages);
-  
 
     console.log("Полученные изображения:", images);
     console.log("Изображения для удаления:", deletedImages);
 
-    // const targetPath = '/static/shop/Article/';
-    // await mkdirp(targetPath);
-    // const imageUrls = [];
+    const targetPath = "/static/shop/Article/";
+    await mkdirp(targetPath);
+    const imageUrls = [];
 
-    // // 1. Перемещение новых изображений в целевую папку и добавление в БД
-    // if (images.length > 0) {
-    //   try {
-    //     for (const file of images) {
-    //       const newFilePath = path.join(targetPath, file.originalname);
-    //       await fs.promises.rename(file.path, newFilePath);
-    //       console.log(`Файл успешно перемещен в ${newFilePath}`);
+    // 1. Перемещение новых изображений в целевую папку и добавление в БД
+    if (images.length > 0) {
+      try {
+        for (const [i, file] of images.entries()) {
+          const newFilePath = path.join(targetPath, file.originalname);
+          await fs.promises.rename(file.path, newFilePath);
+          console.log(`Файл успешно перемещен в ${newFilePath}`);
 
-    //       // Добавление пути нового изображения
-    //       imageUrls.push({ url: newFilePath });
+          // Находим индекс из parsedNewImages с использованием оригинального имени файла
+          const parsedImage = parsedNewImages.find(
+            (img) => img.filename === file.originalname
+          );
+          const imageOrder = parsedImage ? parsedImage.index : i; // Используем индекс, если найден, иначе fallback на i
+          console.log(imageOrder);
 
-    //       // Добавление записи в таблицу изображений
-    //       const imageUrlWithoutStatic = newFilePath.replace(/^static\/shop\//, "");
-    //       const imageOrder = imageUrls.length; // Порядковый номер изображения
+          // Добавление пути нового изображения
+          imageUrls.push({ url: newFilePath, order: imageOrder });
 
-    //       const imageInsertQuery = `
-    //         INSERT INTO images (entity_type, entity_id, image_url, image_order)
-    //         VALUES ('product', $1, $2, $3);
-    //       `;
-    //       const imageValues = [productId, imageUrlWithoutStatic, imageOrder];
+          // Добавление записи в таблицу изображений
+          const imageUrlWithoutStatic = newFilePath.startsWith("/static/shop/")
+            ? newFilePath.replace(/^\/static\/shop\//, "") // Удаляем префикс только если он есть
+            : newFilePath;
 
-    //       await queryDB(imageInsertQuery, imageValues);
-    //       console.log(`Изображение добавлено: ${imageUrlWithoutStatic} с порядковым номером ${imageOrder}`);
-    //     }
-    //   } catch (error) {
-    //     console.error("Ошибка при обработке новых изображений:", error);
-    //     return res.status(500).json({ message: "Ошибка при добавлении новых изображений." });
-    //   }
-    // }
+          const imageInsertQuery = `
+            INSERT INTO images (entity_type, entity_id, image_url, image_order)
+            VALUES ('product', $1, $2, $3);
+          `;
+          const imageValues = [productId, imageUrlWithoutStatic, imageOrder];
+
+          await queryDB(imageInsertQuery, imageValues);
+          console.log(
+            `Изображение добавлено: ${imageUrlWithoutStatic} с порядковым номером ${imageOrder}`
+          );
+        }
+      } catch (error) {
+        console.error("Ошибка при обработке новых изображений:", error);
+        return res
+          .status(500)
+          .json({ message: "Ошибка при добавлении новых изображений." });
+      }
+    }
 
     // // 2. Удаление старых изображений
-    // if (Array.isArray(deletedImages) && deletedImages.length > 0) {
-    //   try {
-    //     const deleteResults = await Promise.all(
-    //       deletedImages.map(async (image) => {
-    //         const { url, product_id } = image;
+    if (Array.isArray(parsedDeletedImages) && parsedDeletedImages.length > 0) {
+      try {
+        const deleteResults = await Promise.all(
+          parsedDeletedImages.map(async (image) => {
+            const { url, product_id } = image;
 
-    //         if (!url) {
-    //           console.warn(`Пропущено изображение с некорректным URL: ${url}`);
-    //           return true; // Пропускаем ошибочные URL
-    //         }
+            if (!url) {
+              console.warn(`Пропущено изображение с некорректным URL: ${url}`);
+              return true; // Пропускаем ошибочные URL
+            }
 
-    //         // Удаление изображения из базы данных
-    //         const dbResult = await deleteImageFromDB("product", product_id, url);
-    //         if (!dbResult) {
-    //           console.warn(`Не удалось найти или удалить изображение с URL: ${url}`);
-    //           return false;
-    //         }
+            // Удаление изображения из базы данных
+            const dbResult = await deleteImageFromDB(
+              "product",
+              product_id,
+              url
+            );
+            if (!dbResult) {
+              console.warn(
+                `Не удалось найти или удалить изображение с URL: ${url}`
+              );
+              return false;
+            }
 
-    //         // Удаление файла с диска
-    //         const filePath = path.join("static/shop/", url);
-    //         const fileDeleted = await deleteFileFromDisk(filePath);
-    //         if (!fileDeleted) {
-    //           console.warn(`Файл ${filePath} не был удален.`);
-    //           return false;
-    //         }
+            // Удаление файла с диска
+            const filePath = path.join("static/shop/", url);
+            const fileDeleted = await deleteFileFromDisk(filePath);
+            if (!fileDeleted) {
+              console.warn(`Файл ${filePath} не был удален.`);
+              return false;
+            }
 
-    //         return true; // Успешное удаление
-    //       })
-    //     );
+            return true; // Успешное удаление
+          })
+        );
 
-    //     if (deleteResults.some(result => result === false)) {
-    //       console.warn("Некоторые изображения не удалось удалить.");
-    //       return res.status(500).json({ message: "Некоторые изображения не удалось удалить." });
-    //     }
-    //   } catch (error) {
-    //     console.error("Ошибка при удалении изображений:", error);
-    //     return res.status(500).json({ message: "Ошибка при удалении изображений." });
-    //   }
-    // }
-
+        if (deleteResults.some((result) => result === false)) {
+          console.warn("Некоторые изображения не удалось удалить.");
+          return res
+            .status(500)
+            .json({ message: "Некоторые изображения не удалось удалить." });
+        }
+      } catch (error) {
+        console.error("Ошибка при удалении изображений:", error);
+        return res
+          .status(500)
+          .json({ message: "Ошибка при удалении изображений." });
+      }
+    }
+    
+    
     // // 3. Обновление информации о продукте в базе данных
-    // if (parsedImages.length > 0) {
-    //   try {
-    //     for (const image of parsedImages) {
-    //       const { id, index, url } = image;
+    console.log(name, description, price, categoryId);
     
-    //       // Получение текущего порядка и URL из базы данных
-    //       const getOrderQuery = `
-    //         SELECT image_order, image_url
-    //         FROM images
-    //         WHERE image_id = $1;
-    //       `;
-    //       const currentOrderResult = await queryDB(getOrderQuery, [id]);
-    
-    //       if (currentOrderResult.length > 0) {
-    //         const { image_order: currentOrder, image_url: currentUrl } = currentOrderResult[0];
-    
-    //         if (currentUrl === url) { // Проверка, что URL совпадают
-    //           if (currentOrder !== index) { // Проверка, что порядок отличается
-    //             console.log(`Несоответствие порядка для изображения ${id}. Текущий: ${currentOrder}, Новый: ${index}`);
-    
-    //             // Обновление порядка
-    //             const updateOrderQuery = `
-    //               UPDATE images
-    //               SET image_order = $1
-    //               WHERE image_id = $2;
-    //             `;
-    //             await queryDB(updateOrderQuery, [index, id]);
-    //             console.log(`Порядок изображения ${id} обновлен на ${index}`);
-    //           }
-    //         } else {
-    //           console.warn(`URL изображения с ID ${id} не совпадает. Ожидалось: ${url}, Получено: ${currentUrl}`);
-    //         }
-    //       } else {
-    //         console.warn(`Изображение с ID ${id} не найдено в базе данных.`);
-    //       }
-    //     }
-    //   } catch (error) {
-    //     console.error("Ошибка при проверке и обновлении порядка изображений:", error);
-    //     return res.status(500).json({ message: "Ошибка при обновлении порядка изображений." });
-    //   }
-    // }
+    if (name || description || price || categoryId) {
+      try {
+        const updateProductQuery = `
+          UPDATE products
+          SET
+            name = COALESCE($1, name),
+            description = COALESCE($2, description),
+            price = COALESCE($3, price),
+            category_id = COALESCE($4, category_id)
+          WHERE product_id = $5
+          RETURNING *;
+        `;
+
+        const productValues = [
+          name || null,
+          description || null,
+          price || null,
+          categoryId || null,
+          productId,
+        ];
+
+        const updatedProduct = await queryDB(updateProductQuery, productValues);
+
+        if (updatedProduct.length === 0) {
+          return res.status(404).json({ error: "Продукт не найден." });
+        }
+
+        console.log("Продукт обновлен:", updatedProduct);
+      } catch (error) {
+        console.error("Ошибка при обновлении данных продукта:", error);
+        return res
+          .status(500)
+          .json({ error: "Ошибка при обновлении данных продукта." });
+      }
+    }
+
+    if (parsedImages.length > 0) {
+      try {
+        for (const image of parsedImages) {
+          const { id, index, url } = image;
+
+          // Получение текущего порядка и URL из базы данных
+          const getOrderQuery = `
+            SELECT image_order, image_url
+            FROM images
+            WHERE image_id = $1;
+          `;
+          const currentOrderResult = await queryDB(getOrderQuery, [id]);
+
+          if (currentOrderResult.length > 0) {
+            const { image_order: currentOrder, image_url: currentUrl } =
+              currentOrderResult[0];
+
+            if (currentUrl === url) {
+              // Проверка, что URL совпадают
+              if (currentOrder !== index) {
+                // Проверка, что порядок отличается
+                console.log(
+                  `Несоответствие порядка для изображения ${id}. Текущий: ${currentOrder}, Новый: ${index}`
+                );
+
+                // Обновление порядка
+                const updateOrderQuery = `
+                  UPDATE images
+                  SET image_order = $1
+                  WHERE image_id = $2;
+                `;
+                await queryDB(updateOrderQuery, [index, id]);
+                console.log(`Порядок изображения ${id} обновлен на ${index}`);
+              }
+            } else {
+              console.warn(
+                `URL изображения с ID ${id} не совпадает. Ожидалось: ${url}, Получено: ${currentUrl}`
+              );
+            }
+          } else {
+            console.warn(`Изображение с ID ${id} не найдено в базе данных.`);
+          }
+        }
+      } catch (error) {
+        console.error(
+          "Ошибка при проверке и обновлении порядка изображений:",
+          error
+        );
+        return res
+          .status(500)
+          .json({ message: "Ошибка при обновлении порядка изображений." });
+      }
+    }
 
     // 4. Возвращаем успешный ответ
     res.status(200).json({

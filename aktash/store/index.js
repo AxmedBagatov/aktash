@@ -314,7 +314,7 @@ export const actions = {
       formData.append("name", productData.name);
       formData.append("description", productData.description);
       formData.append("price", productData.price);
-      formData.append("categoryId", productData.categoryId);
+      formData.append("categoryId", productData.catalogId);
   
       // Добавляем новые изображения в formData
       productData.images.forEach((image) => {
@@ -323,7 +323,8 @@ export const actions = {
           formData.append('newImagesIndexes', image.index);
         }
         if (!image.isNew && image.isDelete) {
-          formData.append('deletedImages', image.id); // Добавляем ID удаляемого изображения
+          formData.append('deletedImages', image.id); 
+          formData.append('deletedcurrentImagesUrls', image.url);
         }
         if (!image.isNew && !image.isDelete){
           formData.append('currentImagesIds', image.id);
