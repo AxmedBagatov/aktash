@@ -6,6 +6,14 @@
     color: #c32222;
 }
 
+.header-catalog-items {
+    display: flex;
+    gap: 10px;
+}
+
+.header-catalog-item {
+    text-decoration: none;
+}
 
 
 .header_undeline {

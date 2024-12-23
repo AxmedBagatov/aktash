@@ -1,30 +1,49 @@
 <template>
   <div class="catalog-details">
-    <div style="margin-left: 10%">
-      <nuxt-link :to="`/`" class="breadcrumb">Главная / </nuxt-link>
-      <nuxt-link :to="`/shop/`" class="breadcrumb">Каталог / </nuxt-link>
+    <div class="breadcrumbs">
+      <nuxt-link :to="`/`" class="breadcrumb">Главная</nuxt-link>
+      <div>/</div>
+      <nuxt-link :to="`/shop/`" class="breadcrumb">Каталог</nuxt-link>
+      <div>/</div>
       <p class="breadcrumb_last">{{ categoryName }}</p>
     </div>
 
     <!-- Поле сортировки -->
+    <div class="category-name-container">
+      <div class="category-name">
+        {{ categoryName }}
+      </div>
+      <div class="category-product-count">({{ products.length }})</div>
+    </div>
     <div class="category-name-sort-buttons">
       <!-- <div class="CategoryName_main_div">
         {{ categoryName }}
       </div> -->
       <div class="sorting-container">
-        <div class="sorting-option" @click="setSortCriteria('price_asc')"
-          :class="{ active: sortCriteria === 'price_asc' }">
-          Цена (по возрастанию)
+        <div class="sorting-text">Отсортировать товары:</div>
+        <div
+          class="sorting-option"
+          @click="setSortCriteria('price_asc')"
+          :class="{ active: sortCriteria === 'price_asc' }"
+        >
+          сначала дешевле
         </div>
-        <div class="sorting-option" @click="setSortCriteria('price_desc')"
-          :class="{ active: sortCriteria === 'price_desc' }">
-          Цена (по убыванию)
+        <div
+          class="sorting-option"
+          @click="setSortCriteria('price_desc')"
+          :class="{ active: sortCriteria === 'price_desc' }"
+        >
+          сначала дороже
         </div>
       </div>
     </div>
 
     <div v-if="isLoggedIn">
-      <button v-if="isLoggedIn" @click="openCreateProductModal" class="create-product-btn">
+      <button
+        v-if="isLoggedIn"
+        @click="openCreateProductModal"
+        class="create-product-btn"
+      >
         Создать товар
       </button>
     </div>
@@ -40,37 +59,72 @@
               </div>
               <div>
                 <label for="productName">Название</label>
-                <input type="text" v-model="newProduct.name" id="productName" required />
+                <input
+                  type="text"
+                  v-model="newProduct.name"
+                  id="productName"
+                  required
+                />
               </div>
               <div>
                 <label for="productPrice">Цена</label>
-                <input type="number" v-model="newProduct.price" id="productPrice" required />
+                <input
+                  type="number"
+                  v-model="newProduct.price"
+                  id="productPrice"
+                  required
+                />
               </div>
               <div>
                 <label for="productDescription">Описание</label>
-                <textarea v-model="newProduct.description" id="productDescription" required></textarea>
+                <textarea
+                  v-model="newProduct.description"
+                  id="productDescription"
+                  required
+                ></textarea>
               </div>
 
               <!-- Поле для загрузки изображений -->
               <div>
                 <label for="productImages">Фотографии</label>
-                <input type="file" id="productImages" @change="handleFileUpload" multiple accept="image/*" />
+                <input
+                  type="file"
+                  id="productImages"
+                  @change="handleFileUpload"
+                  multiple
+                  accept="image/*"
+                />
               </div>
             </div>
 
             <div v-if="newProduct.images.length" class="rightside">
               <h4>Загруженные изображения:</h4>
-              <vuedraggable v-model="newProduct.images" :options="{ handle: '.drag-handle' }" @end="updateImageIndexes">
-                <div v-for="(image, index) in newProduct.images" :key="index" class="image-item">
+              <vuedraggable
+                v-model="newProduct.images"
+                :options="{ handle: '.drag-handle' }"
+                @end="updateImageIndexes"
+              >
+                <div
+                  v-for="(image, index) in newProduct.images"
+                  :key="index"
+                  class="image-item"
+                >
                   <!-- Здесь изображение становится перетаскиваемым -->
-                  <div class="drag-handle" :style="{ backgroundImage: `url(${getImageUrl(image)})` }">
+                  <div
+                    class="drag-handle"
+                    :style="{ backgroundImage: `url(${getImageUrl(image)})` }"
+                  >
                     <span class="image-number">{{ index + 1 }}</span>
                     <span class="drag-handle-icon">☰</span>
 
                     <!-- Иконка для перетаскивания -->
                   </div>
 
-                  <img :src="getImageUrl(image)" :alt="image.name" class="preview-image" />
+                  <img
+                    :src="getImageUrl(image)"
+                    :alt="image.name"
+                    class="preview-image"
+                  />
                   <!-- Отображаем номер изображения в массиве -->
                 </div>
               </vuedraggable>
@@ -88,37 +142,80 @@
     <div v-else-if="errorMessage" class="error">{{ errorMessage }}</div>
     <div v-else>
       <div class="product-list-wrapper">
-        <div class="product-list">
-          <div v-for="product in sortedProducts" :key="product.product_id" class="product-item">
-            <nuxt-link :to="`/shop/${catalogId}/${product.product_id}`" class="product-link">
+        <!-- <div class="product-list"> -->
+        <div
+          v-bind:class="
+            products.length < 3 ? 'product-list-less-than-two' : 'product-list'
+          "
+        >
+          <div
+            v-for="product in sortedProducts"
+            :key="product.product_id"
+            class="product-item"
+          >
+            <nuxt-link
+              :to="`/shop/${catalogId}/${product.product_id}`"
+              class="product-link"
+            >
               <!-- catalog-carousel -->
               <!-- @mouseenter="startCarousel(product.product_id)"
           @mouseleave="stopCarousel(product.product_id)" -->
               <div class="catalog-carousel">
                 <!-- Блок с каруселью -->
-                <div class="catalog-carousel-wrapper" @mousemove="handleMouseMove(product.product_id, $event, product)"
-                  @mouseleave="resetSlide(product.product_id)">
-                  <div class="catalog-carousel-images"
-                    :style="{ transform: `translateX(-${currentSlide[product.product_id] * 100}%)` }">
-                    <img v-for="(image, index) in product.images" :key="index" :src="image.url" alt="Product image"
-                      class="carousel-image" />
+                <div
+                  class="catalog-carousel-wrapper"
+                  @mousemove="
+                    handleMouseMove(product.product_id, $event, product)
+                  "
+                  @mouseleave="resetSlide(product.product_id)"
+                >
+                  <div
+                    class="catalog-carousel-images"
+                    :style="{
+                      transform: `translateX(-${
+                        currentSlide[product.product_id] * 100
+                      }%)`,
+                    }"
+                  >
+                    <img
+                      v-for="(image, index) in product.images"
+                      :key="index"
+                      :src="image.url"
+                      alt="Product image"
+                      class="carousel-image"
+                    />
                   </div>
                   <div class="catalog-carousel-indicators">
-                    <div v-for="(image, index) in product.images" :key="index" class="catalog-carousel-indicator"
-                      :class="{ active: currentSlide[product.product_id] === index }"></div>
+                    <div
+                      v-for="(image, index) in product.images"
+                      :key="index"
+                      class="catalog-carousel-indicator"
+                      :class="{
+                        active: currentSlide[product.product_id] === index,
+                      }"
+                    ></div>
                   </div>
                 </div>
-
               </div>
               <div class="catalog-product-info">
-                <h2>{{ product.name }}</h2>
-                <p>{{ product.description }}</p>
-                <p class="product-price">{{ product.price }} ₽</p>
+                <div class="catalog-product-name-info">
+                  <div class="catalog-product-name">{{ product.name }}</div>
+                  <div class="catalog-product-order-info">Под заказ</div>
+                </div>
+                <!-- <div class="catalog-product-description">{{ product.description }}</div> -->
+                <div class="catalog-product-price">{{ product.price }} ₽</div>
+              </div>
+              <div class="line"></div>
+              <div class="button-container">
+                <button class="to-cart">В корзину</button>
               </div>
             </nuxt-link>
             <!-- Delete Button for Logged-In Users -->
             <div v-if="isLoggedIn">
-              <button @click="deleteProduct(product.product_id)" class="delete-btn">
+              <button
+                @click="deleteProduct(product.product_id)"
+                class="delete-btn"
+              >
                 Удалить
               </button>
             </div>
@@ -196,7 +293,6 @@ export default {
       return category ? category.name : "Неизвестная категория";
     },
     sortedProducts() {
-
       let sorted = [...this.products];
       if (this.sortCriteria === "price_asc") {
         sorted.sort((a, b) => parseFloat(a.price) - parseFloat(b.price));
@@ -207,11 +303,11 @@ export default {
       } else if (this.sortCriteria === "name_desc") {
         sorted.sort((a, b) => b.name.localeCompare(a.name));
       }
-      sorted.forEach(item => {
+      sorted.forEach((item) => {
         this.$set(this.currentSlide, item.product_id, 0);
-      })
-      console.log("sorted here...")
-      console.log(sorted)
+      });
+      console.log("sorted here...");
+      console.log(sorted);
       return sorted;
     },
   },
@@ -267,33 +363,30 @@ export default {
       const newIndex = Math.floor((mouseX / width) * totalImages);
 
       // Если индекс изменился, обновляем его
-      if (newIndex >= 0 && newIndex < totalImages && this.currentSlide[productId] !== newIndex) {
+      if (
+        newIndex >= 0 &&
+        newIndex < totalImages &&
+        this.currentSlide[productId] !== newIndex
+      ) {
         this.$set(this.currentSlide, productId, newIndex); // Устанавливаем текущий индекс слайда
       }
     },
     async createProduct() {
       try {
-        // Добавляем category_id в newProduct, используя catalogId
         const productData = {
           ...this.newProduct,
-          category_id: this.catalogId, // Используем catalogId, так как это правильное имя переменной
+          category_id: this.catalogId, // Используем catalogId
         };
 
         // Загружаем изображения
         const upload_images = await this.uploadImages();
-        console.log(
-          "Полученные изображения внутри createProduct:",
-          upload_images
-        );
-
-        // Обновляем список изображений в productData
         productData.images = upload_images;
-
-        // Логируем данные
-        console.log(productData);
 
         // Отправляем данные на сервер
         await this.$store.dispatch("createProduct", productData);
+
+        // Повторно загружаем продукты из категории
+        await this.$store.dispatch("fetchProductsByCategory", this.catalogId);
 
         // Закрываем модальное окно и сбрасываем данные
         this.closeCreateProductModal();
@@ -302,7 +395,7 @@ export default {
           price: "",
           description: "",
           images: [],
-          category_id: this.catalogId, // Обязательно сбрасываем category_id
+          category_id: this.catalogId,
         };
       } catch (error) {
         console.error("Ошибка при создании товара с изображениями:", error);
@@ -425,7 +518,6 @@ export default {
   background-color: #c32222;
 }
 
-
 .loading,
 .error {
   font-size: 18px;
@@ -433,11 +525,49 @@ export default {
 }
 
 .product-list-wrapper {
-    display: flex;
-    justify-items: center;
+  display: flex;
+  justify-items: center;
+}
+
+.category-name-container {
+  font-family: Geologica;
+  margin: 0 auto;
+  display: flex;
+  justify-content: center;
+  gap: 10px;
+}
+
+.category-name {
+  font-size: 60px;
+  /* font-weight: bold; */
+}
+
+.category-product-count {
+  font-size: 25px;
+  color: #c32222;
 }
 
 .product-list {
+  margin: 0 auto;
+  width: 80%;
+  overflow: hidden;
+  margin-top: 20px;
+  margin-bottom: 20px;
+  display: grid;
+  /* place-items: center; */
+  /* justify-items: center; */
+  /* place-self: center; */
+  justify-content: space-between;
+  justify-items: center;
+  align-content: space-around;
+  align-items: center;
+  /* gap: calc( (80% - 600px * 3 ) / 3); */
+  grid-template-columns: repeat(auto-fit, minmax(600px, 30px));
+  grid-template-rows: auto;
+  gap: 30px;
+}
+
+.product-list-less-than-two {
   margin: 0 auto;
   width: 80%;
   overflow: hidden;
@@ -451,13 +581,11 @@ export default {
   justify-items: center;
   align-content: space-around;
   align-items: center;
-  gap: 30px;
+  /* gap: calc( (80% - 600px * 3 ) / 3); */
   grid-template-columns: repeat(auto-fit, minmax(600px, 30px));
   grid-template-rows: auto;
-  /* gap: 20px; */
+  gap: 30px;
 }
-
-
 
 /* .product-list {
   margin-inline: 10%;
@@ -500,14 +628,12 @@ export default {
   display: flex;
   transition: transform 0.3s ease;
   /* object-fit: cover; */
-
 }
 
 .carousel-image {
   min-width: 100%;
   /* height: 100%; */
   object-fit: cover;
-
 }
 
 .catalog-product-info {
@@ -517,21 +643,68 @@ export default {
   padding: 10px 0 10px 0;
 }
 
-.catalog-product-info h2 {
+.catalog-product-name {
   /* margin: 0 0 10px; */
-  font-size: 18px;
   color: #333;
 }
 
-.catalog-product-info p {
+.catalog-product-description {
   margin: 0;
   font-size: 14px;
   color: #666;
 }
 
-.product-price {
-  font-weight: bold;
+.catalog-product-order-info {
+  font-size: 14px;
+  padding: 5px;
+  color: black;
+  background-color: goldenrod;
+}
+
+.catalog-product-name-info {
+  display: flex;
+  margin-bottom: 10px;
+  /* font-size: 20px; */
+  justify-content: space-between;
+  align-items: center;
+}
+
+.catalog-product-price {
+  font-size: 30px;
+  /* font-weight: bold; */
   color: #333;
+}
+
+.line {
+  background-color: black;
+  width: 100%;
+  height: 1px;
+}
+
+.to-cart {
+  font-family: Geologica;
+  font-size: 20px;
+  color: white;
+  /* visibility: hidden; */
+  opacity: 0;
+  margin-top: 10px;
+  padding: 20px;
+  width: 100%;
+  text-align: center;
+  background-color: black;
+  transition: 0.5s;
+}
+
+.product-link:hover .to-cart {
+  transition: 0.5s;
+  opacity: 1;
+  /* visibility: visible; */
+  /* background-color: #007bff; */
+}
+
+.to-cart:hover {
+  background-color: goldenrod;
+  color: black;
 }
 
 .delete-btn {
@@ -589,7 +762,6 @@ export default {
   border: none;
   border-radius: 4px;
 }
-
 
 .modal-content button:hover {
   background: #007bff;

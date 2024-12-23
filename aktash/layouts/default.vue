@@ -23,7 +23,7 @@ export default {
 /* Глобальные стили */
 
 :root {
-  --header-height: 60px;
+  --header-height: 120px;
   --header-padding: 10px;
   --footer-padding: 20px;
 }

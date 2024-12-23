@@ -13,27 +13,16 @@
         </button>
         <ul class="nav-list">
           <li>
-            <NuxtLink to="/" @click.native="closeMenu" class="link_header"
-              >Главная</NuxtLink
-            >
+            <NuxtLink to="/" @click.native="closeMenu" class="link_header">Главная</NuxtLink>
           </li>
           <li>
-            <NuxtLink to="/shop" @click.native="closeMenu" class="link_header"
-              >Каталог</NuxtLink
-            >
+            <NuxtLink to="/shop" @click.native="closeMenu" class="link_header">Каталог</NuxtLink>
           </li>
           <li>
-            <NuxtLink to="/galery" @click.native="closeMenu" class="link_header"
-              >Галерея</NuxtLink
-            >
+            <NuxtLink to="/galery" @click.native="closeMenu" class="link_header">Галерея</NuxtLink>
           </li>
           <li>
-            <NuxtLink
-              to="/contact"
-              @click.native="closeMenu"
-              class="link_header"
-              >Контакты</NuxtLink
-            >
+            <NuxtLink to="/contact" @click.native="closeMenu" class="link_header">Контакты</NuxtLink>
           </li>
         </ul>
       </div>
@@ -62,10 +51,15 @@
       <font-awesome-icon :icon="['fas', 'user-xmark']" />
     </button>
     <!-- <button style="margin-left: 50px"><font-awesome-icon :icon="['fas', 'user']" /></button> -->
-    <NuxtLink to="/login" @click.native="closeMenu"   style="margin-left: 20px; text-decoration: none; color:  #c32222;">
+    <NuxtLink to="/login" @click.native="closeMenu" style="margin-left: 20px; text-decoration: none; color:  #c32222;">
       <font-awesome-icon :icon="['fas', 'user']" />
-  </NuxtLink>
+    </NuxtLink>
     <hr class="header_undeline" />
+    <div class="header-catalog-items">
+      <div v-for="catalog in catalogs" :key="catalog.category_id" class="catalog-item">
+        <nuxt-link :to="`/shop/${catalog.category_id}`" class="catalog-link"></nuxt-link>
+      </div>
+    </div>
   </header>
 </template>
 
@@ -83,6 +77,9 @@ export default {
     isLoggedIn() {
       return this.$store.state.auth.loggedIn;
     },
+    catalogs() {
+      return this.$store.getters.getCategories;
+    }
   },
   methods: {
     toggleMenu() {

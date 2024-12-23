@@ -31,7 +31,7 @@ app.use(
       }
     },
     credentials: true, // Включение работы с cookies
-    methods: ["GET, POST, PUT, DELETE"],
+    methods: ["GET, POST, PUT, DELETE, PATCH"],
     allowedHeaders: ["Content-Type", "Authorization"],
   })
 );
@@ -906,6 +906,36 @@ app.post("/api/create-products", async (req, res) => {
     res.status(500).json({ error: "Произошла ошибка при создании продукта." });
   }
 });
+
+
+const storage_test = multer.memoryStorage(); // Файлы сохраняются в памяти (можно изменить на диск, если нужно)
+const upload_test = multer({ storage: storage_test });
+
+
+app.patch('/api/products/:id', upload_test.array('newImages'), (req, res) => {
+  try {
+    const { name, description, price, categoryId } = req.body;
+    const productId = req.params.id;
+    const images = req.files; // Это массив загруженных файлов
+    const deletedImages = req.body.deletedImages || []; // Изображения для удаления (если есть)
+
+    // Выводим полученные данные в консоль
+    console.log('ID продукта:', productId);
+    console.log('Название:', name);
+    console.log('Описание:', description);
+    console.log('Цена:', price);
+    console.log('ID категории:', categoryId);
+    console.log('Полученные изображения:', images);
+    console.log('Изображения для удаления:', deletedImages);
+
+    // Можно вернуть ответ, что данные успешно получены
+    res.status(200).json({ message: 'Продукт обновлен', productId, name, description, price, categoryId, images, deletedImages });
+  } catch (error) {
+    console.error('Ошибка при обновлении продукта:', error);
+    res.status(500).json({ message: 'Ошибка при обновлении продукта' });
+  }
+});
+
 
 app.listen(port, () => {
   console.log(`Server running on http://localhost:${port}`);

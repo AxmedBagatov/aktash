@@ -13,13 +13,11 @@
   font-family: Geologica;
   width: 80%;
   margin: 0 auto;
-  text-align: left;
+  text-align: center;
   margin-bottom: 30px;
   margin-top: 30px;
-  font-size: 24px;
+  font-size: 60px;
 }
-
-
 
 .catalog-item {
   /* background: #f9f9f9; */

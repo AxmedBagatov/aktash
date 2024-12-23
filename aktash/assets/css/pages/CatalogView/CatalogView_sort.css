@@ -1,9 +1,14 @@
 .sorting-container {
+  color: #8d8d8d;
   font-family: Geologica;
   display: flex;
-  justify-content: center;
+  justify-content: flex-end;
   gap: 15px;
   align-items: center;
+}
+
+.sorting-text {
+  color: #8d8d8d;
 }
 
 .sorting-option {
@@ -16,7 +21,7 @@
 }
 
 .sorting-option:hover {
-  color: darkgray;
+  color: black;
 }
 
 .sorting-option.active {

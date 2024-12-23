@@ -4,7 +4,7 @@
       <button @click="showAddCategoryForm">Add Category</button>
     </div>
 
-    <div class="catalogs-category-text">Категории</div>
+    <div class="catalogs-category-text">Каталог товаров</div>
     <!-- <div style="margin-left: 10%">
       <nuxt-link class="breadcrumb" :to="`/`">Главная</nuxt-link>
     </div> -->

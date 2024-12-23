@@ -1,20 +1,40 @@
+.breadcrumbs {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  gap: 5px;
+  margin: 20px 0 20px 0;
+}
+
 .breadcrumb {
   font-size: 20px;
   font-family: Geologica;
   color: #000000cf;
   text-decoration: none;
   /* margin-bottom: 10px; */
+  transition: 0.3s;
   display: inline-block;
-  margin: 30px 0 30px 0;
+  /* margin: 30px 0 30px 0; */
   /* margin-inline-start: 10%; */
 }
 
+.breadcrumb:hover {
+  background-color: black;
+  color: white;
+}
+
+.breadcrumb_last:hover {
+  background-color: black;
+  color: gold;
+}
+
 .breadcrumb_last {
+  transition: 0.3s;
   font-family: Geologica;
   font-size: 20px;
   color: #c32222;
   text-decoration: none;
-  margin-bottom: 10px;
+  /* margin-bottom: 10px; */
   display: inline-block;
 }
 

@@ -18,6 +18,15 @@ export const state = () => ({
   },
 });
 export const mutations = {
+  setSelectedProduct(state, product) {
+    state.selectedProduct = product;
+  },
+  updateProduct(state, updatedProduct) {
+    const index = state.products.findIndex(product => product.id === updatedProduct.id);
+    if (index !== -1) {
+      state.products.splice(index, 1, updatedProduct);
+    }
+  },
   // Продукты
   setProducts(state, products) {
     state.products = products;
@@ -298,7 +307,51 @@ export const actions = {
   },
 
   // Переименование файла
+  async updateProduct({ commit }, productData) {
+    try {
+      // Формируем данные для отправки на сервер
+      const formData = new FormData();
+      formData.append("productId", productData.productId)
+      formData.append("name", productData.name);
+      formData.append("description", productData.description);
+      formData.append("price", productData.price);
+      formData.append("categoryId", productData.categoryId);
+      formData.append("images",productData.images)
+      
+      productData.images.forEach((image, index) => {
+        if (image.isNew && !image.isDelete) {
+          formData.append(`newImages[${index}]`, image.file); 
+        }
+        if (!image.isNew && image.isDelete) {
+          formData.append(`deletedImages[${index}]`, image.id); 
+        }
+      });
 
+     
+      const response = await fetch(`${BASE_URL}/api/products/${productData.id}`, {
+        method: "PATCH", // или PUT в зависимости от логики
+        body: formData,
+      });
+
+      if (response.ok) {
+        const updatedProduct = await response.json();
+
+        // Обновляем продукт в состоянии
+        commit("setSelectedProduct", updatedProduct);
+
+        console.log("Продукт успешно обновлен");
+        return updatedProduct;
+      } else {
+        const error = await response.json();
+        commit("setErrorMessage", error.message || "Ошибка при обновлении продукта");
+        throw new Error(error.message || "Ошибка при обновлении продукта");
+      }
+    } catch (error) {
+      console.error("Ошибка при обновлении продукта:", error);
+      commit("setErrorMessage", "Ошибка при обновлении продукта: " + error.message);
+      throw error;
+    }
+  },
   // Action для переименования файла
   async renameFile({ commit }, { oldPath, newPath }) {
     try {
