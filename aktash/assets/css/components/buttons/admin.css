@@ -1,0 +1,87 @@
+.adminButtons {
+    --b: 3px;         /* border thickness */
+    --s: .45em;       /* size of the corner */
+    --color: #000000; /* text and background color */
+    --border-color: #7b161600; /* border color */
+    
+    padding: calc(.5em + var(--s)) calc(.9em + var(--s));
+    color: black;
+    --_p: var(--s);
+    background:
+      conic-gradient(from 90deg at var(--b) var(--b),#0000 90deg,var(--color) 0)
+      var(--_p) var(--_p)/calc(100% - var(--b) - 2*var(--_p)) calc(100% - var(--b) - 2*var(--_p));
+    transition: .3s linear, color 0s, background-color 0s;
+    outline: var(--b) solid var(--border-color);
+    outline-offset: .6em;
+    font-size: 16px;
+  
+    border: 0;
+    margin: 10px;
+    user-select: none;
+    -webkit-user-select: none;
+    touch-action: manipulation;
+}
+  
+.adminButtons:hover,
+.adminButtons:focus-visible {
+    --_p: 0px;
+    outline-color: var(--color);
+    outline-offset: .05em;
+}
+  
+.adminButtons:active {
+    background: var(--color);
+    color: #fff;
+}
+
+
+.adminButtonsInModal {
+  align-items: center;
+  background-color: #fff;
+  border: 2px solid #000;
+  box-sizing: border-box;
+  color: #000;
+  cursor: pointer;
+  display: inline-flex;
+  fill: #000;
+  font-family: Inter,sans-serif;
+  font-size: 16px;
+  font-weight: 600;
+  height: 38px;
+  justify-content: center;
+  letter-spacing: -.8px;
+  line-height: 24px;
+  min-width: 100px;
+  width: auto;
+  outline: 0;
+  padding: 0 17px;
+  text-align: center;
+  text-decoration: none;
+  transition: all .3s;
+  user-select: none;
+  -webkit-user-select: none;
+  touch-action: manipulation;
+  margin-inline: 10px;
+}
+
+.adminButtonsInModal:focus {
+  color: #171e29;
+}
+
+.adminButtonsInModal:hover {
+  border-color: #c32222;
+  color: #c32222;
+  fill: #c32222;
+}
+
+.adminButtonsInModal:active {
+  border-color: #c32222;
+  color: #c32222;
+  fill:#c32222;
+}
+
+@media (min-width: 768px) {
+  .adminButtonsInModal {
+    min-width: 100px;
+  }
+}

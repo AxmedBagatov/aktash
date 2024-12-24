@@ -1,7 +1,7 @@
 <template>
   <div class="catalog-details">
     <div v-if="isLoggedIn" class="admin-controls">
-      <button @click="showAddCategoryForm">Add Category</button>
+      <button @click="showAddCategoryForm" class="adminButtons" >Создать новую категорию</button>
     </div>
 
     <div class="catalogs-category-text">Каталог товаров</div>
@@ -29,10 +29,10 @@
             </nuxt-link>
 
             <div v-if="isLoggedIn" class="admin-actions">
-              <button @click="showEditCategoryForm(catalog.category_id)">
-                Edit
+              <button @click="showEditCategoryForm(catalog.category_id)"  class="adminButtons">
+                Редактировать
               </button>
-              <button @click="confirmDelete(catalog.category_id)">Delete</button>
+              <button @click="confirmDelete(catalog.category_id)"  class="adminButtons">Удалить</button>
             </div>
           </div>
         </div>
@@ -44,14 +44,14 @@
     <!-- Модальное окно для добавления категории -->
     <div v-if="showAddForm" class="modal-overlay">
       <div class="modal-content">
-        <h3>Add New Category</h3>
+        <h3>Создать новую категорию</h3>
         <form @submit.prevent="addCategory">
-          <input v-model="newCategory.name" placeholder="Category Name" required />
-          <textarea v-model="newCategory.description" placeholder="Category Description" required></textarea>
+          <input v-model="newCategory.name" placeholder="Название" required />
+          <textarea v-model="newCategory.description" placeholder="Описание" required></textarea>
           <input type="file" accept="image/*" @change="onFileChange" />
           <div class="modal-actions">
-            <button type="submit">Add Category</button>
-            <button @click="cancelAddCategory">Cancel</button>
+            <button type="submit" class="adminButtonsInModal">Добавить</button>
+            <button @click="cancelAddCategory" class="adminButtonsInModal">Отменить</button>
           </div>
         </form>
       </div>
@@ -60,26 +60,26 @@
     <!-- Модальное окно для редактирования категории -->
     <div v-if="showEditForm" class="modal-overlay">
       <div class="modal-content">
-        <h3>Edit Category</h3>
+        <h3>Редактирование категории</h3>
         <form @submit.prevent="updateCategory">
-          <label for="category_id">Category ID:</label>
+          <label for="category_id">ID Категории:</label>
           <input type="text" id="category_id" v-model="editCategoryData.category_id" readonly />
           <input v-model="editCategoryData.name" placeholder="Category Name" required />
           <textarea v-model="editCategoryData.description" placeholder="Category Description" required></textarea>
 
           <!-- If there is an image -->
           <div v-if="editCategoryData.image_url">
-            <p>Current Image:</p>
+            <p>Текущее изображение:</p>
             <img :src="`/${editCategoryData.image_url}`" alt="Preview" class="preview-image" />
-            <button type="button" @click="removeImage">Remove Image</button>
+            <button type="button" @click="removeImage" class="adminButtonsInModal">Удалить изображение</button>
           </div>
 
           <!-- If there is no image, show the file input -->
           <input v-if="!editCategoryData.image_url" type="file" accept="image/*" @change="onFileChange" />
 
           <div class="modal-actions">
-            <button type="submit">Update Category</button>
-            <button type="button" @click="cancelEditCategory">Cancel</button>
+            <button type="submit" class="adminButtonsInModal">Обновить</button>
+            <button type="button" @click="cancelEditCategory" class="adminButtonsInModal">Отмена</button>
           </div>
         </form>
       </div>
@@ -349,4 +349,5 @@ export default {
 <style src="~/assets/css/pages/Catalogs/Catalogs.css"></style>
 <style src="~/assets/css/pages/Catalogs/Catalogs_admin.css"></style>
 <style src="~/assets/css/components/breadcrumb.css"></style>
+<style src="~/assets/css/components/buttons/admin.css"></style>
 <style scoped></style>

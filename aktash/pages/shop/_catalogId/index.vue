@@ -42,7 +42,7 @@
       <button
         v-if="isLoggedIn"
         @click="openCreateProductModal"
-        class="create-product-btn"
+        class="adminButtons"
       >
         Создать товар
       </button>
@@ -142,7 +142,7 @@
     <div v-else-if="errorMessage" class="error">{{ errorMessage }}</div>
     <div v-else>
       <div class="product-list-wrapper">
-        <!-- <div class="product-list"> -->
+
         <div
           v-bind:class="
             products.length < 3 ? 'product-list-less-than-two' : 'product-list'
@@ -157,9 +157,8 @@
               :to="`/shop/${catalogId}/${product.product_id}`"
               class="product-link"
             >
-              <!-- catalog-carousel -->
-              <!-- @mouseenter="startCarousel(product.product_id)"
-          @mouseleave="stopCarousel(product.product_id)" -->
+              
+
               <div class="catalog-carousel">
                 <!-- Блок с каруселью -->
                 <div
@@ -202,7 +201,7 @@
                   <div class="catalog-product-name">{{ product.name }}</div>
                   <div class="catalog-product-order-info">Под заказ</div>
                 </div>
-                <!-- <div class="catalog-product-description">{{ product.description }}</div> -->
+
                 <div class="catalog-product-price">{{ product.price }} ₽</div>
               </div>
               <div class="line"></div>
@@ -210,11 +209,11 @@
                 <button class="to-cart">В корзину</button>
               </div>
             </nuxt-link>
-            <!-- Delete Button for Logged-In Users -->
+
             <div v-if="isLoggedIn">
               <button
                 @click="deleteProduct(product.product_id)"
-                class="delete-btn"
+                class="adminButtons"
               >
                 Удалить
               </button>
