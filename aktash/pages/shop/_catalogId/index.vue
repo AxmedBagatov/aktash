@@ -51,90 +51,132 @@
     <div v-if="showCreateModal" class="modal-overlay">
       <div class="modal-content">
         <h2>Создать товар</h2>
-        <form @submit.prevent="createProduct">
-          <div class="product_modal_own_card">
-            <div class="left-side">
-              <div>
-                <input type="hidden" v-model="newProduct.category_id" />
-              </div>
-              <div>
-                <label for="productName">Название</label>
-                <input
-                  type="text"
-                  v-model="newProduct.name"
-                  id="productName"
-                  required
-                />
-              </div>
-              <div>
-                <label for="productPrice">Цена</label>
-                <input
-                  type="number"
-                  v-model="newProduct.price"
-                  id="productPrice"
-                  required
-                />
-              </div>
-              <div>
-                <label for="productDescription">Описание</label>
-                <textarea
-                  v-model="newProduct.description"
-                  id="productDescription"
-                  required
-                ></textarea>
-              </div>
-
-              <!-- Поле для загрузки изображений -->
-              <div>
-                <label for="productImages">Фотографии</label>
-                <input
-                  type="file"
-                  id="productImages"
-                  @change="handleFileUpload"
-                  multiple
-                  accept="image/*"
-                />
-              </div>
-            </div>
-
-            <div v-if="newProduct.images.length" class="rightside">
-              <h4>Загруженные изображения:</h4>
-              <vuedraggable
-                v-model="newProduct.images"
-                :options="{ handle: '.drag-handle' }"
-                @end="updateImageIndexes"
-              >
-                <div
-                  v-for="(image, index) in newProduct.images"
-                  :key="index"
-                  class="image-item"
-                >
-                  <!-- Здесь изображение становится перетаскиваемым -->
-                  <div
-                    class="drag-handle"
-                    :style="{ backgroundImage: `url(${getImageUrl(image)})` }"
-                  >
-                    <span class="image-number">{{ index + 1 }}</span>
-                    <span class="drag-handle-icon">☰</span>
-
-                    <!-- Иконка для перетаскивания -->
-                  </div>
-
-                  <img
-                    :src="getImageUrl(image)"
-                    :alt="image.name"
-                    class="preview-image"
-                  />
-                  <!-- Отображаем номер изображения в массиве -->
+        <div class="form-scroll-container">
+          <form @submit.prevent="createProduct">
+            <div class="product_modal_own_card">
+              <div class="left-side">
+                <div>
+                  <input type="hidden" v-model="newProduct.category_id" />
                 </div>
-              </vuedraggable>
+                <div>
+                  <label for="productName">Название</label>
+                  <input
+                    type="text"
+                    v-model="newProduct.name"
+                    id="productName"
+                    required
+                  />
+                </div>
+                <div>
+                  <label for="productPrice">Цена</label>
+                  <input
+                    type="number"
+                    v-model="newProduct.price"
+                    id="productPrice"
+                    required
+                  />
+                </div>
+                <div>
+                  <label for="productDescription">Описание</label>
+                  <textarea
+                    v-model="newProduct.description"
+                    id="productDescription"
+                    required
+                  ></textarea>
+                </div>
+
+                <!-- Чекбокс для наличия товара -->
+                <div class="product-stock-label">
+                  <label for="productStock" style="width: auto; min-width: 150px;">
+                    В наличии
+                  </label>
+                  <input
+                    type="checkbox"
+                    v-model="newProduct.stock"
+                    id="productStock"
+                    class="product-stock-checkbox"
+                  />
+                </div>
+
+                <!-- Динамическое добавление характеристик -->
+                <div>
+                  <h4>Характеристики (ключ-значение)</h4>
+                  <div
+                    v-for="(attribute, index) in newProduct.attributes"
+                    :key="index"
+                  >
+                  <div style="display: flex;   align-items: center;">
+                    <label>Ключ:</label>
+                    <input
+                      type="text"
+                      v-model="attribute.key"
+                      placeholder="Ключ"
+                      required
+                    />
+                    <label>Значение:</label>
+                    <input
+                      type="text"
+                      v-model="attribute.value"
+                      placeholder="Значение"
+                      required
+                    />
+                  </div>
+                    <button type="button" class="adminButtonsInModal" @click="removeAttribute(index)">
+                      Удалить
+                    </button>
+                  </div>
+                  <button type="button" @click="addAttribute" class="adminButtonsInModal">
+                    Добавить характеристику
+                  </button>
+                </div>
+
+                <!-- Поле для загрузки изображений -->
+                <div>
+                  <label for="productImages">Фотографии</label>
+                  <input
+                    type="file"
+                    id="productImages"
+                    @change="handleFileUpload"
+                    multiple
+                    accept="image/*"
+                  />
+                </div>
+              </div>
+
+              <div v-if="newProduct.images.length" class="rightside">
+                <h4>Загруженные изображения:</h4>
+                <vuedraggable
+                  v-model="newProduct.images"
+                  :options="{ handle: '.drag-handle' }"
+                  @end="updateImageIndexes"
+                >
+                  <div
+                    v-for="(image, index) in newProduct.images"
+                    :key="index"
+                    class="image-item"
+                  >
+                    <div
+                      class="drag-handle"
+                      :style="{ backgroundImage: `url(${getImageUrl(image)})` }"
+                    >
+                      <span class="image-number">{{ index + 1 }}</span>
+                      <span class="drag-handle-icon">☰</span>
+                    </div>
+                    <img
+                      :src="getImageUrl(image)"
+                      :alt="image.name"
+                      class="preview-image"
+                    />
+                  </div>
+                </vuedraggable>
+              </div>
             </div>
-          </div>
-          <button type="submit">Создать</button>
-          <button @click="closeCreateProductModal" type="button">
-            Закрыть
-          </button>
-        </form>
+            <button type="submit" class="adminButtonsInModal">Создать</button>
+            <button @click="closeCreateProductModal" class="adminButtonsInModal" type="button">
+              Закрыть
+            </button>
+          </form>
+        </div>
       </div>
     </div>
 
@@ -142,7 +184,6 @@
     <div v-else-if="errorMessage" class="error">{{ errorMessage }}</div>
     <div v-else>
       <div class="product-list-wrapper">
-
         <div
           v-bind:class="
             products.length < 3 ? 'product-list-less-than-two' : 'product-list'
@@ -157,8 +198,6 @@
               :to="`/shop/${catalogId}/${product.product_id}`"
               class="product-link"
             >
-              
-
               <div class="catalog-carousel">
                 <!-- Блок с каруселью -->
                 <div
@@ -199,7 +238,9 @@
               <div class="catalog-product-info">
                 <div class="catalog-product-name-info">
                   <div class="catalog-product-name">{{ product.name }}</div>
-                  <div class="catalog-product-order-info">Под заказ</div>
+                  
+                  <div v-if="product.stock" class="catalog-product-order-info-true">В наличии</div>
+      <div v-else class="catalog-product-order-info">Под заказ</div>
                 </div>
 
                 <div class="catalog-product-price">{{ product.price }} ₽</div>
@@ -246,7 +287,9 @@ export default {
         description: "",
         images: [],
         category_id: this.$route.params.catalogId,
-      }, // Добавлено свойство images
+        stock: true,
+        attributes: [],
+      },
     };
   },
   async asyncData({ params, store }) {
@@ -311,6 +354,12 @@ export default {
     },
   },
   methods: {
+    addAttribute() {
+      this.newProduct.attributes.push({ key: "", value: "" });
+    },
+    removeAttribute(index) {
+      this.newProduct.attributes.splice(index, 1);
+    },
     getImageUrl(image) {
       if (image && image.file instanceof File) {
         // Проверяем, что это файл
@@ -395,6 +444,8 @@ export default {
           description: "",
           images: [],
           category_id: this.catalogId,
+          stock: true,
+          attributes: [],
         };
       } catch (error) {
         console.error("Ошибка при создании товара с изображениями:", error);
@@ -413,7 +464,6 @@ export default {
         // Укажите путь к папке, где нужно сохранить изображения
         formData.append("path", "static/shop/Article/"); // Пример пути
 
-        // Отправляем FormData в Vuex
         const response = await this.$store.dispatch("setImages", formData);
 
         // Проверяем и логируем полученные изображения
@@ -498,9 +548,6 @@ export default {
   z-index: 5;
 }
 
-/* .catalog-carousel {
-  height: 400px;
-} */
 
 .catalog-carousel-indicator {
   width: 30px;
@@ -627,13 +674,13 @@ export default {
 .catalog-carousel-images {
   display: flex;
   transition: transform 0.3s ease;
-  /* object-fit: cover; */
+  height: 100%;
 }
 
 .carousel-image {
   min-width: 100%;
-  /* height: 100%; */
-  object-fit: cover;
+  height: 100%;
+  object-fit:contain;
 }
 
 .catalog-product-info {
@@ -659,6 +706,13 @@ export default {
   padding: 5px;
   color: black;
   background-color: goldenrod;
+}
+
+.catalog-product-order-info-true {
+  font-size: 14px;
+  padding: 5px;
+  color: rgb(241, 3, 3);
+  background-color: rgb(255, 255, 255);
 }
 
 .catalog-product-name-info {
@@ -738,9 +792,18 @@ export default {
   padding: 20px;
   border-radius: 8px;
   width: 70%;
+  overflow-y: auto;
   max-width: 90%;
   box-shadow: 0 5px 15px rgba(0, 0, 0, 0.3);
   max-height: 90vh;
+}
+
+.form-scroll-container {
+  max-height: calc(90vh - 80px); /* Учитываем заголовок и отступы */
+  overflow-y: auto; /* Включаем вертикальный скролл */
+  padding-right: 10px; /* Для прокрутки */
+  margin-top: 10px;
+  box-sizing: border-box;
 }
 
 .modal-content h2 {
@@ -756,17 +819,7 @@ export default {
   border-radius: 4px;
 }
 
-.modal-content button {
-  padding: 10px 20px;
-  cursor: pointer;
-  border: none;
-  border-radius: 4px;
-}
 
-.modal-content button:hover {
-  background: #007bff;
-  color: white;
-}
 
 .product_modal_own_card {
   display: flex;
@@ -830,5 +883,18 @@ export default {
   border-radius: 50%;
   /* Круглая форма */
   font-weight: bold;
+}
+
+.product-stock-label {
+  display: flex;
+  align-items: center;
+  gap: 8px; /* Расстояние между чекбоксом и текстом */
+}
+
+.product-stock-checkbox {
+  
+  width: 16px; /* Размер чекбокса */
+  height: 16px;
+  margin: 0; /* Убираем лишние отступы */
 }
 </style>

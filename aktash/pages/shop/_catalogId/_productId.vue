@@ -1,7 +1,9 @@
 <template>
   <div class="product-details">
     <div>
-      <button v-if="isLoggedIn" @click="showEditProductModal">Редактировать продукт</button>
+      <button v-if="isLoggedIn" @click="showEditProductModal">
+        Редактировать продукт
+      </button>
     </div>
     <div>
       <div class="breadcrumbs">
@@ -9,7 +11,9 @@
         <div>/</div>
         <nuxt-link :to="`/shop/`" class="breadcrumb">Каталог</nuxt-link>
         <div>/</div>
-        <nuxt-link :to="`/shop/${catalogId}`" class="breadcrumb">{{ categoryName }}</nuxt-link>
+        <nuxt-link :to="`/shop/${catalogId}`" class="breadcrumb">{{
+          categoryName
+        }}</nuxt-link>
         <div>/</div>
         <p class="breadcrumb_last">{{ product.name }}</p>
       </div>
@@ -19,32 +23,68 @@
     <div v-else-if="errorMessage" class="error">{{ errorMessage }}</div>
     <div v-else>
       <div class="product-info">
-        <div v-if="product.images && product.images.length" class="product-slider">
+        <div
+          v-if="product.images && product.images.length"
+          class="product-slider"
+        >
           <!-- Основной карусель -->
           <div class="carousel">
             <div class="carousel-inner">
-              <div v-for="(image, index) in product.images" :key="index"
-                :class="['item', index === activeIndex ? 'active' : '']">
-                <img :src="`/shop/${image.url}`" :alt="`Image of ${product.name} - ${index + 1}`" />
+              <div
+                v-for="(image, index) in product.images"
+                :key="index"
+                :class="['item', index === activeIndex ? 'active' : '']"
+              >
+                <img
+                  :src="`/shop/${image.url}`"
+                  :alt="`Image of ${product.name} - ${index + 1}`"
+                  class="product-carousel-main-images"
+                />
               </div>
             </div>
 
             <!-- Контролы для переключения слайдов -->
             <button class="prev" @click="prevSlide">
-              <font-awesome-icon :icon="['fas', 'arrow-left']" style="font-size: 30px" />
+              <font-awesome-icon
+                :icon="['fas', 'arrow-left']"
+                style="font-size: 30px"
+              />
             </button>
             <button class="next" @click="nextSlide">
-              <font-awesome-icon :icon="['fas', 'arrow-right']" style="font-size: 30px" />
+              <font-awesome-icon
+                :icon="['fas', 'arrow-right']"
+                style="font-size: 30px"
+              />
             </button>
           </div>
 
           <!-- Карусель с миниатюрами -->
           <div class="thumbcarousel">
             <div class="carousel-inner">
-              <div class="thumb" v-for="(image, index) in product.images" :key="index" @click="setActiveSlide(index)"
-                :class="{ active: index === activeIndex }">
-                <img :src="`/shop/${image.url}`" :alt="`Thumbnail for ${product.name} - ${index + 1}`" />
+              <div
+                class="thumb"
+                v-for="(image, index) in product.images"
+                :key="index"
+                @click="setActiveSlide(index)"
+                :class="{ active: index === activeIndex }"
+              >
+                <img
+                  :src="`/shop/${image.url}`"
+                  :alt="`Thumbnail for ${product.name} - ${index + 1}`"
+                />
               </div>
+            </div>
+          </div>
+          <div class="product-attributes-title">Характеристики</div>
+          <div class="product-attributes-grid" v-if="product.attributes">
+            <div class="product-attributes" v-for="attr in product.attributes">
+              <div class="prduct-attributes-container">
+                <div v-for="(key, value) in attr">
+                  <div class="product-attribute-key">{{ key }}</div>
+                  <div class="product-attribute-value">{{ value }}</div>
+                </div>
+              </div>
+              <div class="product-attribute-underline"></div>
             </div>
           </div>
         </div>
@@ -57,29 +97,32 @@
             <h1 class="product-main-text">
               {{ product.name }}
             </h1>
-
           </div>
-          <div class="product-price">
-            {{ fancyPrice(product.price) }} ₽
-          </div>
+          <div class="product-price">{{ fancyPrice(product.price) }} ₽</div>
           <div class="product-description-underline"></div>
           <div class="product-article-number-wrapper">
             <div class="product-article-number-info">Артикул товара:</div>
-            <div class="product-article-number"> {{ productId }} </div>
+            <div class="product-article-number">{{ productId }}</div>
           </div>
           <div class="product-button-to-cart-wrapper">
             <button class="product-button-to-cart">В корзину</button>
           </div>
           <div class="one-click-button-wrapper">
-            <button class="one-click-button">Купить товар в 1 клик
+            <button class="one-click-button">
+              Купить товар в 1 клик
               <div class="one-click-button-underline"></div>
             </button>
-
           </div>
 
-          <p> {{ product.description }}</p>
+          <p>{{ product.description }}</p>
         </div>
       </div>
+      <!-- <div class="product-attributes-grid" v-if="product.attributes">
+        <h2>Характеристики</h2>
+        <div class="product-attributes" v-for="attr in product.attributes">
+          <div v-for="(key, value) in attr">{{ (key, value) }}</div>
+        </div>
+      </div> -->
     </div>
 
     <div v-if="editProduct" class="update-product-modal">
@@ -91,33 +134,121 @@
             <div class="product-edit-form_flex">
               <div class="product-edit-form__left">
                 <!-- Название продукта -->
-                <label for="product_name" class="product-edit-form__label">Название продукта:</label>
-                <input type="text" id="product_name" v-model="editProductData.name"
-                  placeholder="Введите название продукта" required class="product-edit-form__input" />
+                <label for="product_name" class="product-edit-form__label"
+                  >Название продукта:</label
+                >
+                <input
+                  type="text"
+                  id="product_name"
+                  v-model="editProductData.name"
+                  placeholder="Введите название продукта"
+                  required
+                  class="product-edit-form__input"
+                />
 
                 <!-- Описание продукта -->
-                <label for="product_description" class="product-edit-form__label">Описание продукта:</label>
-                <textarea id="product_description" v-model="editProductData.description"
-                  placeholder="Введите описание продукта" required class="product-edit-form__textarea"></textarea>
+                <label
+                  for="product_description"
+                  class="product-edit-form__label"
+                  >Описание продукта:</label
+                >
+                <textarea
+                  id="product_description"
+                  v-model="editProductData.description"
+                  placeholder="Введите описание продукта"
+                  required
+                  class="product-edit-form__textarea"
+                ></textarea>
 
                 <!-- Цена продукта -->
-                <label for="product_price" class="product-edit-form__label">Цена продукта:</label>
-                <input type="number" id="product_price" v-model="editProductData.price" placeholder="Введите цену"
-                  required class="product-edit-form__input" />
+                <label for="product_price" class="product-edit-form__label"
+                  >Цена продукта:</label
+                >
+                <input
+                  type="number"
+                  id="product_price"
+                  v-model="editProductData.price"
+                  placeholder="Введите цену"
+                  required
+                  class="product-edit-form__input"
+                />
+
+                <div class="product-stock-label">
+                  <label
+                    for="productStock"
+                    style="width: auto; min-width: 150px"
+                  >
+                    В наличии
+                  </label>
+                  <input
+                    type="checkbox"
+                    v-model="editProductData.stock"
+                    id="productStock"
+                    class="product-stock-checkbox"
+                  />
+                </div>
+
+                <div>
+                  <h4>Характеристики (ключ-значение)</h4>
+                  <div
+                    v-for="(attribute, index) in editProductData.attributes"
+                    :key="index"
+                    style="
+                      display: flex;
+                      align-items: center;
+                      margin-bottom: 10px;
+                    "
+                  >
+                    <label>Ключ:</label>
+                    <input
+                      type="text"
+                      v-model="attribute.key"
+                      placeholder="Ключ"
+                      required
+                    />
+                    <label>Значение:</label>
+                    <input
+                      type="text"
+                      v-model="attribute.value"
+                      placeholder="Значение"
+                      required
+                    />
+                    <button type="button" @click="removeAttribute(index)">
+                      Удалить
+                    </button>
+                  </div>
+                  <button type="button" @click="addAttribute">
+                    Добавить характеристику
+                  </button>
+                </div>
               </div>
 
               <div class="product-edit-form__right">
                 <!-- Текущие изображения -->
                 <div v-if="images.length > 0" class="product-edit-form__images">
                   <p class="product-edit-form__images-title">Изображения:</p>
-                  <vuedraggable v-model="images" group="images" class="product-edit-form__image-gallery"
-                    @end="handleDrop">
-                    <div v-for="(image, index) in visibleImages" :key="`image-${index}`"
-                      class="product-edit-form__image-item">
-                      <img :src="image.preview || `/shop/${image.url}`" alt="Preview"
-                        class="product-edit-form__preview-image" />
+                  <vuedraggable
+                    v-model="images"
+                    group="images"
+                    class="product-edit-form__image-gallery"
+                    @end="handleDrop"
+                  >
+                    <div
+                      v-for="(image, index) in visibleImages"
+                      :key="`image-${index}`"
+                      class="product-edit-form__image-item"
+                    >
+                      <img
+                        :src="image.preview || `/shop/${image.url}`"
+                        alt="Preview"
+                        class="product-edit-form__preview-image"
+                      />
                       <p class="image-index">Индекс: {{ index + 1 }}</p>
-                      <button type="button" @click="removeImage(index)" class="product-edit-form__remove-image">
+                      <button
+                        type="button"
+                        @click="removeImage(index)"
+                        class="product-edit-form__remove-image"
+                      >
                         Удалить
                       </button>
                     </div>
@@ -125,10 +256,21 @@
                 </div>
 
                 <!-- Загрузка нового изображения -->
-                <div v-if="editProductData.images.length < 15" class="product-edit-form__file-upload">
-                  <label for="product_image" class="product-edit-form__label">Новое изображение:</label>
-                  <input id="product_image" type="file" accept="image/*" @change="addImage" multiple
-                    class="product-edit-form__file-input" />
+                <div
+                  v-if="editProductData.images.length < 15"
+                  class="product-edit-form__file-upload"
+                >
+                  <label for="product_image" class="product-edit-form__label"
+                    >Новое изображение:</label
+                  >
+                  <input
+                    id="product_image"
+                    type="file"
+                    accept="image/*"
+                    @change="addImage"
+                    multiple
+                    class="product-edit-form__file-input"
+                  />
                 </div>
               </div>
             </div>
@@ -137,7 +279,11 @@
               <button type="submit" class="product-edit-form__submit-btn">
                 Сохранить изменения
               </button>
-              <button type="button" @click="cancelEditProduct" class="product-edit-form__cancel-btn">
+              <button
+                type="button"
+                @click="cancelEditProduct"
+                class="product-edit-form__cancel-btn"
+              >
                 Отмена
               </button>
             </div>
@@ -166,6 +312,8 @@ export default {
         description: "",
         price: 0,
         images: [],
+        stock: true,
+        attributes: [],
       },
       dragStartIndex: null,
       productId: "",
@@ -210,7 +358,16 @@ export default {
     handleDragStart(index) {
       this.dragStartIndex = index;
     },
-
+    addAttribute() {
+      // Убедитесь, что attributes — это массив
+      if (!Array.isArray(this.editProductData.attributes)) {
+        this.editProductData.attributes = [];
+      }
+      this.editProductData.attributes.push({ key: "", value: "" });
+    },
+    removeAttribute(index) {
+      this.editProductData.attributes.splice(index, 1);
+    },
     nextSlide() {
       if (this.activeIndex < this.product.images.length - 1) {
         this.activeIndex++;
@@ -240,9 +397,13 @@ export default {
         name: this.product.name,
         description: this.product.description,
         price: this.product.price,
+        stock: this.product.stock !== undefined ? this.product.stock : true,
+        attributes: Array.isArray(this.product.attributes)
+          ? [...this.product.attributes]
+          : [],
         images: this.images,
       };
-      this.updateImageIndexes()
+      this.updateImageIndexes();
       this.editProduct = true;
     },
     cancelEditProduct() {
@@ -252,38 +413,40 @@ export default {
       this.editProduct = false;
     },
     fancyPrice(price) {
-      return Math.round(price).toString().replace(/\B(?=(\d{3})+(?!\d))/g, " ");
+      return Math.round(price)
+        .toString()
+        .replace(/\B(?=(\d{3})+(?!\d))/g, " ");
       // return Math.round(price);
     },
     addImage(event) {
-  const files = Array.from(event.target.files);
-  const newImages = [];
+      const files = Array.from(event.target.files);
+      const newImages = [];
 
-  files.forEach((file, index) => {
-    const reader = new FileReader();
-    reader.onload = (e) => {
-      const newImage = {
-        id: null,
-        preview: e.target.result,
-        url: "",
-        file,
-        isNew: true,
-        isDelete: false,
-        index: this.images.length + index + 1, // Присваиваем индекс новому изображению
-      };
+      files.forEach((file, index) => {
+        const reader = new FileReader();
+        reader.onload = (e) => {
+          const newImage = {
+            id: null,
+            preview: e.target.result,
+            url: "",
+            file,
+            isNew: true,
+            isDelete: false,
+            index: this.images.length + index + 1, // Присваиваем индекс новому изображению
+          };
 
-      newImages.push(newImage);
+          newImages.push(newImage);
 
-      if (newImages.length === files.length) {
-        // Обновляем массив изображений, включая новые с индексами
-        this.images = [...this.images, ...newImages];
-        this.editProductData.images = [...this.images];
-        this.updateImageIndexes();  // Обновление индексов в editProductData
-      }
-    };
-    reader.readAsDataURL(file);
-  });
-},
+          if (newImages.length === files.length) {
+            // Обновляем массив изображений, включая новые с индексами
+            this.images = [...this.images, ...newImages];
+            this.editProductData.images = [...this.images];
+            this.updateImageIndexes(); // Обновление индексов в editProductData
+          }
+        };
+        reader.readAsDataURL(file);
+      });
+    },
     removeImage(index) {
       const visibleImage = this.visibleImages[index];
       const realIndex = this.images.findIndex(
@@ -312,22 +475,28 @@ export default {
       });
     },
     async updateProduct() {
-      this.editProductData.images.forEach(image => {
+      this.editProductData.attributes = JSON.stringify(
+        this.editProductData.attributes
+      );
+      this.editProductData.images.forEach((image) => {
         if (image.isNew) {
           image.preview = null;
         }
       });
       this.editProductData.productId = this.productId;
       this.editProductData.catalogId = this.catalogId;
-      console.log("Отправляемые данные", this.editProductData)
+      console.log("Отправляемые данные", this.editProductData);
 
       try {
-        const updatedProduct = await this.$store.dispatch("updateProduct", this.editProductData);
+        const updatedProduct = await this.$store.dispatch(
+          "updateProduct",
+          this.editProductData
+        );
         console.log("Продукт успешно обновлен:", updatedProduct);
       } catch (error) {
         console.error("Ошибка при обновлении продукта:", error);
       }
-      this.closeEditProductModal()
+      this.closeEditProductModal();
     },
   },
   computed: {
@@ -388,7 +557,7 @@ export default {
 .product-edit-form__left {
   flex: 1;
   min-width: 100px;
-  max-width: 30%;
+  width: auto;
 }
 
 .product-edit-form__label {
@@ -417,7 +586,7 @@ export default {
 
 /* Правая часть с изображениями */
 .product-edit-form__right {
-  width: 70%;
+  width: auto;
   min-width: 300px;
   background: #f9f9f9;
   padding: 20px;
@@ -506,5 +675,9 @@ export default {
   margin-top: 5px;
   font-size: 14px;
   color: #666;
+}
+
+.product-carousel-main-images {
+  object-fit: contain;
 }
 </style>

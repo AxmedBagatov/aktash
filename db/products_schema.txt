@@ -8,6 +8,8 @@
  created_at  | timestamp without time zone |           |          | CURRENT_TIMESTAMP
  updated_at  | timestamp without time zone |           |          | CURRENT_TIMESTAMP
  category_id | integer                     |           | not null | 
+ stock       | boolean                     |           | not null | true
+ attributes  | jsonb                       |           |          | 
 Indexes:
     "products_pkey" PRIMARY KEY, btree (product_id)
     "idx_product_name" btree (name)

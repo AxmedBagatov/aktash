@@ -314,6 +314,8 @@ export const actions = {
       formData.append("name", productData.name);
       formData.append("description", productData.description);
       formData.append("price", productData.price);
+      formData.append("stock", productData.stock);
+      formData.append("attributes", productData.attributes);
       formData.append("categoryId", productData.catalogId);
   
       // Добавляем новые изображения в formData

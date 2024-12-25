@@ -55,9 +55,11 @@ const storage = multer.diskStorage({
 
 const upload = multer({ storage: storage });
 
+
+
 app.patch("/api/products/:id", upload.array("newImages"), async (req, res) => {
   try {
-    const { name, description, price } = req.body;
+    const { name, description, price, stock, attributes } = req.body;
     const categoryId = req.body.categoryId;
     const productId = req.params.id;
     let images = req.files;
@@ -67,6 +69,7 @@ app.patch("/api/products/:id", upload.array("newImages"), async (req, res) => {
     let currentImagesIds = req.body.currentImagesIds || [];
     const currentImagesIndexes = req.body.currentImagesIndexes || [];
     const currentImagesUrls = req.body.currentImagesUrls || [];
+    const parsedAttributes = Array.isArray(attributes) ? attributes : JSON.parse(attributes || "[]");
 
     if (!Array.isArray(images)) {
       images = [images];
@@ -161,7 +164,7 @@ app.patch("/api/products/:id", upload.array("newImages"), async (req, res) => {
     console.log("Полученные изображения:", images);
     console.log("Изображения для удаления:", deletedImages);
 
-    const targetPath = "/static/shop/Article/";
+    const targetPath = "static/shop/Article";
     await mkdirp(targetPath);
     const imageUrls = [];
 
@@ -169,35 +172,69 @@ app.patch("/api/products/:id", upload.array("newImages"), async (req, res) => {
     if (images.length > 0) {
       try {
         for (const [i, file] of images.entries()) {
-          const newFilePath = path.join(targetPath, file.originalname);
-          await fs.promises.rename(file.path, newFilePath);
-          console.log(`Файл успешно перемещен в ${newFilePath}`);
-
+          // Получение расширения файла
+          const fileExtension = path.extname(file.originalname);
+    
+          // Генерация уникального имени файла на основе текущего времени и индекса
+          const uniqueFilename = `${Date.now()}_${i}${fileExtension}`;
+          const productFolder = path.join(targetPath, productId); // Папка продукта
+    
+          console.log(`Попытка создать директорию для продукта: ${productFolder}`);
+    
+          // Убедимся, что папка существует или создадим её
+          try {
+            await mkdirp(productFolder);
+            console.log(`Директория успешно создана или уже существует: ${productFolder}`);
+          } catch (mkdirError) {
+            console.error(`Ошибка при создании директории ${productFolder}:`, mkdirError);
+            return res
+              .status(500)
+              .json({ message: `Ошибка при создании директории для продукта.` });
+          }
+    
+          // Путь для перемещения файла
+          const newFilePath = path.join(productFolder, uniqueFilename);
+    
+          // Перемещаем файл
+          try {
+            await fs.promises.rename(file.path, newFilePath);
+            console.log(`Файл успешно перемещен в ${newFilePath}`);
+          } catch (renameError) {
+            console.error(`Ошибка при перемещении файла ${file.path}:`, renameError);
+            return res
+              .status(500)
+              .json({ message: `Ошибка при перемещении файла.` });
+          }
+    
+          // Формируем путь для базы данных
+          const imageUrlForDB = `Article/${productId}/${uniqueFilename}`;
+    
           // Находим индекс из parsedNewImages с использованием оригинального имени файла
           const parsedImage = parsedNewImages.find(
             (img) => img.filename === file.originalname
           );
           const imageOrder = parsedImage ? parsedImage.index : i; // Используем индекс, если найден, иначе fallback на i
-          console.log(imageOrder);
-
-          // Добавление пути нового изображения
-          imageUrls.push({ url: newFilePath, order: imageOrder });
-
-          // Добавление записи в таблицу изображений
-          const imageUrlWithoutStatic = newFilePath.startsWith("/static/shop/")
-            ? newFilePath.replace(/^\/static\/shop\//, "") // Удаляем префикс только если он есть
-            : newFilePath;
-
+          console.log(`Порядковый номер изображения: ${imageOrder}`);
+    
+          // Добавление пути нового изображения в массив
+          imageUrls.push({ url: imageUrlForDB, order: imageOrder });
+    
+          // Запрос на добавление записи в базу данных
           const imageInsertQuery = `
             INSERT INTO images (entity_type, entity_id, image_url, image_order)
             VALUES ('product', $1, $2, $3);
           `;
-          const imageValues = [productId, imageUrlWithoutStatic, imageOrder];
-
-          await queryDB(imageInsertQuery, imageValues);
-          console.log(
-            `Изображение добавлено: ${imageUrlWithoutStatic} с порядковым номером ${imageOrder}`
-          );
+          const imageValues = [productId, imageUrlForDB, imageOrder];
+    
+          try {
+            await queryDB(imageInsertQuery, imageValues);
+            console.log(`Изображение добавлено: ${imageUrlForDB} с порядковым номером ${imageOrder}`);
+          } catch (dbError) {
+            console.error(`Ошибка при добавлении изображения в базу данных:`, dbError);
+            return res
+              .status(500)
+              .json({ message: `Ошибка при добавлении изображения в базу данных.` });
+          }
         }
       } catch (error) {
         console.error("Ошибка при обработке новых изображений:", error);
@@ -206,6 +243,7 @@ app.patch("/api/products/:id", upload.array("newImages"), async (req, res) => {
           .json({ message: "Ошибка при добавлении новых изображений." });
       }
     }
+    
 
     // // 2. Удаление старых изображений
     if (Array.isArray(parsedDeletedImages) && parsedDeletedImages.length > 0) {
@@ -262,33 +300,36 @@ app.patch("/api/products/:id", upload.array("newImages"), async (req, res) => {
     // // 3. Обновление информации о продукте в базе данных
     console.log(name, description, price, categoryId);
     
-    if (name || description || price || categoryId) {
+    if (name || description || price || categoryId || stock || attributes) {
       try {
-        const updateProductQuery = `
-          UPDATE products
+        const updateProductQuery = 
+          `UPDATE products
           SET
             name = COALESCE($1, name),
             description = COALESCE($2, description),
             price = COALESCE($3, price),
-            category_id = COALESCE($4, category_id)
-          WHERE product_id = $5
-          RETURNING *;
-        `;
-
+            category_id = COALESCE($4, category_id),
+            stock = COALESCE($5, stock), -- Добавляем обновление для stock
+            attributes = COALESCE($6, attributes) -- Добавляем обновление для attributes
+          WHERE product_id = $7
+          RETURNING *;`;
+    
         const productValues = [
           name || null,
           description || null,
           price || null,
           categoryId || null,
+          stock || null, // Присваиваем значение stock
+          attributes || null, // Присваиваем значение attributes
           productId,
         ];
-
+    
         const updatedProduct = await queryDB(updateProductQuery, productValues);
-
+    
         if (updatedProduct.length === 0) {
           return res.status(404).json({ error: "Продукт не найден." });
         }
-
+    
         console.log("Продукт обновлен:", updatedProduct);
       } catch (error) {
         console.error("Ошибка при обновлении данных продукта:", error);
@@ -897,6 +938,8 @@ app.get("/api/products", async (req, res) => {
         p.name,
         p.description,
         p.price,
+        p.stock,  
+        p.attributes,
         JSON_AGG(JSON_BUILD_OBJECT('id', i.image_id, 'url', i.image_url, 'order', i.image_order) ORDER BY i.image_order) AS images
 
       FROM 
@@ -1126,6 +1169,8 @@ app.post("/api/create-products", async (req, res) => {
   console.log("Описание:", productData.description);
   console.log("Длина массива:", productData.images.length);
   console.log("Фото:", productData.images);
+  console.log("Наличие товара:", productData.stock);  // Выводим stock
+  console.log("Характеристики товара:", productData.attributes);  // Выводим attributes
 
   try {
     // Проверка на наличие данных в productData.images
@@ -1133,10 +1178,10 @@ app.post("/api/create-products", async (req, res) => {
       return res.status(400).json({ error: "Нет изображений для добавления." });
     }
 
-    // 1. Добавляем новый продукт в таблицу `products`
+    // 1. Добавляем новый продукт в таблицу `products`, включая stock и attributes
     const insertProductQuery = `
-      INSERT INTO products (category_id, name, description, price)
-      VALUES ($1, $2, $3, $4)
+      INSERT INTO products (category_id, name, description, price, stock, attributes)
+      VALUES ($1, $2, $3, $4, $5, $6)
       RETURNING product_id;
     `;
     const values = [
@@ -1144,6 +1189,8 @@ app.post("/api/create-products", async (req, res) => {
       productData.name,
       productData.description,
       productData.price,
+      productData.stock,  // Добавляем stock
+      productData.attributes ? JSON.stringify(productData.attributes) : null,  // Сохраняем attributes как JSON
     ];
 
     const result = await queryDB(insertProductQuery, values);
@@ -1153,7 +1200,7 @@ app.post("/api/create-products", async (req, res) => {
     const newProductId = Array.isArray(result)
       ? result[0].product_id
       : result.rows[0].product_id;
-    console.log("Новый продукт добавлен с test ID:", newProductId);
+    console.log("Новый продукт добавлен с ID:", newProductId);
 
     // 2. Добавляем изображения для нового продукта в таблицу `images`
     for (let i = 0; i < productData.images.length; i++) {
