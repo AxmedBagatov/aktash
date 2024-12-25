@@ -415,13 +415,9 @@ app.patch("/api/products/:id", upload.array("newImages"), async (req, res) => {
 app.post("/api/upload-images", upload.array("images[]"), async (req, res) => {
   const uploadedFiles = req.files;
   const indexes = req.body.indexes; // Извлекаем индексы из FormData
-  const targetPath = req.body.path; // Извлекаем путь из FormData
+  const targetPath = "static/shop/Article/"; // Извлекаем путь из FormData
   console.log("Путь:", targetPath); // Логируем путь для отладки
-
-  if (!targetPath) {
-    return res.status(400).json({ success: false, message: "Путь не передан" });
-  }
-
+  
   try {
     // Убедитесь, что директория существует, или создайте её
     await mkdirp(targetPath);

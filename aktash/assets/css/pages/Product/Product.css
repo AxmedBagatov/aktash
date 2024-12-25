@@ -71,6 +71,10 @@
     background-color: lightgray;
 }
 
+.product-attribute-key {
+    color: gray;
+}
+
 .product-attributes-title {
     font-size: 40px;
     margin-top: 20px;

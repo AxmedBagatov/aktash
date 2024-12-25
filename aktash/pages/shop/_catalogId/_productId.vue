@@ -79,10 +79,10 @@
           <div class="product-attributes-grid" v-if="product.attributes">
             <div class="product-attributes" v-for="attr in product.attributes">
               <div class="prduct-attributes-container">
-                <div v-for="(key, value) in attr">
-                  <div class="product-attribute-key">{{ key }}</div>
-                  <div class="product-attribute-value">{{ value }}</div>
-                </div>
+                <!-- <div v-for="(key, value) in attr"> -->
+                  <div class="product-attribute-key">{{ beautifyText(attr.key) }}</div>
+                  <div class="product-attribute-value">{{ beautifyText(attr.value) }}</div>
+                <!-- </div> -->
               </div>
               <div class="product-attribute-underline"></div>
             </div>
@@ -411,6 +411,13 @@ export default {
     },
     closeEditProductModal() {
       this.editProduct = false;
+    },
+    beautifyText(text) {
+      try {
+        return text.charAt(0).toUpperCase()+ text.toLowerCase().slice(1)
+      } catch {
+        return text
+      }
     },
     fancyPrice(price) {
       return Math.round(price)

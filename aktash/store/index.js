@@ -471,7 +471,7 @@ export const actions = {
     }
   },
   async setImages({ commit }, formData) {
-  
+   
     try {
       const response = await this.$axios.post("/upload-images", formData, {
         headers: {

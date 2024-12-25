@@ -87,7 +87,10 @@
 
                 <!-- Чекбокс для наличия товара -->
                 <div class="product-stock-label">
-                  <label for="productStock" style="width: auto; min-width: 150px;">
+                  <label
+                    for="productStock"
+                    style="width: auto; min-width: 150px"
+                  >
                     В наличии
                   </label>
                   <input
@@ -105,27 +108,35 @@
                     v-for="(attribute, index) in newProduct.attributes"
                     :key="index"
                   >
-                  <div style="display: flex;   align-items: center;">
-                    <label>Ключ:</label>
-                    <input
-                      type="text"
-                      v-model="attribute.key"
-                      placeholder="Ключ"
-                      required
-                    />
-                    <label>Значение:</label>
-                    <input
-                      type="text"
-                      v-model="attribute.value"
-                      placeholder="Значение"
-                      required
-                    />
-                  </div>
-                    <button type="button" class="adminButtonsInModal" @click="removeAttribute(index)">
+                    <div style="display: flex; align-items: center">
+                      <label>Ключ:</label>
+                      <input
+                        type="text"
+                        v-model="attribute.key"
+                        placeholder="Ключ"
+                        required
+                      />
+                      <label>Значение:</label>
+                      <input
+                        type="text"
+                        v-model="attribute.value"
+                        placeholder="Значение"
+                        required
+                      />
+                    </div>
+                    <button
+                      type="button"
+                      class="adminButtonsInModal"
+                      @click="removeAttribute(index)"
+                    >
                       Удалить
                     </button>
                   </div>
-                  <button type="button" @click="addAttribute" class="adminButtonsInModal">
+                  <button
+                    type="button"
+                    @click="addAttribute"
+                    class="adminButtonsInModal"
+                  >
                     Добавить характеристику
                   </button>
                 </div>
@@ -172,7 +183,11 @@
               </div>
             </div>
             <button type="submit" class="adminButtonsInModal">Создать</button>
-            <button @click="closeCreateProductModal" class="adminButtonsInModal" type="button">
+            <button
+              @click="closeCreateProductModal"
+              class="adminButtonsInModal"
+              type="button"
+            >
               Закрыть
             </button>
           </form>
@@ -238,9 +253,14 @@
               <div class="catalog-product-info">
                 <div class="catalog-product-name-info">
                   <div class="catalog-product-name">{{ product.name }}</div>
-                  
-                  <div v-if="product.stock" class="catalog-product-order-info-true">В наличии</div>
-      <div v-else class="catalog-product-order-info">Под заказ</div>
+
+                  <div
+                    v-if="product.stock"
+                    class="catalog-product-order-info-true"
+                  >
+                    В наличии
+                  </div>
+                  <div v-else class="catalog-product-order-info">Под заказ</div>
                 </div>
 
                 <div class="catalog-product-price">{{ product.price }} ₽</div>
@@ -281,6 +301,7 @@ export default {
       currentSlide: {},
       carouselInterval: {},
       showCreateModal: false,
+      productId: "",
       newProduct: {
         name: "",
         price: "",
@@ -388,13 +409,7 @@ export default {
     closeCreateProductModal() {
       this.showCreateModal = false;
     },
-    handleIndicatorHover(productId, index) {
-      if (!this.currentSlide[productId]) {
-        this.$set(this.currentSlide, productId, index); // Обеспечивает реактивность
-      } else {
-        this.currentSlide[productId] = index; // Обновляем индекс
-      }
-    },
+
     resetSlide(productId) {
       this.currentSlide[productId] = 0;
     },
@@ -427,7 +442,9 @@ export default {
         };
 
         // Загружаем изображения
-        const upload_images = await this.uploadImages();
+        const upload_images = await this.uploadImages(
+          this.newProduct.productId
+        );
         productData.images = upload_images;
 
         // Отправляем данные на сервер
@@ -451,7 +468,7 @@ export default {
         console.error("Ошибка при создании товара с изображениями:", error);
       }
     },
-    async uploadImages() {
+    async uploadImages(productId) {
       try {
         const formData = new FormData();
 
@@ -461,8 +478,13 @@ export default {
           formData.append("indexes[]", imageObj.index);
         });
 
+        // Добавляем productId в formData
+        formData.append("productId", productId);
+
+        console.log("id продукта:", productId);
+
         // Укажите путь к папке, где нужно сохранить изображения
-        formData.append("path", "static/shop/Article/"); // Пример пути
+        // formData.append("path", "static/shop/Article/");
 
         const response = await this.$store.dispatch("setImages", formData);
 
@@ -547,7 +569,6 @@ export default {
   /* Space between indicators */
   z-index: 5;
 }
-
 
 .catalog-carousel-indicator {
   width: 30px;
@@ -680,7 +701,7 @@ export default {
 .carousel-image {
   min-width: 100%;
   height: 100%;
-  object-fit:contain;
+  object-fit: contain;
 }
 
 .catalog-product-info {
@@ -819,8 +840,6 @@ export default {
   border-radius: 4px;
 }
 
-
-
 .product_modal_own_card {
   display: flex;
 }
@@ -892,7 +911,6 @@ export default {
 }
 
 .product-stock-checkbox {
-  
   width: 16px; /* Размер чекбокса */
   height: 16px;
   margin: 0; /* Убираем лишние отступы */
